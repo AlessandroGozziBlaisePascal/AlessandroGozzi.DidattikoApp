@@ -1,0 +1,50 @@
+## -- STRUMENTI DI COMPILAZIONE E OUTPUT --
+# Cartelle di output (Binari e file temporanei di build)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Gg]enerated/
+
+# Output di MSBuild, Roslyn e compilazione
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+## -- VISUAL STUDIO --
+# Cartelle specifiche di Visual Studio e cache
+.vs/
+*.vshost.exe
+*.vshost.exe.manifest
+*.manifest
+*.cscfg
+*.csdef
+
+## -- GESTIONE PACCHETTI (NuGet) --
+# Cartella dei pacchetti memorizzati localmente
+packages/
+# Se usi il nuovo formato, escludi la cache di ripristino
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+
+## -- UNIT TESTING --
+# Risultati dei test e report di copertura codice
+TestResults/
+*.sequenced
+_Chutzpah*
+*.coverage
+*.coveragexml
+
+## -- SISTEMA OPERATIVO E FILE SENSIBILI --
+# File utente e variabili d'ambiente locali
+.env
+.env.*
+appsettings.Development.json
+*.usersettings
+
+# File di sistema (macOS e Windows)
+.DS_Store
+Thumbs.db
