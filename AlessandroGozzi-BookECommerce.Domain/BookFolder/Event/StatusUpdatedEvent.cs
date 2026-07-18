@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi_BookECommerce.Domain.BookFolder.Event
 {
-    internal class RewievAddedEvent
+    internal class StatusUpdatedEvent
     {
     }
 }

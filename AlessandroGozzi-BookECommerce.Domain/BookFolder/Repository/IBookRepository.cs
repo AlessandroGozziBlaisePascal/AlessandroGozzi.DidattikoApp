@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi_BookECommerce.Domain.BookFolder.Value_Object
+namespace AlessandroGozzi_BookECommerce.Domain.BookFolder.Repository
 {
-    internal class BookComment
+    internal class IBookRepository
     {
     }
 }
