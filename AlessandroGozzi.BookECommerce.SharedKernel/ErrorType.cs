@@ -11,6 +11,7 @@ namespace AlessandroGozzi.BookECommerce.SharedKernel
         Failure = 0,
         Validation = 1,
         NotFound = 2,
-        StatusConflict = 3
+        StatusConflict = 3,
+        PermissionDenied = 4
     }
 }

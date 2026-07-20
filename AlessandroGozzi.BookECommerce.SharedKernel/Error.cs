@@ -28,8 +28,9 @@ namespace AlessandroGozzi.BookECommerce.SharedKernel
 
         public static Error NotFound(string code, string description) => new(code, description, ErrorType.NotFound);
 
-        public static Error Problem(string code, string description) => new(code, description, ErrorType.Problem);
+        public static Error StatusConflict(string code, string description) => new(code, description, ErrorType.StatusConflict);
 
-        public static Error Conflict(string code, string description) => new(code, description, ErrorType.Conflict);
+        public static Error Validation(string code, string description) => new(code, description, ErrorType.Validation);
+        public static Error PermissionDenied(string code, string description) => new(code, description, ErrorType.PermissionDenied);
     }
 }

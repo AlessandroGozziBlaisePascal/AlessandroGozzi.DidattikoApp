@@ -11,7 +11,7 @@ namespace AlessandroGozzi.BookECommerce.SharedKernel
         DateTime OccurredOnUtc { get; }
     }
 
-    public abstract class DomainEvent : IDomainEvent
+    public abstract record DomainEvent : IDomainEvent
     {
         public DateTime OccurredOnUtc { get; } = DateTime.UtcNow;
     }
