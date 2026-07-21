@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto
 {
-    internal class AdoptedBookItemDto
-    {
-    }
+    public record ClassAdoptionResponseDto(string SchoolName, string ClassName, string AcademicYear, IReadOnlyCollection<AdoptedBookItemDto> Books) { }
 }

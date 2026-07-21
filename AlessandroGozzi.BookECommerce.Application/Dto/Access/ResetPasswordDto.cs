@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
-    internal class ResetPasswordDto
+    public record ResetPasswordDto(string ResetTokenCode, string NewPassword, string RepeatedNewPassword)
     {
+        public override string ToString() => $"ResetTokenCode: {ResetTokenCode}, NewPassword = [PROTECTED], RepeatedNewPassword = [PROTECTED]}}";
     }
 }

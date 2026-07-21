@@ -15,10 +15,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void Subject_Create_WithValidValue_ShouldSucceed()
         {
-            // Act
             var result = Subject.Create("Matematica 101");
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Value.Should().Be("Matematica 101");
         }
@@ -29,10 +27,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData("   ")]
         public void Subject_Create_WithNullOrEmpty_ShouldReturnFailure(string invalidSubject)
         {
-            // Act
             var result = Subject.Create(invalidSubject);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Subject empty");
         }
@@ -42,17 +38,15 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         #region ISBN Tests
 
         [Theory]
-        [InlineData("978-88-08-09703-3")] // Sostituire con ISBN-13 valido
-        [InlineData("9788808097033")] // Sostituire con ISBN-13 valido
-        [InlineData("978-0-13-449416-6")]       // Sostituire con ISBN-10 valido
+        [InlineData("978-88-08-09703-3")] 
+        [InlineData("9788808097033")] 
+        [InlineData("978-0-13-449416-6")]     
         [InlineData("0-13-609181-4")]
         [InlineData("007462542X")]
         public void ISBN_Create_WithValidIsbn_ShouldSucceed(string validIsbn)
         {
-            // Act
             var result = ISBN.Create(validIsbn);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Value.Should().NotBeNullOrEmpty();
         }
@@ -62,10 +56,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData("")]
         public void ISBN_Create_WithNullOrEmpty_ShouldReturnFailure(string invalidIsbn)
         {
-            // Act
             var result = ISBN.Create(invalidIsbn);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("ISBN.Empty");
         }
@@ -73,10 +65,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void ISBN_Create_WithInvalidChecksum_ShouldReturnFailure()
         {
-            // Act (ISBN13 con cifre errate)
+            // ISBN13 con cifre errate
             var result = ISBN.Create("9781234567890");
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("ISBN.InvalidCheckDigit");
         }
@@ -88,13 +79,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void BookReview_Create_WithValidData_ShouldSucceed()
         {
-            // Arrange
             var customerId = Guid.NewGuid();
 
-            // Act
             var result = BookReview.Create(customerId, 5, "Ottimo libro di testo!");
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.CustomerId.Should().Be(customerId);
             result.Value.Rating.Should().Be(5);
@@ -104,10 +92,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void BookReview_Create_WithEmptyCustomerId_ShouldReturnFailure()
         {
-            // Act
             var result = BookReview.Create(Guid.Empty, 4, "Molto utile");
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Review.InvalidCustomer");
         }
@@ -117,10 +103,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData(6)]
         public void BookReview_Create_WithInvalidRating_ShouldReturnFailure(int invalidRating)
         {
-            // Act
             var result = BookReview.Create(Guid.NewGuid(), invalidRating, "Bel libro");
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Review.InvalidRating");
         }
@@ -131,10 +115,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData("   ")]
         public void BookReview_Create_WithEmptyText_ShouldReturnFailure(string invalidText)
         {
-            // Act
             var result = BookReview.Create(Guid.NewGuid(), 5, invalidText);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Review.EmptyText");
         }

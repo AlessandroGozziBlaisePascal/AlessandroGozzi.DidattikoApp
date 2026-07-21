@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto
 {
-    internal class SchoolAdoptionSarchRequestDto
+    internal class PaymentResponseDetail
     {
     }
 }

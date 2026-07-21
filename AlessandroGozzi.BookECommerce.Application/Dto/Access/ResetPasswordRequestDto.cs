@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
-    internal class ResetPasswordDto
-    {
-    }
+    public record ResetPasswordRequestDto(string Identifier) { }
 }

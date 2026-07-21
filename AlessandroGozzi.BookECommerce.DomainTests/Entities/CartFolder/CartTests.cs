@@ -19,10 +19,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [Fact]
         public void Create_WithValidCustomerId_ShouldCreateEmptyCart()
         {
-            // Act
             var result = Cart.Create(_validCustomerId);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
             result.Value.CustomerId.Should().Be(_validCustomerId);
@@ -32,10 +30,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [Fact]
         public void Create_WithEmptyCustomerId_ShouldReturnFailure()
         {
-            // Act
             var result = Cart.Create(Guid.Empty);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Customer id");
         }
@@ -47,33 +43,26 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [Fact]
         public void AddBook_NewItem_ShouldAddItemAndRaiseDomainEvent()
         {
-            // Arrange
             var cart = Cart.Create(_validCustomerId).Value;
             int quantity = 2;
 
-            // Act
             var result = cart.AddBook(_validBookId, quantity);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().HaveCount(1);
             cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == quantity);
 
-            // Verifica del Domain Event
             cart._domainEvents.Should().ContainSingle(e => e is BookAddedToCartEvent);
         }
 
         [Fact]
         public void AddBook_ExistingItem_ShouldUpdateQuantity()
         {
-            // Arrange
             var cart = Cart.Create(_validCustomerId).Value;
             cart.AddBook(_validBookId, 2);
 
-            // Act
             var result = cart.AddBook(_validBookId, 3); // Aggiunge altre 3 quantità
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().HaveCount(1);
             cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == 5);
@@ -85,13 +74,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [InlineData(-5)]
         public void AddBook_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
         {
-            // Arrange
             var cart = Cart.Create(_validCustomerId).Value;
 
-            // Act
             var result = cart.AddBook(_validBookId, invalidQuantity);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
             cart.GetItems.Should().BeEmpty();
@@ -106,13 +92,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [InlineData(-2)]
         public void RemoveBook_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
         {
-            // Arrange
             var cart = Cart.Create(_validCustomerId).Value;
 
-            // Act
             var result = cart.RemoveBook(_validBookId, invalidQuantity);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
         }

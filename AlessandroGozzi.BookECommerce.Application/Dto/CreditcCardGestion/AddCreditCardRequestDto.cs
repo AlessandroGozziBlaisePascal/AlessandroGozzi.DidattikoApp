@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.CreditcCardGestion
 {
-    internal class AddCreditCardRequestDto
+    public record AddCreditCardRequestDto(string CardOwnerName, string CardOwnerSurname, string CardNumber, string ExpiryDate, string CVV)
     {
+        public override string ToString() => $"AddCreditCardRequestDto  {{ Owner = {CardOwnerName} {CardOwnerSurname}, Expiry = {ExpiryDate}, CardNumber = [PROTECTED], CVV = [PROTECTED] }}";
+
     }
 }

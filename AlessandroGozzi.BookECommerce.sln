@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi-BookECommer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommerce.DomainTests", "AlessandroGozzi.BookECommerce.DomainTests\AlessandroGozzi.BookECommerce.DomainTests.csproj", "{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommerce.Application", "AlessandroGozzi.BookECommerce.Application\AlessandroGozzi.BookECommerce.Application.csproj", "{41F0BB16-964F-49A9-B540-FAD056A43327}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41F0BB16-964F-49A9-B540-FAD056A43327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41F0BB16-964F-49A9-B540-FAD056A43327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41F0BB16-964F-49A9-B540-FAD056A43327}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41F0BB16-964F-49A9-B540-FAD056A43327}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

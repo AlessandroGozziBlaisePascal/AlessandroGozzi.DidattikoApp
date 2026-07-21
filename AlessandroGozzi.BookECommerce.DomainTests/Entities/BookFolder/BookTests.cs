@@ -37,10 +37,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void Create_WithValidData_ShouldCreateBookAndBeAvailable()
         {
-            // Act
             var bookResult = Book.Create("Analisi Matematica", _sellerId, _validSubject, _validIsbn, 1, 2022, _validPrice, BookStatus.LikeNew);
 
-            // Assert
             bookResult.IsSuccess.Should().BeTrue();
             var book = bookResult.Value;
             book.Title.Should().Be("Analisi Matematica");
@@ -56,10 +54,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData("   ")]
         public void Create_WithInvalidTitle_ShouldReturnFailure(string invalidTitle)
         {
-            // Act
             var result = Book.Create(invalidTitle, _sellerId, _validSubject, _validIsbn, 1, 2022, _validPrice, BookStatus.LikeNew);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Title");
         }
@@ -69,10 +65,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [InlineData(6)]
         public void Create_WithInvalidSchoolYear_ShouldReturnFailure(int invalidSchoolYear)
         {
-            // Act
             var result = Book.Create("Fisica", _sellerId, _validSubject, _validIsbn, invalidSchoolYear, 2022, _validPrice, BookStatus.LikeNew);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("School book year");
         }
@@ -84,15 +78,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void AddReview_WithValidReview_ShouldUpdateRatingsAndRaiseEvent()
         {
-            // Arrange
             var book = CreateSampleBook();
             var reviewerId = Guid.NewGuid();
             var review = BookReview.Create(reviewerId, 4, "Molto chiaro").Value;
 
-            // Act
             var result = book.AddReview(review);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             book.Reviews.Should().HaveCount(1);
             book.RatingsNumber.Should().Be(1);
@@ -104,7 +95,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void AddReview_DuplicateReviewFromSameCustomer_ShouldReturnFailure()
         {
-            // Arrange
             var book = CreateSampleBook();
             var reviewerId = Guid.NewGuid();
             var review1 = BookReview.Create(reviewerId, 5, "Ottimo").Value;
@@ -112,10 +102,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
 
             book.AddReview(review1);
 
-            // Act
             var result = book.AddReview(review2);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Review.Duplicate");
             book.Reviews.Should().HaveCount(1);
@@ -124,14 +112,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void AddReview_SelfReviewBySeller_ShouldReturnFailure()
         {
-            // Arrange
             var book = CreateSampleBook();
             var selfReview = BookReview.Create(_sellerId, 5, "Mio libro bellissimo").Value;
 
-            // Act
             var result = book.AddReview(selfReview);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Review.SelfReview");
         }
@@ -139,7 +124,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void RemoveReview_ExistingReview_ShouldRecalculateAverageRatingAndRaiseEvent()
         {
-            // Arrange
             var book = CreateSampleBook();
             var customer1 = Guid.NewGuid();
             var customer2 = Guid.NewGuid();
@@ -147,12 +131,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
             book.AddReview(BookReview.Create(customer1, 5, "Eccellente").Value);
             book.AddReview(BookReview.Create(customer2, 1, "Pessimo").Value);
 
-            // Average ora è (5+1)/2 = 3.0
-
-            // Act
             var result = book.RemoveReview(customer2);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             book.Reviews.Should().HaveCount(1);
             book.RatingsNumber.Should().Be(1);
@@ -168,14 +148,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void UpdatePrice_BySeller_ShouldUpdatePriceAndRaiseEvent()
         {
-            // Arrange
             var book = CreateSampleBook();
             var newPrice = Money.Create(19.99m).Value;
 
-            // Act
             var result = book.UpdatePrice(newPrice, _sellerId);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             book.Price.Should().Be(newPrice);
             book._domainEvents.Should().ContainSingle(e => e is PriceUpdatedEvent);
@@ -184,15 +161,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void UpdatePrice_ByNotSeller_ShouldReturnPermissionDenied()
         {
-            // Arrange
             var book = CreateSampleBook();
             var wrongCustomer = Guid.NewGuid();
             var newPrice = Money.Create(19.99m).Value;
 
-            // Act
             var result = book.UpdatePrice(newPrice, wrongCustomer);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("New price");
         }
@@ -204,13 +178,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void RemoveFromMarket_WhenAvailable_ShouldSetIsAvailableToFalseAndRaiseEvent()
         {
-            // Arrange
             var book = CreateSampleBook();
 
-            // Act
             var result = book.RemoveFromMarket();
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             book.IsAvailable.Should().BeFalse();
             book._domainEvents.Should().ContainSingle(e => e is BookRemovedFromMarketEvent);
@@ -219,14 +190,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         [Fact]
         public void RemoveFromMarket_WhenAlreadyRemoved_ShouldReturnFailure()
         {
-            // Arrange
             var book = CreateSampleBook();
             book.RemoveFromMarket(); // Prima rimozione
 
-            // Act
             var result = book.RemoveFromMarket(); // Seconda rimozione
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book.Remove");
         }

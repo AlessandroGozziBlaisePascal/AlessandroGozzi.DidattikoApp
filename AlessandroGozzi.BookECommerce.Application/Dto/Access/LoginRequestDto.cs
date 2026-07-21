@@ -1,7 +1,7 @@
-﻿namespace AlessandroGozzi.BookECommerce.Application
+﻿namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
-    public class Class1
+    public record LoginRequestDto(string Identifier, string Password)
     {
-
+        public override string ToString() => $"LoginRequestDto {{ Identifier = {Identifier}, Password = [PROTECTED]}}";
     }
 }

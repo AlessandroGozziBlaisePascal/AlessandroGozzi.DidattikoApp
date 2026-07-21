@@ -6,7 +6,5 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
-    internal class LoginProfileResponseDto
-    {
-    }
+    public record LoginProfileResponseDto(Guid CustomerId, string Name, string Surname, string Email, string PhoneNumber) { }
 }
