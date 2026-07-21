@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36616.10 d17.14
+VisualStudioVersion = 17.14.36616.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommerce.SharedKernel", "AlessandroGozzi.BookECommerce.SharedKernel\AlessandroGozzi.BookECommerce.SharedKernel.csproj", "{C9E5DCA4-9728-4A4F-BAF2-08CFE8423C90}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi-BookECommerce.Domain", "AlessandroGozzi-BookECommerce.Domain\AlessandroGozzi-BookECommerce.Domain.csproj", "{44BBD259-57E9-48D8-8F62-7467CE83C254}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommerce.DomainTests", "AlessandroGozzi.BookECommerce.DomainTests\AlessandroGozzi.BookECommerce.DomainTests.csproj", "{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{44BBD259-57E9-48D8-8F62-7467CE83C254}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44BBD259-57E9-48D8-8F62-7467CE83C254}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44BBD259-57E9-48D8-8F62-7467CE83C254}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

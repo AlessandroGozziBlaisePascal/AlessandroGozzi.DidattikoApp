@@ -4,7 +4,7 @@
     {
         public Guid Id { get; set; }
 
-        private readonly List<IDomainEvent> _domainEvents;
+        public readonly List<IDomainEvent> _domainEvents;
 
         public Entity()
         {
