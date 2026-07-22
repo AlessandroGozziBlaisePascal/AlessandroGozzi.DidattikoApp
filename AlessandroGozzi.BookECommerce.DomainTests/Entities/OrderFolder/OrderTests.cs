@@ -14,10 +14,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
 {
     public class OrderTests
     {
-        // Helper per creare un CreditCard fittizio (o mockato) per i test
         private CreditCard GetValidCreditCard() => CreditCard.Create("Mario", "Rossi", "12/30", "1234", "token_1029303").Value;
 
-        // Helper per creare un OrderItem valido
         private OrderItem GetValidOrderItem(decimal amount = 29.99m)
         {
             var money = Money.Create(amount).Value;
@@ -29,7 +27,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void OrderItem_Create_WithValidData_ShouldSucceed()
         {
-            // Act
             var result = OrderItem.Create(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -37,7 +34,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 Money.Create(49.99m).Value
             );
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.BookTitle.Should().Be("Design Patterns");
             result.Value.Price.Amount.Should().Be(49.99m);
@@ -49,7 +45,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [InlineData(null)]
         public void OrderItem_Create_WithInvalidTitle_ShouldFail(string? invalidTitle)
         {
-            // Act
             var result = OrderItem.Create(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -57,7 +52,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 Money.Create(10m).Value
             );
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("BookTitle");
         }
@@ -65,7 +59,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void OrderItem_Create_WithNullPrice_ShouldFail()
         {
-            // Act
             var result = OrderItem.Create(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
@@ -73,7 +66,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 null!
             );
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("BookPrice");
         }
@@ -85,7 +77,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Order_Create_WithValidData_ShouldSucceedAndCalculateTotalPrice()
         {
-            // Arrange
             var customerId = Guid.NewGuid();
             var date = DateTime.UtcNow;
             var card = GetValidCreditCard();
@@ -95,28 +86,23 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
             GetValidOrderItem(20.50m)
         };
 
-            // Act
             var result = Order.Create(customerId, date, card, items);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
             result.Value.CustomerId.Should().Be(customerId);
             result.Value.Status.Should().Be(OrderStatus.Placed);
             result.Value.TotalPrice.Amount.Should().Be(30.50m);
-            result.Value._domainEvents.Should().HaveCount(1); // OrderPlacedEvent
+            result.Value._domainEvents.Should().HaveCount(1); 
         }
 
         [Fact]
         public void Order_Create_WithNullPaymentDetails_ShouldFail()
         {
-            // Arrange
             var items = new List<OrderItem> { GetValidOrderItem() };
 
-            // Act
             var result = Order.Create(Guid.NewGuid(), DateTime.UtcNow, null!, items);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order payment details");
         }
@@ -124,16 +110,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Order_Create_WithEmptyOrNullItems_ShouldFail()
         {
-            // Arrange
             var card = GetValidCreditCard();
 
-            // Act 1: Lista vuota
             var resultEmpty = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, new List<OrderItem>());
 
-            // Act 2: Lista null
             var resultNull = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, null!);
 
-            // Assert
             resultEmpty.IsFailure.Should().BeTrue();
             resultEmpty.Error.Code.Should().Be("Order items");
 
@@ -148,28 +130,23 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Order_FullLifecycle_ShouldSucceedInCorrectSequence()
         {
-            // Arrange: Creazione dell'ordine (Stato: Placed)
             var card = GetValidCreditCard();
             var items = new List<OrderItem> { GetValidOrderItem() };
             var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, items).Value;
 
-            // Act & Assert 1: Confirm (Placed -> Confirmed)
             var confirmResult = order.Confirm();
             confirmResult.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Confirmed);
 
-            // Act & Assert 2: MarkAsPrepared (Confirmed -> Prepared)
             var prepareResult = order.MarkAsPrepared();
             prepareResult.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Prepared);
 
-            // Act & Assert 3: Ship (Prepared -> Shipped)
             var shipResult = order.Ship("TRACK12345");
             shipResult.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Shipped);
             order.TrackingCode.Should().Be("TRACK12345");
 
-            // Act & Assert 4: MarkAsDelivered (Shipped -> Delivered)
             var deliverResult = order.MarkAsDelivered();
             deliverResult.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Delivered);
@@ -178,14 +155,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Confirm_WhenStatusIsNotPlaced_ShouldFail()
         {
-            // Arrange
             var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
-            order.Confirm(); // Stato ora è Confirmed
+            order.Confirm(); 
 
-            // Act: proviamo a rifare Confirm
             var result = order.Confirm();
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order confirmation");
         }
@@ -193,15 +167,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Ship_WithNullTrackingCode_ShouldFail()
         {
-            // Arrange
             var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
             order.MarkAsPrepared();
 
-            // Act
             var result = order.Ship(null!);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Tracking code");
         }
@@ -209,13 +180,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void CancelOrder_BeforeShipping_ShouldSucceed()
         {
-            // Arrange
             var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
 
-            // Act
             var result = order.CancelOrder();
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Cancelled);
         }
@@ -223,16 +191,13 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void CancelOrder_WhenAlreadyShipped_ShouldFail()
         {
-            // Arrange: Portiamo l'ordine fino allo stato Shipped
             var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
             order.MarkAsPrepared();
-            order.Ship("TRACK123"); // Ora TrackingCode != null
+            order.Ship("TRACK123"); 
 
-            // Act
             var result = order.CancelOrder();
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order status");
         }

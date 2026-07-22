@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.BookSearching
 {
     public record AdoptedBookItemDto(
         Guid? InternalBookId,

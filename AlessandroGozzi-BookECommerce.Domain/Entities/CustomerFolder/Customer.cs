@@ -13,24 +13,23 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public Surname Surname { get; private set; }
         public Email Email { get; private set; }
         public Address Address {  get; private set; }
-        private CreditCard CreditCard { get; set; }
+        public CreditCard? CreditCard { get; private set; }
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
 
-        private Customer(Name name, Surname surname, Email email, Address address, CreditCard card, PhoneNumber number, TaxCode TCode)
+        private Customer(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode)
         {
             Name = name;
             Surname = surname;
             Email = email;
             Address = address;
-            CreditCard = card;
             Number = number;
             TaxCode = TCode;
         }
 
-        public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, CreditCard card, PhoneNumber number, TaxCode TCode)
+        public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode)
         {
-            var customer = new Customer(name, surname, email, address, card, number, TCode);
+            var customer = new Customer(name, surname, email, address, number, TCode);
 
             customer.Raise(new CustomerCreatedEvent(customer.Id));
 
@@ -94,6 +93,18 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             var a = Address;
             Address = address;
             Raise(new AddressChangedEvent(Id, a, Address));
+            return Result.Success();
+        }
+
+        public Result AddCreditCard(CreditCard card)
+        {
+            if(card == null)
+                return Result.Failure(new Error("Credit card","Cannot add null credit card",ErrorType.Validation)); 
+            if(card == CreditCard)
+                return Result.Success();
+
+            CreditCard = card;
+            Raise(new CreditCardAddedEvent(Id, card.CardOwner, card.DisplayName));
             return Result.Success();
         }
     }

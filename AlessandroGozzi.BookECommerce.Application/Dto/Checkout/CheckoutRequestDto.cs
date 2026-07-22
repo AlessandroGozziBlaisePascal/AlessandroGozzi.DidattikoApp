@@ -4,9 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
 {
-    internal class CheckoutRequestDto
-    {
-    }
+    public record CheckoutRequestDto(
+    Guid CustomerId,
+    Guid CartId,
+    string? ShippingAddress = null,      
+    string? PaymentMethod = null,         
+    string? PaymentToken = null
+    )
+    { }
+
 }

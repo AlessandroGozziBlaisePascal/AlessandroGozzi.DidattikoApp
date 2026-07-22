@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AlessandroGozzi-BookECommerce.Domain\AlessandroGozzi-BookECommerce.Domain.csproj" />
+    <ProjectReference Include="..\AlessandroGozzi.BookECommerce.SharedKernel\AlessandroGozzi.BookECommerce.SharedKernel.csproj" />
+  </ItemGroup>
+
 </Project>

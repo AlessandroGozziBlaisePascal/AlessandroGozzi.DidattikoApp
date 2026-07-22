@@ -4,9 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
 {
-    internal class PaymentResponseDetail
-    {
-    }
+    public record PaymentResponseDto(
+    bool IsSuccess,
+    string TransactionId,        
+    Guid? OrderId,            
+    string Status,            
+    string? ErrorMessage,       
+    DateTime ProcessedAt
+    )
+    { }
+
 }

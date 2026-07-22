@@ -15,10 +15,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [Fact]
         public void CardOwner_Create_WithValidData_ShouldSucceed()
         {
-            // Act
             var result = CardOwner.Create("Mario", "Rossi");
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.ToString().Should().Be("Mario Rossi");
         }
@@ -30,10 +28,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [InlineData("Mario", null)]
         public void CardOwner_Create_WithInvalidData_ShouldFail(string name, string surname)
         {
-            // Act
             var result = CardOwner.Create(name, surname);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
         }
 
@@ -47,27 +43,23 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [InlineData("01/25")]
         public void ExpiryDate_Create_WithValidFormat_ShouldSucceed(string rawDate)
         {
-            // Act
             var result = ExpiryDate.Create(rawDate);
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.Month.Should().BeGreaterThan(0).And.BeLessThanOrEqualTo(12);
         }
 
         [Theory]
-        [InlineData("13/25")]   // Mese invalido
-        [InlineData("00/25")]   // Mese zero
-        [InlineData("5/25")]    // Manca lo zero iniziale
-        [InlineData("05/2025")] // Anno a 4 cifre anziché 2
+        [InlineData("13/25")]   
+        [InlineData("00/25")]  
+        [InlineData("5/25")]  
+        [InlineData("05/2025")] 
         [InlineData("invalid")]
         [InlineData(null)]
         public void ExpiryDate_Create_WithInvalidFormat_ShouldFail(string rawDate)
         {
-            // Act
             var result = ExpiryDate.Create(rawDate);
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Expiry date");
         }
@@ -75,14 +67,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [Fact]
         public void ExpiryDate_IsExpired_WhenReferenceDateIsAfter_ShouldReturnTrue()
         {
-            // Arrange
             var expiryDate = ExpiryDate.Create("05/24").Value;
             var referenceDate = new DateTime(2024, 6, 1); // Giugno 2024 (Scaduta a Maggio 2024)
 
-            // Act
             var isExpired = expiryDate.IsExpired(referenceDate);
 
-            // Assert
             isExpired.Should().BeTrue();
         }
 
@@ -93,7 +82,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [Fact]
         public void CreditCard_Create_WithValidData_ShouldSucceed()
         {
-            // Act
             var result = AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.CreditCard.Create(
                 "Mario",
                 "Rossi",
@@ -102,7 +90,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
                 "tok_123456789"
             );
 
-            // Assert
             result.IsSuccess.Should().BeTrue();
             result.Value.DisplayName.Should().Be("XXXX-XXXX-XXXX-4321");
             result.Value.Last4Digits.Should().Be("4321");
@@ -110,13 +97,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         }
 
         [Theory]
-        [InlineData("123")]   // Meno di 4 cifre
-        [InlineData("12345")] // Più di 4 cifre
-        [InlineData("")]      // Vuoto
+        [InlineData("123")]  
+        [InlineData("12345")] 
+        [InlineData("")]     
         [InlineData(null)]
         public void CreditCard_Create_WithInvalidLast4Digits_ShouldFail(string invalidLast4Digits)
         {
-            // Act
             var result = AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.CreditCard.Create(
                 "Mario",
                 "Rossi",
@@ -125,7 +111,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
                 "tok_123456789"
             );
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Last 4 digits card");
         }
@@ -136,7 +121,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
         [InlineData(null)]
         public void CreditCard_Create_WithEmptyToken_ShouldFail(string invalidToken)
         {
-            // Act
             var result = AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.CreditCard.Create(
                 "Mario",
                 "Rossi",
@@ -145,7 +129,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
                 invalidToken
             );
 
-            // Assert
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Card token");
         }

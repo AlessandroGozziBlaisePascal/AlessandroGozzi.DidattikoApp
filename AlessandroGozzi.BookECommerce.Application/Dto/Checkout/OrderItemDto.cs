@@ -4,9 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
 {
-    internal class OrderItemDto
-    {
-    }
+    public record OrderItemDto(
+        Guid OrderItemId,
+        Guid BookId,
+        string ISBN,
+        string Title,
+        string Condition,        
+        decimal PriceAtPurchase, 
+        Guid SellerId,
+        string SellerFullName
+    ){ }
+
 }

@@ -4,9 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.BookInformation
 {
-    internal class ReviewDto
-    {
-    }
+    public record ReviewDto(
+        string Comment,
+        int Rating,
+        string ReviewerName,
+        string ReviewerSurname,
+        DateTime CreatedAt
+        )
+    { }
 }
