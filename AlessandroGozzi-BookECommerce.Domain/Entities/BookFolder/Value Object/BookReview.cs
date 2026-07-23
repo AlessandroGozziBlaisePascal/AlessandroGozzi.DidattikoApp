@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
@@ -37,6 +38,14 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
             }
 
             return Result.Success(new BookReview(customerId, text.Trim(), rating, DateTime.UtcNow));
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+            sb.Append($"{CustomerId} {Rating}");
+            sb.Append($"{Text} {CreatedAt}");
+            return sb.ToString();
         }
     }
 

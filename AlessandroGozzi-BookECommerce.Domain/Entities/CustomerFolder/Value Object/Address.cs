@@ -33,5 +33,6 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
                 return Result.Failure<Address>(new Error("Address CAP", "Street cannot be null", ErrorType.Validation));
             return Result.Success(new Address(street, civicN, city, cap));
         }
+        public override string ToString() => $"{Street} {CivicNumber}, {City} {CAP}";
     }
 }

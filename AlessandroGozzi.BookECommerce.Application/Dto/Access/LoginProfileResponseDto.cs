@@ -7,11 +7,7 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
     public record LoginProfileResponseDto(
-        Guid CustomerId, 
-        string Name, 
-        string Surname, 
-        string Email, 
-        string PhoneNumber, 
+        CustomerDto customer,
         bool HasSavedCreditCard,
         string? MaskedCardNumbers
         ) { }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto.BookInformation
+namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record ReviewDto(
         string Comment,

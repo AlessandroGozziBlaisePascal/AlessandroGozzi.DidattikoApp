@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.BookInformation
 {
-    public record BookAddedInformationDto(
+    public record CreateBookDto(
         string ISBN,
         string Title,
         string Subject,
@@ -14,6 +14,5 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.BookInformation
         string Condition,
         int SchoolYear,
         string MainPhoto
-        )
-    { }
+    );
 }

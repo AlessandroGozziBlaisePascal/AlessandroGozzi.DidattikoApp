@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
+namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record CartItemDto(
     Guid CartItemId,            
@@ -16,9 +16,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
     decimal UnitPrice,         
     int Quantity,              
     decimal Subtotal,         
-    bool IsStillAvailable,     
-    string SellerName,
-    string SellerSurname
+    bool IsStillAvailable
     )
     { }
 

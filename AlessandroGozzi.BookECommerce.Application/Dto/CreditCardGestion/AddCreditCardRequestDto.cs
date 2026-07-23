@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto.CreditcCardGestion
+namespace AlessandroGozzi.BookECommerce.Application.Dto.CreditCardGestion
 {
     public record AddCreditCardRequestDto(string CardOwnerName, string CardOwnerSurname, string CardNumber, string ExpiryDate, string CVV)
     {
