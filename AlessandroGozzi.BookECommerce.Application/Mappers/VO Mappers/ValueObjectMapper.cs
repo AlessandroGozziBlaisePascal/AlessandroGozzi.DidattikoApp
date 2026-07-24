@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
+using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object;
@@ -46,7 +47,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static BookReview ToReviewDomain(Guid customerId, string comment, int rating) => BookReview.Create(customerId, rating, comment).Value;
         public static string ToDto(this BookReview value) => value.ToString();
         //MONEY
-        public static Money ToDomain(this decimal price) => Money.Create(price).Value;
+        public static Money ToMoneyDomain(this decimal price) => Money.Create(price).Value;
         public static decimal ToDto(this Money money) => money.Amount;
         //BOOK STATUS
         public static BookStatus ToDomain(this string status)
