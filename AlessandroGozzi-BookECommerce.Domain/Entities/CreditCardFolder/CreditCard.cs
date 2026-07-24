@@ -13,20 +13,18 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder
         public CardOwner CardOwner { get; init; }
         public ExpiryDate ExpiryDate { get; init; }
         public string Last4Digits { get; init; }
-        public string PaymentToken { get; init; }
 
         public string DisplayName => $"XXXX-XXXX-XXXX-{Last4Digits}";
 
         private CreditCard() { }
 
-        private CreditCard(CardOwner owner, ExpiryDate date, string last4digits, string token)
+        private CreditCard(CardOwner owner, ExpiryDate date, string last4digits)
         {
             CardOwner = owner;
             ExpiryDate = date;
             Last4Digits = last4digits;
-            PaymentToken = token;
         }
-        public static Result<CreditCard> Create(string rawName, string rawSurname, string rawExpiryDate, string last4digits, string token)
+        public static Result<CreditCard> Create(string rawName, string rawSurname, string rawExpiryDate, string last4digit)
         {
             var ownerResult = CardOwner.Create(rawName, rawSurname);
             if (ownerResult.IsFailure)
@@ -40,12 +38,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder
                 return Result.Failure<CreditCard>(expiryDateResult.Error);
             }
 
-            if(string.IsNullOrWhiteSpace(last4digits) || last4digits.Length != 4)
+            if(string.IsNullOrWhiteSpace(last4digit) || last4digit.Length != 4)
                 return Result.Failure<CreditCard>(new Error("Last 4 digits card", "Card must have 4 last digits", ErrorType.Validation));
-            if(string.IsNullOrWhiteSpace(token))
-                return Result.Failure<CreditCard>(new Error("Card token", "Must have card token", ErrorType.Validation));
 
-            return Result.Success(new CreditCard(ownerResult.Value, expiryDateResult.Value, last4digits, token));
+            return Result.Success(new CreditCard(ownerResult.Value, expiryDateResult.Value, last4digit));
         }
     }
 }

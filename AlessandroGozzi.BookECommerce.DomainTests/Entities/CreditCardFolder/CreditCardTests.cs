@@ -86,14 +86,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
                 "Mario",
                 "Rossi",
                 "12/28",
-                "4321",
-                "tok_123456789"
+                "4321"
             );
 
             result.IsSuccess.Should().BeTrue();
             result.Value.DisplayName.Should().Be("XXXX-XXXX-XXXX-4321");
             result.Value.Last4Digits.Should().Be("4321");
-            result.Value.PaymentToken.Should().Be("tok_123456789");
         }
 
         [Theory]
@@ -107,32 +105,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CreditCardFolder
                 "Mario",
                 "Rossi",
                 "12/28",
-                invalidLast4Digits,
-                "tok_123456789"
+                invalidLast4Digits
             );
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Last 4 digits card");
         }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("   ")]
-        [InlineData(null)]
-        public void CreditCard_Create_WithEmptyToken_ShouldFail(string invalidToken)
-        {
-            var result = AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.CreditCard.Create(
-                "Mario",
-                "Rossi",
-                "12/28",
-                "4321",
-                invalidToken
-            );
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Card token");
-        }
-
         #endregion
 
     }

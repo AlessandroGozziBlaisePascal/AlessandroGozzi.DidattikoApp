@@ -26,7 +26,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetCartByCustomerId
 
         public async Task<Result<CartDto>> Handle(GetCartByCustomerIdQuery request, CancellationToken token)
         {
-            var cart = await Repo.GetByCustomerIdAsync(request.customerId, token);
+            var cart = await Repo.GetByCustomerIdAsync(request.CustomerId, token);
 
             if(cart == null)
             {
@@ -35,7 +35,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetCartByCustomerId
 
             var bookIds = cart.GetItems.Select(b => b.BookId);
 
-            var books = await BookRepo.GetByIdsAsync(bookIds);
+            var books = await BookRepo.GetByIdsAsync(bookIds, token);
 
             return Result.Success(cart.ToDto(books));
         }

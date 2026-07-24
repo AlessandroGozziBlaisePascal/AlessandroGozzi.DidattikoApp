@@ -9,5 +9,5 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.GetCartByCustomerId
 {
-    public sealed record GetCartByCustomerIdQuery(Guid customerId): IRequest<Result<CartDto>>;
+    public sealed record GetCartByCustomerIdQuery(Guid CustomerId): IRequest<Result<CartDto>>;
 }

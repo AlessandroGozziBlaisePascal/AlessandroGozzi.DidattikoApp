@@ -131,7 +131,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
                 GetValidName(), GetValidSurname(), GetValidEmail(),
                 GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
             ).Value;
-            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672", "token_10292").Value;
+            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
 
             customer.AddCreditCard(card);
             customer.ClearEvents(); 
@@ -150,11 +150,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
                 GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
             ).Value;
 
-            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672", "token_10292").Value;
+            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
             customer.AddCreditCard(card);
             customer.ClearEvents();
 
-            var card2 = CreditCard.Create("Noemi", "Colciago", "10/31", "0670", "token_10772").Value;
+            var card2 = CreditCard.Create("Noemi", "Colciago", "10/31", "0670").Value;
 
             var result = customer.AddCreditCard(card2);
 

@@ -14,7 +14,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
 {
     public class OrderTests
     {
-        private CreditCard GetValidCreditCard() => CreditCard.Create("Mario", "Rossi", "12/30", "1234", "token_1029303").Value;
+        private CreditCard GetValidCreditCard() => CreditCard.Create("Mario", "Rossi", "12/30", "1234").Value;
 
         private OrderItem GetValidOrderItem(decimal amount = 29.99m)
         {
