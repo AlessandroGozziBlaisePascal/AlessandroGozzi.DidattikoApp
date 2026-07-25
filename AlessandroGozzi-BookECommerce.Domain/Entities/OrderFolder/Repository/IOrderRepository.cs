@@ -13,6 +13,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository
     public interface IOrderRepository
     {
         Task<Order?> GetByIdAsync(Guid id, CancellationToken token = default);
+        Task<Order?> GetByPaymentIntentIdAsync(string paymenIntentId, CancellationToken token = default);
         Task<IReadOnlyCollection<(Order, IReadOnlyCollection<Book>, IReadOnlyCollection<Customer>)>> GetAllByCustomerIdAsync(Guid customerId, CancellationToken token = default);
         Task AddAsync(Order order, CancellationToken token = default);
         Task UpdateAsync(Order order, CancellationToken token = default);

@@ -19,14 +19,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
             return new CartItemDto(
                 item.Id,
                 item.BookId,
-                book.ISBNCode.ToDto(),
-                Title: book.Title,
-                book.Status.ToDto(),
-                book.MainPhoto,
-                book.Price.ToDto(),
+                item.BookTitle,
+                item.MainPhoto,
+                item.Price.ToDto(),
                 item.Quantity,
-                book.Price.ToDto() * item.Quantity,
-                IsStillAvailable: book.IsAvailable
+                book.IsAvailable
             );
         }
     }

@@ -14,20 +14,22 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
 {
     public static class CartMapper
     {
-        public static CartDto ToDto(this Cart cart, IEnumerable<Book> books)
+        public static CartDto ToDto(this Cart cart, IReadOnlyCollection<Book> books)
         {
             var bookDict = books.ToDictionary(b => b.Id);
-            var itemDtos = cart.GetItems
-           .Select(item => item.ToDto(bookDict[item.BookId]))
-           .ToList();
+
+            var itemDtos = cart.GetItems.Select(item =>
+            {
+                bookDict.TryGetValue(item.BookId, out var book);
+                return item.ToDto(book);
+            }).ToList().AsReadOnly();
 
             return new CartDto(
-            cart.Id,
-            cart.CustomerId,
-            (IReadOnlyCollection<Dto.VO_Dto.CartItemDto>)itemDtos,
-            itemDtos.Sum(x => x.Subtotal),  
-            itemDtos.Sum(x => x.Quantity)    
-            );
+                cart.Id,
+                cart.CustomerId,
+                itemDtos,
+                itemDtos.Sum(x => x.UnitPrice),
+                itemDtos.Sum(x => x.Quantity));
         }
        
     }

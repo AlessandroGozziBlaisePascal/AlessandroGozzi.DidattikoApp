@@ -14,21 +14,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
 {
     public static class OrderMapper
     {
-        public static OrderDto ToDto(this Order order, IReadOnlyCollection<Book> books, IReadOnlyCollection<Customer> sellers)
+        public static OrderDto ToDto(this Order order)
         {
-            var bookDict = books.ToDictionary(b => b.Id);
-            var sellerDict = sellers.ToDictionary(s => s.Id);
-
-            var itemDtos = order.Items
-                .Select(item =>
-                {
-                    var book = bookDict[item.BookId];
-                    var seller = sellerDict[book.SellerId]; 
-
-                    return item.ToDto(book, seller);
-                })
-                .ToList()
-                .AsReadOnly();
+            var itemDtos = order.Items.Select(item => item.ToDto()).ToList().AsReadOnly();
 
             return new OrderDto(
                 OrderId: order.Id,
@@ -37,7 +25,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 PlacedAt: order.Date,
                 Status: order.Status.ToString(),
                 TotalAmount: order.TotalPrice.Amount,
-                PaymentTransactionId: order.PaymentDetails?.PaymentToken, 
+                PaymentTransactionId: order.PaymentDetails?.Id.ToString(), 
                 Items: itemDtos
             );
         }

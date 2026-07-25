@@ -10,6 +10,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository
 {
     public interface ICartRepository
     {
+        Task<Cart?> GetByIdAsync(Guid id, CancellationToken token);
         Task<Cart?> GetByCustomerIdAsync(Guid customerId, CancellationToken token = default);
         Task AddAsync(Cart cart, CancellationToken token = default);
         Task UpdateAsync(Cart cart, CancellationToken token = default);

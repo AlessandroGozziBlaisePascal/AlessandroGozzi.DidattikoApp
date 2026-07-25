@@ -13,15 +13,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {
     public static class OrderItemMapper
     {
-        public static OrderItemDto ToDto(this OrderItem item, Book book, Customer seller) => new OrderItemDto(
+        public static OrderItemDto ToDto(this OrderItem item) => new OrderItemDto(
                 item.Id,
                 item.BookId,
-                book.ISBNCode.ToDto(),
-                book.Title,
-                book.Status.ToDto(),
+                item.BookTitle,
                 item.Price.ToDto(),
-                SellerId: seller.Id,
-                SellerFullName: $"{seller.Name.Value} {seller.Surname.Value}"
+                item.SellerId
         );
     }
 }

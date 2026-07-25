@@ -45,7 +45,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
 
             owner.AddCreditCard(card.Value);
 
-            return Result.Success(card);-+
+            return Result.Success(card);
         }
     }
 }

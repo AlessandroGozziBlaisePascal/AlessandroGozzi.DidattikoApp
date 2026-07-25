@@ -12,7 +12,6 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
     {
         private readonly List<CartItem> Items = new ();
         public IReadOnlyCollection<CartItem> GetItems => Items;
-
         public Guid CustomerId { get; init; }
 
         private Cart() { }
@@ -27,7 +26,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             return Result.Success(new Cart(customerId));
         }
 
-        public Result AddBook(Guid bookId, int quantity)
+        public Result AddBook(Guid bookId, string bookTitle, Money price, string mainPhoto, int quantity)
         {
             if (quantity <= 0)
             {
@@ -37,7 +36,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             if (item != null)
                 item.UpdateQuantity(item.Quantity + quantity);
             else
-                Items.Add(new CartItem(bookId, quantity));
+                Items.Add(new CartItem(bookId, bookTitle, price, mainPhoto ,quantity));
             Raise(new BookAddedToCartEvent(CustomerId, Id, bookId, quantity));
 
             return Result.Success();

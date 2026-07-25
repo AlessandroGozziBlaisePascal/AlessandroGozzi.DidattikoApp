@@ -8,14 +8,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record CartItemDto(
     Guid CartItemId,            
-    Guid BookId,               
-    string ISBN,
-    string Title,
-    string Condition,        
+    Guid BookId,  
+    string Title,        
     string MainPhoto,
     decimal UnitPrice,         
-    int Quantity,              
-    decimal Subtotal,         
+    int Quantity,         
     bool IsStillAvailable
     )
     { }

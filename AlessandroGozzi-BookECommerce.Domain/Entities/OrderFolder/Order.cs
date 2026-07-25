@@ -24,10 +24,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
 
         private Order() { }
 
-        private Order(Guid customerId, DateTime date, CreditCard paymentDetails, List<OrderItem> items)
+        private Order(Guid customerId, CreditCard paymentDetails, List<OrderItem> items)
         {
             CustomerId = customerId;
-            Date = date;
             PaymentDetails = paymentDetails;
             _items = items;
             TotalPrice = CalculateTotalPrice(_items);
@@ -45,7 +44,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
                 : Money.Create(0).Value;
         }
 
-        public static Result<Order> Create(Guid customerId, DateTime date, CreditCard paymentDetails, List<OrderItem> items)
+        public static Result<Order> Create(Guid customerId, CreditCard paymentDetails, List<OrderItem> items)
         {
             if(paymentDetails  == null)
             {
@@ -53,7 +52,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
             }
             if(items == null || items.Count == 0)
                 return Result.Failure<Order>(new Error("Order items", "OrderItems must contain at least one item", ErrorType.Validation));
-            var order = new Order(customerId, date, paymentDetails, items);
+            var order = new Order(customerId, paymentDetails, items);
             order.Raise(new OrderPlacedEvent(order.Id));
             return Result.Success(order);
         }

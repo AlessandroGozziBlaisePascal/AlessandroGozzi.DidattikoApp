@@ -13,7 +13,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
 {
     public static class BookMapper
     {
-        public static BookDto ToDto(this Book book, Customer seller)
+        public static BookDto ToDto(this Book book)
         {
             return new BookDto(
                 book.Id,
@@ -23,8 +23,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 book.MainPhoto,
                 book.Price.Amount,
                 book.IsAvailable,
-                seller.Id,
-                $"{seller.Name.Value} {seller.Surname.Value}"
+                book.SellerId
             );
         }
     }

@@ -34,6 +34,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         //ADDRESS
         public static Address ToAddressDomain(this AddressDto addressDto) => Address.Create(addressDto.Street,addressDto.Cnumber, addressDto.City, addressDto.CAP).Value;
         public static AddressDto ToDto(this Address value) => new AddressDto(value.Street,value.CivicNumber,value.City,value.CAP);
+
         //EMAIL
         public static Email ToEmailDomain(this string value) => Email.Create(value).Value;
         public static string ToDto(this Email value) => value.ToString();

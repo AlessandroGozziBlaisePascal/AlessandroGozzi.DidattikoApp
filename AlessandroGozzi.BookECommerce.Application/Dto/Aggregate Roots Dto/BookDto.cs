@@ -16,7 +16,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
         string MainPhoto,
         decimal Price,
         bool IsAvailable,
-        Guid SellerId,
-        string SellerFullName
+        Guid SellerId
     );
 }
