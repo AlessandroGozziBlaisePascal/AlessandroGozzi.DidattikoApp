@@ -15,24 +15,17 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetSellerBooks
     public class GetSellerBooksQueryHandler: IRequestHandler<GetSellerBooksQuery, Result<IEnumerable<BookDto>>>
     {
         private readonly IBookRepository Repo;
-        private readonly ICustomerRepository CustomerRepo;
 
-        public GetSellerBooksQueryHandler(IBookRepository repo, ICustomerRepository customerRepository)
+        public GetSellerBooksQueryHandler(IBookRepository repo)
         {
             Repo = repo;
-            CustomerRepo = customerRepository;
         }
         
         public async Task<Result<IEnumerable<BookDto>>> Handle(GetSellerBooksQuery request, CancellationToken token)
         {
-            var seller = await CustomerRepo.GetByIdAsync(request.sellerId, token);
-            if(seller == null)
-            {
-                return Result.Failure<IEnumerable<BookDto>>(new Error("Book seller","Seller not found",ErrorType.NotFound));
-            }
             var books = await Repo.GetAllByCustomerIdAsync(request.sellerId, token);
 
-            var dtos = books.Select(b => b.ToDto(seller));
+            var dtos = books.Select(b => b.ToDto());
 
             return Result.Success(dtos);
         }

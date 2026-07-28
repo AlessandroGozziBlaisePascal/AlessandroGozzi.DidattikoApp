@@ -18,6 +18,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
                 item.BookId,
                 item.BookTitle,
                 item.Price.ToDto(),
+                item.Quantity,
                 item.SellerId
         );
     }

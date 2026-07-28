@@ -29,7 +29,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetBooksByDetails
             
             var books = await Repo.GetByBooksDetailsAsync(request.Subject, request.SchoolYear, request.Title, token);
 
-            var dtos = books.Select(pair => pair.Item1.ToDto(pair.Item2));
+            var dtos = books.Select(pair => pair.ToDto());
 
             return Result.Success(dtos);
         }

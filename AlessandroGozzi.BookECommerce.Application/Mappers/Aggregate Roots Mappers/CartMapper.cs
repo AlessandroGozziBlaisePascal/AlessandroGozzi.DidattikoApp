@@ -14,7 +14,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
 {
     public static class CartMapper
     {
-        public static CartDto ToDto(this Cart cart, IReadOnlyCollection<Book> books)
+        public static CartDto ToDto(this Cart cart, IEnumerable<Book> books)
         {
             var bookDict = books.ToDictionary(b => b.Id);
 

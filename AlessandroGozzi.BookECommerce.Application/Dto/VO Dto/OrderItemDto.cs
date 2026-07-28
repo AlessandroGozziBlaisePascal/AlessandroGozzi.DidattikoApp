@@ -11,6 +11,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
         Guid BookId,
         string Title,
         decimal PriceAtPurchase,
+        int Quantity,
         Guid SellerId
     );
 

@@ -151,5 +151,14 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             Raise(new BookRemovedFromMarketEvent(Id));
             return Result.Success();
         }
+
+        public void MarkAsUnavailbale()
+        {
+            IsAvailable = false;
+        }
+        public void RestoreAvailability()
+        {
+            IsAvailable = false;
+        }
     }
 }

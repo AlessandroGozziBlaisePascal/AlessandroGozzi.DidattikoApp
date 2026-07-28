@@ -22,9 +22,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetOrdersByCustomerI
 
         public async Task<Result<IEnumerable<OrderDto>>> Handle(GetOrdersByCustomerIdQuery request, CancellationToken token)
         {
-            var orders = await Repo.GetAllByCustomerIdAsync(request.customerId, token);
+            var orders = await Repo.GetAllByCustomerIdAsync(request.CustomerId, token);
 
-            var dtos = orders.Select(pair => pair.Item1.ToDto(pair.Item2,pair.Item3));
+            var dtos = orders.Select(o => o.ToDto());
 
             return Result.Success(dtos);
         }

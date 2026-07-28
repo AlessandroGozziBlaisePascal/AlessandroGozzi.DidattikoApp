@@ -53,8 +53,17 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
             foreach(var cartItem in cart.GetItems)
             {
                 var book = books.First(b => b.Id == cartItem.BookId);
-                var orderItem = OrderItem.Create(book.Id, book.Title, book.Price, cartItem.Quantity).Value;
-                orderItems.Add(orderItem);
+                var orderItemResult = OrderItem.Create(
+                    book.Id,
+                    book.SellerId,
+                    book.Title,
+                    book.Price,
+                    cartItem.Quantity);
+                if (orderItemResult.IsFailure)
+                {
+                    return Result.Failure<OrderDto>(new Error("Order item", "Order item failed to be generated", ErrorType.Failure));
+                }
+                orderItems.Add(orderItemResult.Value);
             }
 
             var order = Order.Create(command.CustomerId, paymentDetails.Item2, orderItems);
@@ -67,7 +76,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
             
             await UnitOfWork.SaveChangesAsync(token);
 
-            return Result.Success(order.Value.ToDto(books,))
+            return Result.Success(order.Value.ToDto());
         }
     }
 }

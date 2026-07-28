@@ -9,5 +9,5 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.GetOrdersByCustomerId
 {
-    public sealed record GetOrdersByCustomerIdQuery(Guid customerId) : IRequest<Result<IEnumerable<OrderDto>>>;
+    public sealed record GetOrdersByCustomerIdQuery(Guid CustomerId) : IRequest<Result<IEnumerable<OrderDto>>>;
 }

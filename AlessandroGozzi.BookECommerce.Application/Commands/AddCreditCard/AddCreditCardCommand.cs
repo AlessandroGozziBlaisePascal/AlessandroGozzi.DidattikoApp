@@ -8,7 +8,7 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
 {
-    public sealed record AddCredtiCardCommand(
+    public sealed record AddCreditCardCommand(
         Guid CustomerId,
         string CardNumber,
         string CardHolderName,
