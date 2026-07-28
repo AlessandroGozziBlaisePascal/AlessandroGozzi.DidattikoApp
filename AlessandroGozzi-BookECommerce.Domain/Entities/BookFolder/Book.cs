@@ -104,9 +104,11 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             return Result.Success();
         }
 
-        public Result AddPhotos(List<string> photos)
+        public Result AddPhotos(List<string> photos, Guid requesterCustomer)
         {
-            if(photos == null || photos.Count == 0)
+            if (SellerId != requesterCustomer)
+                return Result.Failure(new Error("New price", "Cannot update price. You are not the seller", ErrorType.PermissionDenied));
+            if (photos == null || photos.Count == 0)
                 return Result.Failure<Book>(new Error("Photos", "Cannot add null or empty photos", ErrorType.Validation));
             BookPhotos.AddRange(photos);
             Raise(new PhotosAddedEvent(Id, photos));
@@ -142,8 +144,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             return Result.Success();
         }
 
-        public Result RemoveFromMarket()
+        public Result RemoveFromMarket(Guid requesterCustomer)
         {
+            if (SellerId != requesterCustomer)
+                return Result.Failure(new Error("New status", "Cannot update status. You are not the seller", ErrorType.PermissionDenied));
             if (!IsAvailable)
                 return Result.Failure(new Error("Book.Remove","Book is already removed from market",ErrorType.StatusConflict));
 
@@ -151,14 +155,18 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             Raise(new BookRemovedFromMarketEvent(Id));
             return Result.Success();
         }
+        public Result RestoreInMarket(Guid requesterCustomer)
+        {
+            if (SellerId != requesterCustomer)
+                return Result.Failure(new Error("New status", "Cannot update status. You are not the seller", ErrorType.PermissionDenied));
+            if (IsAvailable)
+                return Result.Failure(new Error("Book.Restore", "Book is already restored in market", ErrorType.StatusConflict));
 
-        public void MarkAsUnavailbale()
-        {
-            IsAvailable = false;
+            IsAvailable = true;
+            Raise(new BookRestoredInMarketEvent(Id));
+            return Result.Success();
         }
-        public void RestoreAvailability()
-        {
-            IsAvailable = false;
-        }
+
+        public void RestoreAvailability() => IsAvailable = true;
     }
 }

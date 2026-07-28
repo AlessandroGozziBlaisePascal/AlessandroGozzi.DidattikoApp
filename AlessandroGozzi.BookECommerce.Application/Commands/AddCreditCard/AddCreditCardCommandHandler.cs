@@ -10,18 +10,20 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
 {
-    public class AddCreditCardCommandHandler: IRequestHandler<AddCredtiCardCommand, Result>
+    public class AddCreditCardCommandHandler: IRequestHandler<AddCreditCardCommand, Result>
     {
         private readonly ICustomerRepository CustomerRepo;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public AddCreditCardCommandHandler(ICustomerRepository customerRepo)
+        public AddCreditCardCommandHandler(ICustomerRepository customerRepo, IUnitOfWork unitOfWork)
         {
             CustomerRepo = customerRepo;
+            UnitOfWork = unitOfWork;
         }
 
-        public async Task<Result> Handle(AddCredtiCardCommand command, CancellationToken token)
+        public async Task<Result> Handle(AddCreditCardCommand command, CancellationToken token)
         {
-            var owner = await CustomerRepo.GetByIdAsync(command.CustomerId);
+            var owner = await CustomerRepo.GetByIdAsync(command.CustomerId, token);
 
             if(owner == null)
             {
@@ -29,7 +31,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
             }
 
             var cardNumber = command.CardNumber;
-            if (cardNumber?.Length != 16 || cardNumber.All(char.IsDigit))
+            if(cardNumber == null)
+            {
+                return Result.Failure(new Error("Card number", "Card number is null", ErrorType.Validation));
+            }
+            if (cardNumber?.Length != 16 || !cardNumber.All(char.IsDigit))
             {
                 return Result.Failure(new Error("Card number", "Card number must be 16 digits", ErrorType.Validation));
             }
@@ -44,6 +50,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
             );
 
             owner.AddCreditCard(card.Value);
+
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(card);
         }

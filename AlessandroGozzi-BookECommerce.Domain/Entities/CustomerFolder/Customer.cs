@@ -16,8 +16,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public CreditCard? CreditCard { get; private set; }
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
+        public string PasswordHash { get; private set;}
 
-        private Customer(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode)
+        private Customer(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
             Name = name;
             Surname = surname;
@@ -25,11 +26,12 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             Address = address;
             Number = number;
             TaxCode = TCode;
+            PasswordHash = passwordHash;
         }
 
-        public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode)
+        public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
-            var customer = new Customer(name, surname, email, address, number, TCode);
+            var customer = new Customer(name, surname, email, address, number, TCode, passwordHash);
 
             customer.Raise(new CustomerCreatedEvent(customer.Id));
 
@@ -105,6 +107,20 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 
             CreditCard = card;
             Raise(new CreditCardAddedEvent(Id, card.CardOwner, card.DisplayName));
+            return Result.Success();
+        }
+
+        public Result ChangePassword(string newPasswordHash)
+        {
+            if (string.IsNullOrWhiteSpace(newPasswordHash))
+            {
+                return Result.Failure(new Error("New password", "New password hash is null or white spaces",ErrorType.Validation));
+            }
+            if (PasswordHash == newPasswordHash)
+                return Result.Success();
+            var p = PasswordHash;
+            PasswordHash = newPasswordHash;
+            Raise(new CustomerPasswordChangedEvent(Id, p, PasswordHash));
             return Result.Success();
         }
     }

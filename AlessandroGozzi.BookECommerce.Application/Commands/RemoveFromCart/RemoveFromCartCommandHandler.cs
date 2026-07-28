@@ -37,7 +37,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromCart
                 return Result.Failure(new Error("Book", "Book not found in DB", ErrorType.NotFound));
             }
 
-            cart.RemoveBook(command.BookId, command.quantity);
+            cart.RemoveItem(command.BookId, command.quantity);
 
             await CartRepo.UpdateAsync(cart, token);
 

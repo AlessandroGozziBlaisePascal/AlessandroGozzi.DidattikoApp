@@ -94,7 +94,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         {
             var cart = Cart.Create(_validCustomerId).Value;
 
-            var result = cart.RemoveBook(_validBookId, invalidQuantity);
+            var result = cart.RemoveItem(_validBookId, invalidQuantity);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
@@ -105,7 +105,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         {
             var cart = Cart.Create(_validCustomerId).Value;
 
-            var result = cart.RemoveBook(_validBookId, 1);
+            var result = cart.RemoveItem(_validBookId, 1);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
@@ -117,7 +117,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             var cart = Cart.Create(_validCustomerId).Value;
             cart.AddBook(_validBookId, 2);
 
-            var result = cart.RemoveBook(_validBookId, 5); // Tenta di rimuoverne 5 avendone solo 2
+            var result = cart.RemoveItem(_validBookId, 5); // Tenta di rimuoverne 5 avendone solo 2
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
@@ -130,7 +130,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             var cart = Cart.Create(_validCustomerId).Value;
             cart.AddBook(_validBookId, 5);
 
-            var result = cart.RemoveBook(_validBookId, 2);
+            var result = cart.RemoveItem(_validBookId, 2);
 
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == 3);
@@ -144,7 +144,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             var cart = Cart.Create(_validCustomerId).Value;
             cart.AddBook(_validBookId, 3);
 
-            var result = cart.RemoveBook(_validBookId, 3); // Rimuove tutte le quantità
+            var result = cart.RemoveItem(_validBookId, 3); // Rimuove tutte le quantità
 
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().BeEmpty();

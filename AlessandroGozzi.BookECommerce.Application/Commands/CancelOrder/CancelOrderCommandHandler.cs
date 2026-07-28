@@ -51,21 +51,16 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CancelOrder
             }
 
             var bookIds = order.Items.Select(i => i.BookId).ToList();
-            var books = await BookRepo.GetByIdsAsync(bookIds);
+            var books = await BookRepo.GetByIdsAsync(bookIds, token);
 
             foreach(var item in order.Items)
             {
                 var book = books.FirstOrDefault(b => b.Id == item.BookId);
                 if(book != null)
-                {
                     book.RestoreAvailability();
-                    await BookRepo.UpdateAsync(book,token);
-                }
-
             }
 
-            await OrderRepo.UpdateAsync(order , token);
-            await UnitOfWork.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success();
         }
