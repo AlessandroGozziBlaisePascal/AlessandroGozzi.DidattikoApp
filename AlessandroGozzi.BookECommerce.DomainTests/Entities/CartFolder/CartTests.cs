@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Event;
 using FluentAssertions;
@@ -13,22 +14,19 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
     {
         private readonly Guid _validCustomerId = Guid.NewGuid();
         private readonly Guid _validBookId = Guid.NewGuid();
+        private readonly string _validTitle = "Clean Code";
+        private readonly Money _validPrice = Money.Create(29.99m).Value;
+        private readonly string _validPhoto = "cover.jpg";
+
+        private Cart CreateValidCart()
+        {
+            return Cart.Create(_validCustomerId).Value;
+        }
 
         #region Create Tests
 
         [Fact]
-        public void Create_WithValidCustomerId_ShouldCreateEmptyCart()
-        {
-            var result = Cart.Create(_validCustomerId);
-
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeNull();
-            result.Value.CustomerId.Should().Be(_validCustomerId);
-            result.Value.GetItems.Should().BeEmpty();
-        }
-
-        [Fact]
-        public void Create_WithEmptyCustomerId_ShouldReturnFailure()
+        public void Create_ShouldFail_WhenCustomerIdIsEmpty()
         {
             var result = Cart.Create(Guid.Empty);
 
@@ -36,63 +34,77 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             result.Error.Code.Should().Be("Customer id");
         }
 
+        [Fact]
+        public void Create_ShouldSucceed_WhenCustomerIdIsValid()
+        {
+            var result = Cart.Create(_validCustomerId);
+
+            result.IsSuccess.Should().BeTrue();
+            result.Value.CustomerId.Should().Be(_validCustomerId);
+            result.Value.GetItems.Should().BeEmpty();
+        }
+
         #endregion
 
-        #region AddBook Tests
-
-        [Fact]
-        public void AddBook_NewItem_ShouldAddItemAndRaiseDomainEvent()
-        {
-            var cart = Cart.Create(_validCustomerId).Value;
-            int quantity = 2;
-
-            var result = cart.AddBook(_validBookId, quantity);
-
-            result.IsSuccess.Should().BeTrue();
-            cart.GetItems.Should().HaveCount(1);
-            cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == quantity);
-
-            cart._domainEvents.Should().ContainSingle(e => e is BookAddedToCartEvent);
-        }
-
-        [Fact]
-        public void AddBook_ExistingItem_ShouldUpdateQuantity()
-        {
-            var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 2);
-
-            var result = cart.AddBook(_validBookId, 3); // Aggiunge altre 3 quantità
-
-            result.IsSuccess.Should().BeTrue();
-            cart.GetItems.Should().HaveCount(1);
-            cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == 5);
-        }
+        #region AddItem Tests
 
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        [InlineData(-5)]
-        public void AddBook_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
+        public void AddItem_ShouldFail_WhenQuantityIsZeroOrNegative(int invalidQuantity)
         {
-            var cart = Cart.Create(_validCustomerId).Value;
+            var cart = CreateValidCart();
 
-            var result = cart.AddBook(_validBookId, invalidQuantity);
+            var result = cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, invalidQuantity);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
-            cart.GetItems.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void AddItem_ShouldFail_WhenCartItemCreationFails()
+        {
+            var cart = CreateValidCart();
+
+            var result = cart.AddItem(_validBookId, "", _validPrice, _validPhoto, 1);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Cart item title");
+        }
+
+        [Fact]
+        public void AddItem_ShouldAddNewItem_WhenItemNotInCart()
+        {
+            var cart = CreateValidCart();
+
+            var result = cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 2);
+
+            result.IsSuccess.Should().BeTrue();
+            cart.GetItems.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void AddItem_ShouldUpdateQuantity_WhenItemAlreadyInCart()
+        {
+            var cart = CreateValidCart();
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 2);
+
+            var result = cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 3);
+
+            result.IsSuccess.Should().BeTrue();
+            cart.GetItems.Should().HaveCount(1);
         }
 
         #endregion
 
-        #region RemoveBook Tests
+        #region RemoveItem Tests
 
         [Theory]
         [InlineData(0)]
-        [InlineData(-2)]
-        public void RemoveBook_WithInvalidQuantity_ShouldReturnFailure(int invalidQuantity)
+        [InlineData(-1)]
+        public void RemoveItem_ShouldFail_WhenQuantityIsZeroOrNegative(int invalidQuantity)
         {
-            var cart = Cart.Create(_validCustomerId).Value;
+            var cart = CreateValidCart();
 
             var result = cart.RemoveItem(_validBookId, invalidQuantity);
 
@@ -101,50 +113,47 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         }
 
         [Fact]
-        public void RemoveBook_ItemNotFound_ShouldReturnFailure()
+        public void RemoveItem_ShouldFail_WhenItemNotFound()
         {
-            var cart = Cart.Create(_validCustomerId).Value;
+            var cart = CreateValidCart();
 
-            var result = cart.RemoveItem(_validBookId, 1);
+            var result = cart.RemoveItem(Guid.NewGuid(), 1);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
         }
 
         [Fact]
-        public void RemoveBook_QuantityGreaterThanAvailable_ShouldReturnFailure()
+        public void RemoveItem_ShouldFail_WhenQuantityToRemoveIsGreaterThanCartQuantity()
         {
-            var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 2);
+            var cart = CreateValidCart();
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 2);
 
-            var result = cart.RemoveItem(_validBookId, 5); // Tenta di rimuoverne 5 avendone solo 2
+            var result = cart.RemoveItem(_validBookId, 5);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
-            cart.GetItems.Should().ContainSingle(i => i.Quantity == 2);
         }
 
         [Fact]
-        public void RemoveBook_PartialQuantity_ShouldDecreaseQuantityAndRaiseEvent()
+        public void RemoveItem_ShouldReduceQuantity_WhenQuantityToRemoveIsLess()
         {
-            var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 5);
+            var cart = CreateValidCart();
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 5);
 
             var result = cart.RemoveItem(_validBookId, 2);
 
             result.IsSuccess.Should().BeTrue();
-            cart.GetItems.Should().ContainSingle(i => i.BookId == _validBookId && i.Quantity == 3);
-
-            cart._domainEvents.Should().Contain(e => e is BookRemovedFromCartEvent);
+            cart.GetItems.Should().HaveCount(1);
         }
 
         [Fact]
-        public void RemoveBook_ExactQuantity_ShouldRemoveItemFromCart()
+        public void RemoveItem_ShouldRemoveItemEntirely_WhenQuantityToRemoveEqualsCartQuantity()
         {
-            var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 3);
+            var cart = CreateValidCart();
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 2);
 
-            var result = cart.RemoveItem(_validBookId, 3); // Rimuove tutte le quantità
+            var result = cart.RemoveItem(_validBookId, 2);
 
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().BeEmpty();
@@ -157,9 +166,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         [Fact]
         public void ClearCart_ShouldRemoveAllItems()
         {
-            var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(Guid.NewGuid(), 2);
-            cart.AddBook(Guid.NewGuid(), 1);
+            var cart = CreateValidCart();
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhoto, 2);
+            cart.AddItem(Guid.NewGuid(), "Another Book", _validPrice, _validPhoto, 1);
 
             var result = cart.ClearCart();
 

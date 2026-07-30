@@ -13,7 +13,7 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.RegisterNewCustomer
 {
-    public class RegisterNewCustomerCommandHandler: IRequestHandler<RegisterNewCustomerCommand, Result<CustomerDto>
+    public class RegisterNewCustomerCommandHandler: IRequestHandler<RegisterNewCustomerCommand, Result<CustomerDto>>
     {
         private readonly ICustomerRepository CustRepo;
         private readonly IUnitOfWork UnitOfWork;

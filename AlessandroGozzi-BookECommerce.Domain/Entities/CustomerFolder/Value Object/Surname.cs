@@ -11,18 +11,20 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
     public record Surname
     {
         public string Value { get; init; }
+
         private Surname(string value) => Value = value;
 
         public static Result<Surname> Create(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
-                return Result.Failure<Surname>(new Error("Surname creation", "Surname cannot be null ro white spaces", ErrorType.Validation));
+                return Result.Failure<Surname>(new Error("Surname creation", "Surname cannot be null or white spaces", ErrorType.Validation));
+
             var trimmedSurname = value.Trim();
-            if (!Regex.IsMatch(trimmedSurname, @"^[a-zA-ZÀ-ÿ'\s\-]+$"))
-                return Result.Failure<Surname>(new Error("Surname creation", "Surname must contains only letters", ErrorType.Validation));
+
+            if (!Regex.IsMatch(trimmedSurname, @"^[a-zA-Z\u00C0-\u024F'\s-]+$"))
+                return Result.Failure<Surname>(new Error("Surname creation", "Surname must contain only letters", ErrorType.Validation));
 
             return Result.Success(new Surname(trimmedSurname));
         }
-
     }
 }

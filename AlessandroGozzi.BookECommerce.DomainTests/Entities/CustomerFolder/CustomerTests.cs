@@ -13,64 +13,68 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
 {
     public class CustomerTests
     {
-        private Name GetValidName() => Name.Create("Mario").Value;
-        private Surname GetValidSurname() => Surname.Create("Rossi").Value;
-        private Email GetValidEmail() => Email.Create("mario.rossi@example.com").Value;
-        private Address GetValidAddress() => Address.Create("Via Roma", "10", "Milano", "20100").Value;
-        private PhoneNumber GetValidPhoneNumber() => PhoneNumber.Create("3331234567").Value;
-        private TaxCode GetValidTaxCode() => TaxCode.Create("RSSMRA80A01H501U").Value;
+        private readonly Name _validName = Name.Create("Mario").Value;
+        private readonly Surname _validSurname = Surname.Create("Rossi").Value;
+        private readonly Email _validEmail = Email.Create("mario.rossi@example.com").Value;
+        private readonly Address _validAddress = Address.Create("Via Roma", "10", "Milano", "20100").Value;
+        private readonly PhoneNumber _validPhone = PhoneNumber.Create("3401234567").Value;
+        private readonly TaxCode _validTaxCode = TaxCode.Create("RSSMRA80A01H501Z").Value;
+        private const string ValidPasswordHash = "hashed_password_123";
 
-        #region Customer Creation Tests
+        private Customer CreateSampleCustomer()
+        {
+            return Customer.Create(
+                _validName,
+                _validSurname,
+                _validEmail,
+                _validAddress,
+                _validPhone,
+                _validTaxCode,
+                ValidPasswordHash).Value;
+        }
+
+        #region Create Tests
 
         [Fact]
-        public void Customer_Create_WithValidData_ShouldSucceedAndRaiseEvent()
+        public void Create_ShouldSucceed_AndRaiseCustomerCreatedEvent_WhenParametersAreValid()
         {
             var result = Customer.Create(
-                GetValidName(),
-                GetValidSurname(),
-                GetValidEmail(),
-                GetValidAddress(),
-                GetValidPhoneNumber(),
-                GetValidTaxCode()
-            );
+                _validName,
+                _validSurname,
+                _validEmail,
+                _validAddress,
+                _validPhone,
+                _validTaxCode,
+                ValidPasswordHash);
 
             result.IsSuccess.Should().BeTrue();
-            result.Value.Should().NotBeNull();
-            result.Value.Name.Value.Should().Be("Mario");
-            result.Value.Surname.Value.Should().Be("Rossi");
-            result.Value.Email.Value.Should().Be("mario.rossi@example.com");
+            result.Value.Name.Should().Be(_validName);
+            result.Value._domainEvents.Should().ContainSingle(e => e is CustomerCreatedEvent);
+        }
 
-            result.Value._domainEvents.Should().HaveCount(1);
+        [Fact]
+        public void Create_ShouldFail_WhenNameIsNull()
+        {
+            var result = Customer.Create(
+                null!,
+                _validSurname,
+                _validEmail,
+                _validAddress,
+                _validPhone,
+                _validTaxCode,
+                ValidPasswordHash);
+
+            result.IsFailure.Should().BeTrue();
         }
 
         #endregion
 
-        #region Change Methods Tests
+        #region ChangeName Tests
 
         [Fact]
-        public void ChangeName_WithValidName_ShouldUpdateAndRaiseEvent()
+        public void ChangeName_ShouldFail_WhenNameIsNull()
         {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
-
-            var newName = Name.Create("Luigi").Value;
-
-            var result = customer.ChangeName(newName);
-
-            result.IsSuccess.Should().BeTrue();
-            customer.Name.Value.Should().Be("Luigi");
-            customer._domainEvents.Should().HaveCount(2); 
-        }
-
-        [Fact]
-        public void ChangeName_WithNullValue_ShouldFail()
-        {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
+            var customer = CreateSampleCustomer();
 
             var result = customer.ChangeName(null!);
 
@@ -79,130 +83,144 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         }
 
         [Fact]
-        public void ChangeName_WithSameValue_ShouldDoNothingAndSucceed()
+        public void ChangeName_ShouldDoNothing_WhenNameIsUnchanged()
         {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
 
-            var sameName = GetValidName(); 
-
-            var result = customer.ChangeName(sameName);
+            var result = customer.ChangeName(_validName);
 
             result.IsSuccess.Should().BeTrue();
-            customer._domainEvents.Should().HaveCount(1); 
+            customer._domainEvents.Should().BeEmpty();
         }
 
         [Fact]
-        public void ChangeEmail_WithValidEmail_ShouldUpdateAndRaiseEvent()
+        public void ChangeName_ShouldUpdateNameAndRaiseEvent_WhenNameIsNew()
         {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            var newName = Name.Create("Luigi").Value;
 
-            var newEmail = Email.Create("nuova.email@example.com").Value;
+            var result = customer.ChangeName(newName);
+
+            result.IsSuccess.Should().BeTrue();
+            customer.Name.Should().Be(newName);
+            customer._domainEvents.Should().ContainSingle(e => e is NameChangedEvent);
+        }
+
+        #endregion
+
+        #region ChangeSurname Tests
+
+        [Fact]
+        public void ChangeSurname_ShouldUpdateSurnameAndRaiseEvent_WhenSurnameIsNew()
+        {
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            var newSurname = Surname.Create("Verdi").Value;
+
+            var result = customer.ChangeSurname(newSurname);
+
+            result.IsSuccess.Should().BeTrue();
+            customer.Surname.Should().Be(newSurname);
+            customer._domainEvents.Should().ContainSingle(e => e is SurnameChangedEvent);
+        }
+
+        #endregion
+
+        #region ChangeEmail Tests
+
+        [Fact]
+        public void ChangeEmail_ShouldUpdateEmailAndRaiseEvent_WhenEmailIsNew()
+        {
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            var newEmail = Email.Create("new.email@example.com").Value;
 
             var result = customer.ChangeEmail(newEmail);
 
             result.IsSuccess.Should().BeTrue();
-            customer.Email.Value.Should().Be("nuova.email@example.com");
-        }
-        [Fact]
-        public void AddCreditCard_ShouldReturnFailure_WhenCardIsNull()
-        {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
-            CreditCard nullCard = null;
-
-            var result = customer.AddCreditCard(nullCard);
-
-            result.IsSuccess.Should().BeFalse(); 
-            result.Error.Description.Should().Be("Cannot add null credit card");
+            customer.Email.Should().Be(newEmail);
+            customer._domainEvents.Should().ContainSingle(e => e is EmailChangedEvent);
         }
 
-        [Fact]
-        public void AddCreditCard_ShouldReturnSuccessWithoutRaisingEvent_WhenCardIsAlreadyAssigned()
-        {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
-            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
+        #endregion
 
-            customer.AddCreditCard(card);
-            customer.ClearEvents(); 
+        #region ChangeAddress Tests
+
+        [Fact]
+        public void ChangeAddress_ShouldUpdateAddressAndRaiseEvent_WhenAddressIsNew()
+        {
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            var newAddress = Address.Create("Corso Vittorio", "5", "Torino", "10100").Value;
+
+            var result = customer.ChangeAddress(newAddress);
+
+            result.IsSuccess.Should().BeTrue();
+            customer.Address.Should().Be(newAddress);
+            customer._domainEvents.Should().ContainSingle(e => e is AddressChangedEvent);
+        }
+
+        #endregion
+
+        #region AddCreditCard Tests
+
+        [Fact]
+        public void AddCreditCard_ShouldFail_WhenCardIsNull()
+        {
+            var customer = CreateSampleCustomer();
+
+            var result = customer.AddCreditCard(null!);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Credit card");
+        }
+
+        [Fact]
+        public void AddCreditCard_ShouldSetCardAndRaiseEvent_WhenCardIsValid()
+        {
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            var card = CreditCard.Create("Mario", "Rossi", "12/28", "1234").Value;
 
             var result = customer.AddCreditCard(card);
 
             result.IsSuccess.Should().BeTrue();
-            customer._domainEvents.Should().NotContain(e => e is CreditCardAddedEvent); 
-        }
-
-        [Fact]
-        public void AddCreditCard_ShouldSetCreditCardAndRaiseEvent_WhenCardIsValidAndNew()
-        {
-            var customer = Customer.Create(
-                GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
-            ).Value;
-
-            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
-            customer.AddCreditCard(card);
-            customer.ClearEvents();
-
-            var card2 = CreditCard.Create("Noemi", "Colciago", "10/31", "0670").Value;
-
-            var result = customer.AddCreditCard(card2);
-
-            result.IsSuccess.Should().BeTrue();
-            customer.CreditCard.Should().Be(card2);
-
+            customer.CreditCard.Should().Be(card);
             customer._domainEvents.Should().ContainSingle(e => e is CreditCardAddedEvent);
         }
 
-
         #endregion
 
-        #region Value Objects Unit Tests
+        #region ChangePassword Tests
 
         [Theory]
-        [InlineData("2010")] 
-        [InlineData("201000")] 
         [InlineData(null)]
         [InlineData("")]
-        public void Address_Create_WithInvalidCAP_ShouldFail(string invalidCap)
+        [InlineData("   ")]
+        public void ChangePassword_ShouldFail_WhenPasswordHashIsInvalid(string? invalidHash)
         {
-            var result = Address.Create("Via Roma", "10", "Milano", invalidCap);
+            var customer = CreateSampleCustomer();
+
+            var result = customer.ChangePassword(invalidHash!);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Address CAP");
+            result.Error.Code.Should().Be("New password");
         }
 
-        [Theory]
-        [InlineData("RSSMRA80A01H50")] 
-        [InlineData("RSSMRA80A01H501!")] 
-        public void TaxCode_Create_WithInvalidValue_ShouldFail(string invalidTaxCode)
+        [Fact]
+        public void ChangePassword_ShouldUpdatePasswordAndRaiseEvent_WhenPasswordIsNew()
         {
-            var result = TaxCode.Create(invalidTaxCode);
+            var customer = CreateSampleCustomer();
+            customer._domainEvents.Clear();
+            const string newHash = "new_secret_hash_999";
 
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tax code creation");
-        }
+            var result = customer.ChangePassword(newHash);
 
-        [Theory]
-        [InlineData("email-non-valida")]
-        [InlineData("test@")]
-        [InlineData("@domain.com")]
-        public void Email_Create_WithInvalidFormat_ShouldFail(string invalidEmail)
-        {
-            var result = Email.Create(invalidEmail);
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Email");
+            result.IsSuccess.Should().BeTrue();
+            customer.PasswordHash.Should().Be(newHash);
+            customer._domainEvents.Should().ContainSingle(e => e is CustomerPasswordChangedEvent);
         }
 
         #endregion

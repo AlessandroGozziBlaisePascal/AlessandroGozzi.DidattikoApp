@@ -21,7 +21,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.Value_O
 
         public static Result<ExpiryDate> Create(string rawDate)
         {
-            if(string.IsNullOrWhiteSpace(rawDate) || !Regex.IsMatch(rawDate, @"^(0[1-9]|1[0-2])\/\d{2}$"))
+            if(string.IsNullOrWhiteSpace(rawDate) || !Regex.IsMatch(rawDate, @"^(0[1-9]|1[0-2])/\d{2}$"))
             {
                 return Result.Failure<ExpiryDate>(new Error("Expiry date", "No valid format", ErrorType.Validation));
             }
@@ -31,7 +31,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.Value_O
 
         public bool IsExpired(DateTime referenceDate)
         {
-            var lastDayOfMonth = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month));
+            var lastDayOfMonth = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month), 23, 59, 59);
             return lastDayOfMonth < referenceDate;
         }
 

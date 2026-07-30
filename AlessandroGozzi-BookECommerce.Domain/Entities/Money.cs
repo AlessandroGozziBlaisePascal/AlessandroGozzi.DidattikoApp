@@ -16,7 +16,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities
         public static Result<Money> Create(decimal amount)
         {
             if (amount < 0)
-                return Result.Failure<Money>(new Error("Money amount", "Amount must be greater than 0", ErrorType.Validation));
+                return Result.Failure<Money>(new Error("Money amount", "Amount cannot be negative", ErrorType.Validation));
 
             return Result.Success(new Money(amount));
         }

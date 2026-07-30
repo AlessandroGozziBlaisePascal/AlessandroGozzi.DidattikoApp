@@ -38,7 +38,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder
                 return Result.Failure<CreditCard>(expiryDateResult.Error);
             }
 
-            if(string.IsNullOrWhiteSpace(last4digit) || last4digit.Length != 4)
+            if(string.IsNullOrWhiteSpace(last4digit) || last4digit.Length != 4 || !last4digit.All(char.IsDigit))
                 return Result.Failure<CreditCard>(new Error("Last 4 digits card", "Card must have 4 last digits", ErrorType.Validation));
 
             return Result.Success(new CreditCard(ownerResult.Value, expiryDateResult.Value, last4digit));

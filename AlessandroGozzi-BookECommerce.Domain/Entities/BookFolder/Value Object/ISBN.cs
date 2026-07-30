@@ -24,7 +24,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
                 return Result.Failure<ISBN>(new Error("ISBN.Empty", "ISBN cannot be empty.", ErrorType.Validation));
             }
 
-            var cleaned = value.Replace("-", "").Replace(" ", "").Trim().ToUpper();
+            var cleaned = value.Trim().Replace("-", "").Replace(" ", "").ToUpper();
 
             if (!Regex.IsMatch(cleaned, @"^(\d{13}|\d{9}[\dX])$"))
             {

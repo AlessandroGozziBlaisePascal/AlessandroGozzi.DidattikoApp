@@ -21,18 +21,24 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
             City = city;
             CAP = cap;
         }
+
         public static Result<Address> Create(string street, string civicN, string city, string cap)
         {
             if (string.IsNullOrWhiteSpace(street))
-                return Result.Failure<Address>(new Error("Address street", "Street cannot be null", ErrorType.Validation));
+                return Result.Failure<Address>(new Error("Address street", "Street cannot be null or empty", ErrorType.Validation));
+
             if (string.IsNullOrWhiteSpace(civicN))
-                return Result.Failure<Address>(new Error("Address civic number", "Civic number cannot be null", ErrorType.Validation));
+                return Result.Failure<Address>(new Error("Address civic number", "Civic number cannot be null or empty", ErrorType.Validation));
+
             if (string.IsNullOrWhiteSpace(city))
-                return Result.Failure<Address>(new Error("Address city", "City cannot be null", ErrorType.Validation));
-            if (string.IsNullOrWhiteSpace(cap) || cap.Length != 5)
-                return Result.Failure<Address>(new Error("Address CAP", "Street cannot be null", ErrorType.Validation));
+                return Result.Failure<Address>(new Error("Address city", "City cannot be null or empty", ErrorType.Validation));
+
+            if (string.IsNullOrWhiteSpace(cap) || cap.Length != 5 || !cap.All(char.IsDigit))
+                return Result.Failure<Address>(new Error("Address CAP", "CAP must be exactly 5 numeric digits", ErrorType.Validation));
+
             return Result.Success(new Address(street, civicN, city, cap));
         }
+
         public override string ToString() => $"{Street} {CivicNumber}, {City} {CAP}";
     }
 }

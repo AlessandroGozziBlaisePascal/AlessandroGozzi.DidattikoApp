@@ -17,13 +17,15 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
         public Money Price { get; init; }
         public int Quantity { get; private set; }
 
+        public Money TotalPrice => Price * Quantity;
+
         private OrderItem() { }
 
         private OrderItem(Guid bookId, Guid sellerId, string bookTitle, Money price, int quantity)
         {
             Id = Guid.NewGuid();
             BookId = bookId;
-            SellerId = sellerId;    
+            SellerId = sellerId;
             BookTitle = bookTitle;
             Price = price;
             Quantity = quantity;
@@ -31,12 +33,21 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
 
         public static Result<OrderItem> Create(Guid bookId, Guid sellerId, string bookTitle, Money price, int quantity)
         {
+            if (bookId == Guid.Empty)
+                return Result.Failure<OrderItem>(new Error("BookId", "Book ID cannot be empty", ErrorType.Validation));
+
+            if (sellerId == Guid.Empty)
+                return Result.Failure<OrderItem>(new Error("SellerId", "Seller ID cannot be empty", ErrorType.Validation));
+
             if (string.IsNullOrWhiteSpace(bookTitle))
-                return Result.Failure<OrderItem>(new Error("BookTitle", "Title cannot be null", ErrorType.Validation));
-            if (price == null)
+                return Result.Failure<OrderItem>(new Error("BookTitle", "Title cannot be null or whitespace", ErrorType.Validation));
+
+            if (price is null)
                 return Result.Failure<OrderItem>(new Error("BookPrice", "Price cannot be null", ErrorType.Validation));
-            if(quantity < 1)
-                return Result.Failure<OrderItem>(new Error("Quantity", "Quantity must be at min 1", ErrorType.Validation));
+
+            if (quantity < 1)
+                return Result.Failure<OrderItem>(new Error("Quantity", "Quantity must be at least 1", ErrorType.Validation));
+
             return Result.Success(new OrderItem(bookId, sellerId, bookTitle, price, quantity));
         }
     }
