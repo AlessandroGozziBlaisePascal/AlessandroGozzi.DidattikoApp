@@ -15,14 +15,14 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
     {
         private readonly Guid _validSellerId = Guid.NewGuid();
         private readonly Subject _validSubject = Subject.Create("Informatica").Value;
-        private readonly ISBN _validIsbn = ISBN.Create("978-0-306-40615-8").Value;
+        private readonly ISBN _validIsbn = ISBN.Create("978-88-04-66823-7").Value;
         private readonly Money _validPrice = Money.Create(29.99m).Value;
         private readonly BookStatus _validStatus = BookStatus.PencilMarked; 
 
         private Book CreateValidBook()
         {
 
-            var bookResult = Book.Create("ciao", _validSellerId, _validSubject, _validIsbn, 2, 2021, _validPrice, _validStatus);
+            var bookResult = Book.Create("TPSIT", _validSellerId, _validSubject, _validIsbn, 2, 2021, _validPrice, _validStatus);
 
             if (bookResult.IsFailure)
             {

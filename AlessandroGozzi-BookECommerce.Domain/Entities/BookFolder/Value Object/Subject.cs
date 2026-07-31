@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
@@ -17,9 +18,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
         public static Result<Subject> Create(string val)
         {
             if (string.IsNullOrWhiteSpace(val))
-                return Result.Failure<Subject>(new Error("Subject empty", "Subject cannot be null", ErrorType.Validation));
-
-            if (!val.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
+                return Result.Failure<Subject>(new Error("Subject empty", "Subject cannot be null", ErrorType.Validation)); var trimmedval = val.Trim();
+            if (!Regex.IsMatch(trimmedval, @"^[\p{L}\p{N}\s]+$"))
                 return Result.Failure<Subject>(new Error("Subject", "Subject can only contains letters, digits or spaces", ErrorType.Validation));
 
             return Result.Success(new Subject(val));

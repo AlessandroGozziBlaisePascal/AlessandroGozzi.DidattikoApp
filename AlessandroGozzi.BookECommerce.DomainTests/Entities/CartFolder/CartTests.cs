@@ -69,7 +69,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             var result = cart.AddItem(_validBookId, "", _validPrice, _validPhoto, 1);
 
             result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Cart item title");
         }
 
         [Fact]

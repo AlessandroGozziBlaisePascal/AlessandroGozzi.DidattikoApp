@@ -14,12 +14,12 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
         public string Text { get; init; }
         public int Rating { get; init; }
         public DateTime CreatedAt { get; init; }
-        private BookReview(Guid customerId, string text, int rating, DateTime createdAt)
+        private BookReview(Guid customerId, string text, int rating)
         {
             CustomerId = customerId;
             Text = text;
             Rating = rating;
-            CreatedAt = createdAt;
+            CreatedAt = DateTime.Now;
         }
 
         public static Result<BookReview> Create(Guid customerId, int rating, string text)
@@ -37,7 +37,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
                 return Result.Failure<BookReview>(new Error("Review.EmptyText", "Comment text cannot be empty.",ErrorType.Validation));
             }
 
-            return Result.Success(new BookReview(customerId, text.Trim(), rating, DateTime.UtcNow));
+            return Result.Success(new BookReview(customerId, text.Trim(), rating));
         }
 
         public override string ToString()
