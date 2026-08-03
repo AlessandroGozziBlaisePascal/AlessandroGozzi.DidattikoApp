@@ -7,19 +7,21 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.ResetPassword
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.ResetPassword
 {
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Result>
     {
         private readonly ICustomerRepository CustRepo;
         private readonly IOtpService _otpService;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public ResetPasswordCommandHandler(ICustomerRepository custRepo, IOtpService otpService, IPasswordHasher passwordHasher)
+        public ResetPasswordCommandHandler(ICustomerRepository custRepo, IOtpService otpService, IPasswordHasher passwordHasher, IUnitOfWork unitOfWork)
         {
             CustRepo = custRepo;
             _otpService = otpService;
             _passwordHasher = passwordHasher;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
@@ -44,10 +46,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.ResetPassword
 
             string newPasswordHash = _passwordHasher.Hash(request.NewPassword);
 
-            customer.UpdatePassword(newPasswordHash);
-            await CustRepo.UpdateAsync(customer, cancellationToken);
+            customer.ChangePassword(newPasswordHash);
 
-            // 6. Invalida il codice OTP dopo l'uso per evitare riutilizzi
+            await UnitOfWork.SaveChangesAsync(cancellationToken);
+
             await _otpService.InvalidateCodeAsync(request.Identifier, cancellationToken);
 
             return Result.Success();

@@ -8,7 +8,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.RegisterNewCustomer
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.RegisterNewCustomer
 {
     public record RegisterNewCustomerCommand(string Name,
         string Surname,

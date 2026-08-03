@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
@@ -12,48 +13,44 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
 {
     public class AddCreditCardCommandHandler: IRequestHandler<AddCreditCardCommand, Result>
     {
-        private readonly ICustomerRepository CustomerRepo;
-        private readonly IUnitOfWork UnitOfWork;
+        private readonly ICustomerRepository CustRepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AddCreditCardCommandHandler(ICustomerRepository customerRepo, IUnitOfWork unitOfWork)
+        public AddCreditCardCommandHandler(ICustomerRepository custRepo, IUnitOfWork unitOfWork)
         {
-            CustomerRepo = customerRepo;
-            UnitOfWork = unitOfWork;
+            CustRepo = custRepo;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result> Handle(AddCreditCardCommand command, CancellationToken token)
+        public async Task<Result<CreditCardDto>> Handle(AddCreditCardCommand command, CancellationToken token)
         {
-            var owner = await CustomerRepo.GetByIdAsync(command.CustomerId, token);
+            string cleanNumber = command.CardNumber.Replace(" ", "");
+            string lastFourDigits = cleanNumber.Substring(cleanNumber.Length - 4);
+            string maskedCardNumber = $"**** **** **** {lastFourDigits}";
 
-            if(owner == null)
+            var customer = await CustRepo.GetByIdAsync(command.CustomerId, token);
+            if(customer == null)
             {
-                return Result.Failure(new Error("Owner", "Owner not found in DB", ErrorType.NotFound));
+                return Result.Failure<CreditCardDto>(new Error("Customer", "Customer not found", ErrorType.NotFound));
             }
 
-            var cardNumber = command.CardNumber;
-            if(cardNumber == null)
-            {
-                return Result.Failure(new Error("Card number", "Card number is null", ErrorType.Validation));
-            }
-            if (cardNumber?.Length != 16 || !cardNumber.All(char.IsDigit))
-            {
-                return Result.Failure(new Error("Card number", "Card number must be 16 digits", ErrorType.Validation));
-            }
-
-            var last4Digits = cardNumber.Substring(12);
-
-            var card = CreditCard.Create(
-                command.CardHolderName,
-                command.CardHolderSurname,
+            var cardResult = CreditCard.Create(
+                customer.Name.Value,
+                customer.Surname.Value,
                 command.ExpiryDate,
-                last4Digits
+                maskedCardNumber
             );
 
-            owner.AddCreditCard(card.Value);
+            if (cardResult.IsFailure)
+            {
+                return Result.Failure<CreditCardDto>(cardResult.Error);
+            }
 
-            await UnitOfWork.SaveChangesAsync(token);
+            customer.AddCreditCard(cardResult.Value);
 
-            return Result.Success(card);
+            await _unitOfWork.SaveChangesAsync(token);
+
+            return Result.Success(cardResult.Value);
         }
     }
 }

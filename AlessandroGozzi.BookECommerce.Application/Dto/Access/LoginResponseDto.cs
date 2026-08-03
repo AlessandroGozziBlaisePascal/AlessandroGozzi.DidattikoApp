@@ -8,7 +8,10 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
     public record LoginProfileResponseDto(
-        CustomerDto customer,
+        string AccessToken,            
+        DateTime ExpiresAt,            
+        string? RefreshToken,
+        CustomerDto Customer,
         bool HasSavedCreditCard,
         string? MaskedCardNumbers
         ) { }

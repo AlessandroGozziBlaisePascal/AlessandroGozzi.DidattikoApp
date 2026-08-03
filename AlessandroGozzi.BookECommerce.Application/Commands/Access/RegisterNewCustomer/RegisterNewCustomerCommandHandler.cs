@@ -11,17 +11,19 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.RegisterNewCustomer
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.RegisterNewCustomer
 {
     public class RegisterNewCustomerCommandHandler: IRequestHandler<RegisterNewCustomerCommand, Result<CustomerDto>>
     {
         private readonly ICustomerRepository CustRepo;
         private readonly IUnitOfWork UnitOfWork;
+        private readonly IPasswordHasher _passHasher;
 
-        public RegisterNewCustomerCommandHandler(ICustomerRepository custRepo, IUnitOfWork unitOfWork) 
+        public RegisterNewCustomerCommandHandler(ICustomerRepository custRepo, IUnitOfWork unitOfWork, IPasswordHasher passHasher)
         {
             CustRepo = custRepo;
             UnitOfWork = unitOfWork;
+            _passHasher = passHasher;
         }
 
         public async Task<Result<CustomerDto>> Handle(RegisterNewCustomerCommand command, CancellationToken token)
@@ -30,7 +32,16 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RegisterNewCustomer
             {
                 return Result.Failure<CustomerDto>(new Error("Password", "Passwords are not the same", ErrorType.Validation));
             }
-            string passwordHash = _passHasher.HashPassword(); //TODO: Implement IPasswordHasher
+            string passwordHash = _passHasher.HashPassword(command.Password); //TODO: Implement IPasswordHasher
+
+            if(await CustRepo.GetByIdentifierAsync(command.Email, token) != null)
+            {
+                return Result.Failure<CustomerDto>(new Error("New customer credential", "Email already in using", ErrorType.Validation));
+            }
+            if (await CustRepo.GetByIdentifierAsync(command.PhoneNumber, token) != null)
+            {
+                return Result.Failure<CustomerDto>(new Error("New customer credential", "Number already in using", ErrorType.Validation));
+            }
 
             var customerResult = Customer.Create(
                 command.Name.ToNameDomain(),
@@ -46,7 +57,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RegisterNewCustomer
                 return Result.Failure<CustomerDto>(new Error("Customer", "Customer failed to be created", ErrorType.Failure));
             }
 
-            await UnitOfWork.SaveChangesAsync();
+            await CustRepo.AddAsync(customerResult.Value, token);
+
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(customerResult.Value.ToDto());
         }

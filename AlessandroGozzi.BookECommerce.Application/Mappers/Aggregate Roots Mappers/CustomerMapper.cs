@@ -30,7 +30,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 customerDto.Email.ToEmailDomain(),
                 customerDto.Address.ToAddressDomain(),
                 customerDto.PhoneNumber.ToNumberDomain(),
-                customerDto.TaxCode.ToTaxCodeDomain()
+                customerDto.TaxCode.ToTaxCodeDomain(),
+
             ).Value;
     }
 }
