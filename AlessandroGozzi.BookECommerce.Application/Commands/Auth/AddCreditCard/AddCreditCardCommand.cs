@@ -7,7 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
 {
     public sealed record AddCreditCardCommand(
         Guid CustomerId,

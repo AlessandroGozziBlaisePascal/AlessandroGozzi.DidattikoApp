@@ -5,14 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Access;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
+using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 using MediatR;
 using Stripe;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.Login
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login
 {
     public class LoginCommandHandler: IRequestHandler<LoginCommand, Result<LoginResponseDto>>
     {
@@ -51,18 +53,18 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.Login
                 return Result.Failure<LoginResponseDto>(new Error("Auth.InvalidCredentials", "Credenziali non valide.", ErrorType.Validation));
             }
 
-            if (!_passwordHasher.Verify(request.Password, customer.PasswordHash))
+            if (!_passwordHasher.VerifyPassword(request.Password, customer.PasswordHash))
             {
                 return Result.Failure<LoginResponseDto>(
                     new Error("Auth.InvalidCredentials", "Credenziali non valide.", ErrorType.Validation));
             }
 
             // 3. Genera Token e prepara il DTO di risposta
-            var token = _jwtProvider.GenerateToken(customer);
+            var token = _jwtProvider.GenerateToken(customer.ToDto());
             var expiresAt = DateTime.UtcNow.AddHours(2);
             var savedCard = customer.CreditCard;
 
-            var response = new LoginProfileResponseDto(
+            var response = new LoginResponseDto(
                 AccessToken: token,
                 ExpiresAt: expiresAt,
                 RefreshToken: null,

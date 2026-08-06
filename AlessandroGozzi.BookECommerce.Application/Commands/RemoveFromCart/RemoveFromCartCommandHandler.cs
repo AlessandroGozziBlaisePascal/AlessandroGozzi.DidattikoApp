@@ -14,12 +14,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromCart
     public class RemoveFromCartCommandHandler: IRequestHandler<RemoveFromCartCommand, Result>
     {
         private readonly ICartRepository CartRepo;
-        private readonly IBookRepository BookRepo;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public RemoveFromCartCommandHandler(ICartRepository cartRepo, IBookRepository bookRepo)
+        public RemoveFromCartCommandHandler(ICartRepository cartRepo, IUnitOfWork unitOfWork)
         {
             CartRepo = cartRepo;
-            BookRepo = bookRepo;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result> Handle(RemoveFromCartCommand command, CancellationToken token)
@@ -31,15 +31,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromCart
                 return Result.Failure(new Error("Cart", "Cart not found", ErrorType.NotFound));
             }
 
-            var book = await BookRepo.GetByIdAsync(command.BookId, token);
-            if (book == null)
+            var removeResult = cart.RemoveItem(command.BookId, command.Quantity);
+            if(removeResult.IsFailure)
             {
-                return Result.Failure(new Error("Book", "Book not found in DB", ErrorType.NotFound));
+                return Result.Failure(removeResult.Error);
             }
 
-            cart.RemoveItem(command.BookId, command.quantity);
-
-            await CartRepo.UpdateAsync(cart, token);
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success();
         }

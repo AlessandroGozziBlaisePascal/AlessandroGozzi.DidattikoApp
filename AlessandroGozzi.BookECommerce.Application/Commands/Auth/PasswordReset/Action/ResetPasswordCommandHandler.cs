@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.ResetPassword
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.Action
 {
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, Result>
     {
@@ -44,7 +45,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.ResetPasswor
                 return Result.Failure(new Error("ResetPassword.InvalidCode", "Il codice di verifica è errato o scaduto.", ErrorType.Validation));
             }
 
-            string newPasswordHash = _passwordHasher.Hash(request.NewPassword);
+            string newPasswordHash = _passwordHasher.HashPassword(request.NewPassword);
 
             customer.ChangePassword(newPasswordHash);
 

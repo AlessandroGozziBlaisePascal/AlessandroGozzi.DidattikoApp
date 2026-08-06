@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
+using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
 {
-    public class AddCreditCardCommandHandler: IRequestHandler<AddCreditCardCommand, Result>
+    public class AddCreditCardCommandHandler: IRequestHandler<AddCreditCardCommand, Result<CreditCardDto>>
     {
         private readonly ICustomerRepository CustRepo;
         private readonly IUnitOfWork _unitOfWork;
@@ -50,7 +51,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddCreditCard
 
             await _unitOfWork.SaveChangesAsync(token);
 
-            return Result.Success(cardResult.Value);
+            return Result.Success(cardResult.Value.ToDto());
         }
     }
 }

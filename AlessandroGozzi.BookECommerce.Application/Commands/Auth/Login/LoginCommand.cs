@@ -7,7 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Access;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.Login
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login
 {
     public record LoginCommand(
         string Identifier, 

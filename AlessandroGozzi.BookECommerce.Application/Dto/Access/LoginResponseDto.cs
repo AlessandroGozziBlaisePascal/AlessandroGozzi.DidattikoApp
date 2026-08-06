@@ -7,7 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Access
 {
-    public record LoginProfileResponseDto(
+    public record LoginResponseDto(
         string AccessToken,            
         DateTime ExpiresAt,            
         string? RefreshToken,

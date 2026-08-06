@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
 using MediatR;
 using Stripe;
@@ -19,18 +22,27 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
     public class StartCheckoutPaymentCommandHandler: IRequestHandler<StartCheckoutPaymentCommand, Result<CheckoutPaymentResultDto>>
     {
         private readonly ICartRepository CartRepo;
+        private readonly ICustomerRepository CustomerRepo;
         private readonly IBookRepository BookRepo;
+        private readonly IPaymentService PaymentService;
 
-        public StartCheckoutPaymentCommandHandler(ICartRepository cartRepo, IBookRepository bookRepo)
+        public StartCheckoutPaymentCommandHandler(ICartRepository cartRepo, IBookRepository bookRepo, IPaymentService service, ICustomerRepository custRepo)
         {
             CartRepo = cartRepo;
             BookRepo = bookRepo;
+            PaymentService = service;
+            CustomerRepo = custRepo;
         }
 
         public async Task<Result<CheckoutPaymentResultDto>> Handle(StartCheckoutPaymentCommand command, CancellationToken token)
         {
-            var cart = await CartRepo.GetByCustomerIdAsync(command.CustomerId);
+            var customer = await CustomerRepo.GetByIdAsync(command.CustomerId, token);
+            if (customer == null || customer.CreditCard == null)
+            {
+                return Result.Failure<CheckoutPaymentResultDto>(new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
+            }
 
+            var cart = await CartRepo.GetByCustomerIdAsync(command.CustomerId, token);
             if (cart == null)
             {
                 return Result.Failure<CheckoutPaymentResultDto>(new Error("Cart", "Cart not found", ErrorType.NotFound));
@@ -57,38 +69,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
 
             long totalInCent = (long)(totalAmount * 100);
 
-            try
+            var paymentCreationResult = await PaymentService.CreatePaymentIntentAsync(totalInCent, command.CustomerId, cart.Id, token);
+            if(paymentCreationResult.IsFailure)
             {
-                var options = new PaymentIntentCreateOptions
-                {
-                    Amount = totalInCent,
-                    Currency = "eur",
-                    AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
-                    {
-                        Enabled = true,
-                    },
-                    Metadata = new Dictionary<string, string>
-                    {
-                        {"CustomerId ", command.CustomerId.ToString()},
-                        { "CartId", cart.Id.ToString() }
-                    }
-                };
-
-                var service = new PaymentIntentService();
-                PaymentIntent paymentIntent = await service.CreateAsync(options, cancellationToken: token);
-
-                var dto = new CheckoutPaymentResultDto(
-                    paymentIntent.ClientSecret,
-                    paymentIntent.Id,
-                    totalInCent
-                );
-
-                return Result.Success(dto);
-                    
-            } catch(StripeException ex)
-            {
-                return Result.Failure<CheckoutPaymentResultDto>(new Error("Stripe error",ex.Message, ErrorType.Failure));
+                return Result.Failure<CheckoutPaymentResultDto>(paymentCreationResult.Error);
             }
+
+            return Result.Success(paymentCreationResult.Value);
 
         }
     }

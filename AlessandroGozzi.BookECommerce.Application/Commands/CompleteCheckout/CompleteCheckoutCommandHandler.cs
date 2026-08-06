@@ -12,6 +12,8 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
 using MediatR;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using System.ComponentModel.DataAnnotations;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
 {
@@ -21,22 +23,24 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
         private readonly IOrderRepository OrderRepo;
         private readonly IPaymentService PaymentService;
         private readonly IUnitOfWork UnitOfWork;
+        private readonly ICustomerRepository CustomerRepo;
         private readonly IBookRepository BookRepo;
 
-        public CompleteCheckoutCommandHandler(ICartRepository cartRepo, IOrderRepository orderRepo, IPaymentService service, IUnitOfWork unitOfWork, IBookRepository bookRepo)
+        public CompleteCheckoutCommandHandler(ICartRepository cartRepo, IOrderRepository orderRepo, IPaymentService service, IUnitOfWork unitOfWork, IBookRepository bookRepo, ICustomerRepository custRepo)
         {
             CartRepo = cartRepo;
             OrderRepo = orderRepo;
             PaymentService = service;
             UnitOfWork = unitOfWork;
             BookRepo = bookRepo;
+            CustomerRepo = custRepo;
         }
 
         public async Task<Result<OrderDto>> Handle(CompleteCheckoutCommand command, CancellationToken token)
         {
-            var paymentDetails = await PaymentService.IsPaymentSuccessful(command.PaymentIntentId, token);
+            var paymentDetails = await PaymentService.IsPaymentSuccessfulAsync(command.PaymentIntentId, token);
 
-            if (!paymentDetails.Item1)
+            if (!paymentDetails.IsFailure)
             {
                 return Result.Failure<OrderDto>(new Error("Payment", "Payment failed", ErrorType.Failure));
             }
@@ -66,13 +70,18 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                 orderItems.Add(orderItemResult.Value);
             }
 
-            var order = Order.Create(command.CustomerId, paymentDetails.Item2, orderItems);
+            var customer = await CustomerRepo.GetByIdAsync(command.CustomerId, token);
+            if(customer == null || customer.CreditCard == null)
+            {
+                return Result.Failure<OrderDto>(new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
+            }
+
+            var order = Order.Create(command.CustomerId, customer.CreditCard, orderItems);
             if(order.IsFailure)
                 return Result.Failure<OrderDto>(new Error("Order", "Order failed to be created", ErrorType.Failure));
 
             await OrderRepo.AddAsync(order.Value, token);
             cart.ClearCart();
-            await CartRepo.UpdateAsync(cart, token);
             
             await UnitOfWork.SaveChangesAsync(token);
 

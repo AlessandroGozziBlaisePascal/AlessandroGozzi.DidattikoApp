@@ -11,22 +11,22 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.RegisterNewCustomer
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
 {
-    public class RegisterNewCustomerCommandHandler: IRequestHandler<RegisterNewCustomerCommand, Result<CustomerDto>>
+    public class RegistrationCommandHandler: IRequestHandler<RegistrationCommand, Result<CustomerDto>>
     {
         private readonly ICustomerRepository CustRepo;
         private readonly IUnitOfWork UnitOfWork;
         private readonly IPasswordHasher _passHasher;
 
-        public RegisterNewCustomerCommandHandler(ICustomerRepository custRepo, IUnitOfWork unitOfWork, IPasswordHasher passHasher)
+        public RegistrationCommandHandler(ICustomerRepository custRepo, IUnitOfWork unitOfWork, IPasswordHasher passHasher)
         {
             CustRepo = custRepo;
             UnitOfWork = unitOfWork;
             _passHasher = passHasher;
         }
 
-        public async Task<Result<CustomerDto>> Handle(RegisterNewCustomerCommand command, CancellationToken token)
+        public async Task<Result<CustomerDto>> Handle(RegistrationCommand command, CancellationToken token)
         {
             if(command.Password != command.ConfirmPassword)
             {

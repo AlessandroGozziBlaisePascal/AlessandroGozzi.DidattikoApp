@@ -36,7 +36,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.AddToCart
                 return Result.Failure(new Error("Book", "Book not found in DB", ErrorType.NotFound));
             }
 
-            cart.AddBook(command.BookId, book.Title, book.Price, book.MainPhoto, command.quantity);
+            cart.AddItem(command.BookId, book.Title, book.Price, book.MainPhoto, command.quantity);
 
             await CartRepo.UpdateAsync(cart, cancellationToken);
 

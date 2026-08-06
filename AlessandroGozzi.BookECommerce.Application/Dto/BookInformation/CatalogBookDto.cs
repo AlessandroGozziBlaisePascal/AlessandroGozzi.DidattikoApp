@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.BookInformation
 {
-    public record BookSummaryDto(
+    public record CatalogBookDto(
         Guid BookId,
         string ISBN,
         string Condition,

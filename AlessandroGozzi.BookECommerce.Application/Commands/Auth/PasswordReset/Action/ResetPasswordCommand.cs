@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Access.ResetPassword
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.Action
 {
     public record ResetPasswordCommand(
         string Identifier,

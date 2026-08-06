@@ -10,9 +10,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {
     public static class CreditCardMapper
     {
-        public static CreditCard ToCreditCardDomain(this CreditCardDto dto)
+        public static CreditCardDto ToDto(this CreditCard card)
         {
-            return CreditCard.Create(dto.)
+            return new CreditCardDto(
+                Id: card.Id,
+                MaskedNumber: card.DisplayName,
+                ExpirationDate: card.ExpiryDate.ToString()
+            );
         }
     }
 }
