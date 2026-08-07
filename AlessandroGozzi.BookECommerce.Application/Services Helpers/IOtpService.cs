@@ -8,6 +8,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
 {
     public interface IOtpService
     {
-        Task<string> GenerateAhdSave
+        Task<string> GenerateAhdSaveOtpAsync(string identifier, CancellationToken cancellationToken = default);
+        Task<bool> ValidateOtpAsync(string identifier, string otp, CancellationToken cancellationToken = default);
     }
 }

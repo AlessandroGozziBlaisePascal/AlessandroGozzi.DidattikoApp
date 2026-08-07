@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Event;
 using FluentAssertions;
@@ -13,6 +14,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
     {
         private readonly Guid _validCustomerId = Guid.NewGuid();
         private readonly Guid _validBookId = Guid.NewGuid();
+        private readonly Money _validPrice = Money.Create(10.0m).Value;
+        private readonly string _validTitle = "Valid Book Title";
+        private readonly string _validPhotoUrl = "photo.png";
 
         #region Create Tests
 
@@ -46,7 +50,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
             var cart = Cart.Create(_validCustomerId).Value;
             int quantity = 2;
 
-            var result = cart.AddBook(_validBookId, quantity);
+            var result = cart.AddItem(_validBookId,_validTitle,_validPrice,_validPhotoUrl,quantity);
 
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().HaveCount(1);
@@ -59,9 +63,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         public void AddBook_ExistingItem_ShouldUpdateQuantity()
         {
             var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 2);
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 2);
 
-            var result = cart.AddBook(_validBookId, 3); // Aggiunge altre 3 quantità
+            var result = cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 3); // Aggiunge altre 3 quantità
 
             result.IsSuccess.Should().BeTrue();
             cart.GetItems.Should().HaveCount(1);
@@ -76,7 +80,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         {
             var cart = Cart.Create(_validCustomerId).Value;
 
-            var result = cart.AddBook(_validBookId, invalidQuantity);
+            var result = cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, invalidQuantity);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book");
@@ -115,7 +119,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         public void RemoveBook_QuantityGreaterThanAvailable_ShouldReturnFailure()
         {
             var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 2);
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 2);
 
             var result = cart.RemoveItem(_validBookId, 5); // Tenta di rimuoverne 5 avendone solo 2
 
@@ -128,7 +132,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         public void RemoveBook_PartialQuantity_ShouldDecreaseQuantityAndRaiseEvent()
         {
             var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 5);
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 5);
 
             var result = cart.RemoveItem(_validBookId, 2);
 
@@ -142,7 +146,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         public void RemoveBook_ExactQuantity_ShouldRemoveItemFromCart()
         {
             var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(_validBookId, 3);
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 3);
 
             var result = cart.RemoveItem(_validBookId, 3); // Rimuove tutte le quantità
 
@@ -158,8 +162,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
         public void ClearCart_ShouldRemoveAllItems()
         {
             var cart = Cart.Create(_validCustomerId).Value;
-            cart.AddBook(Guid.NewGuid(), 2);
-            cart.AddBook(Guid.NewGuid(), 1);
+            cart.AddItem(_validBookId, _validTitle, _validPrice, _validPhotoUrl, 2);
+            cart.AddItem(Guid.NewGuid(), "ciao", _validPrice, "newPhoto.jpg", 1);
 
             var result = cart.ClearCart();
 

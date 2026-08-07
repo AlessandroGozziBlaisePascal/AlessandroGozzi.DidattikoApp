@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
 {
-    internal class ISMSSender
+    public interface ISMSSender
     {
+        Task SendSmsAsync(string to, string message, CancellationToken cancellationToken = default);
     }
 }

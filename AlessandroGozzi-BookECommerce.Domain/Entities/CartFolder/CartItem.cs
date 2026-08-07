@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
 {
@@ -25,6 +26,22 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             Quantity = quantity;
         }
         private CartItem() { }
-        internal void UpdateQuantity(int quantity) => Quantity = quantity;
+        public void UpdateQuantity(int quantity) => Quantity = quantity;
+
+        public static Result<CartItem> Create(Guid bookId, string title, Money price, string mainPhoto, int quantity)
+        {
+            if (bookId == Guid.Empty)
+                return Result.Failure<CartItem>(new Error("Book id", "Book id is empty", ErrorType.Validation));
+            if (string.IsNullOrWhiteSpace(title))
+                return Result.Failure<CartItem>(new Error("Book title", "Book title is empty", ErrorType.Validation));
+            if (price == null || price.Amount <= 0)
+                return Result.Failure<CartItem>(new Error("Price", "Price is invalid", ErrorType.Validation));
+            if (string.IsNullOrWhiteSpace(mainPhoto))
+                return Result.Failure<CartItem>(new Error("Main photo", "Main photo is empty", ErrorType.Validation));
+            if (quantity <= 0)
+                return Result.Failure<CartItem>(new Error("Quantity", "Quantity must be greater than zero.", ErrorType.Validation));
+            var cartItem = new CartItem(bookId, title, price, mainPhoto, quantity);
+            return Result.Success(cartItem);
+        }
     }
 }

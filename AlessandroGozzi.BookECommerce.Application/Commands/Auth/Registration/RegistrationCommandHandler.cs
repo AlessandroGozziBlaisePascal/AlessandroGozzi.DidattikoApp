@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
@@ -32,7 +33,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
             {
                 return Result.Failure<CustomerDto>(new Error("Password", "Passwords are not the same", ErrorType.Validation));
             }
-            string passwordHash = _passHasher.HashPassword(command.Password); //TODO: Implement IPasswordHasher
+            string passwordHash = _passHasher.HashPassword(command.Password);
 
             if(await CustRepo.GetByIdentifierAsync(command.Email, token) != null)
             {

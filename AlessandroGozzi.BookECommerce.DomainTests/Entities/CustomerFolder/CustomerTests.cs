@@ -31,7 +31,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
                 GetValidEmail(),
                 GetValidAddress(),
                 GetValidPhoneNumber(),
-                GetValidTaxCode()
+                GetValidTaxCode(),
+                "hashedPassword123"
             );
 
             result.IsSuccess.Should().BeTrue();
@@ -52,7 +53,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
 
             var newName = Name.Create("Luigi").Value;
@@ -69,7 +70,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
 
             var result = customer.ChangeName(null!);
@@ -83,7 +84,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
 
             var sameName = GetValidName(); 
@@ -99,7 +100,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
 
             var newEmail = Email.Create("nuova.email@example.com").Value;
@@ -114,7 +115,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
             CreditCard nullCard = null;
 
@@ -129,7 +130,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
             var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
 
@@ -147,7 +148,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = Customer.Create(
                 GetValidName(), GetValidSurname(), GetValidEmail(),
-                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode()
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
             ).Value;
 
             var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;

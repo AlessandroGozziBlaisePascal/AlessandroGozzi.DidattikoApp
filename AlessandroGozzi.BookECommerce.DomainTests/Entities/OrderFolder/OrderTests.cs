@@ -19,7 +19,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         private OrderItem GetValidOrderItem(decimal amount = 29.99m)
         {
             var money = Money.Create(amount).Value;
-            return OrderItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Il Signore degli Anelli", money).Value;
+            return OrderItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Il Signore degli Anelli", money, 1).Value;
         }
 
         #region OrderItem Tests
@@ -31,7 +31,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "Design Patterns",
-                Money.Create(49.99m).Value
+                Money.Create(49.99m).Value,
+                2
             );
 
             result.IsSuccess.Should().BeTrue();
@@ -49,7 +50,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 invalidTitle!,
-                Money.Create(10m).Value
+                Money.Create(10m).Value,
+                2
             );
 
             result.IsFailure.Should().BeTrue();
@@ -63,11 +65,25 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 "Clean Code",
-                null!
+                null!,
+                2
             );
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("BookPrice");
+        }
+        [Fact]
+        public void OrderItem_Create_WithInvalidQuantity_ShouldFail()
+        {
+            var result = OrderItem.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Clean Code",
+                Money.Create(10m).Value,
+                -1
+            );
+
+            result.IsFailure.Should().BeTrue();
         }
 
         #endregion
@@ -86,7 +102,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
             GetValidOrderItem(20.50m)
         };
 
-            var result = Order.Create(customerId, date, card, items);
+            var result = Order.Create(customerId, card, items);
 
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
@@ -101,7 +117,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         {
             var items = new List<OrderItem> { GetValidOrderItem() };
 
-            var result = Order.Create(Guid.NewGuid(), DateTime.UtcNow, null!, items);
+            var result = Order.Create(Guid.NewGuid(), null!, items);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order payment details");
@@ -112,9 +128,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         {
             var card = GetValidCreditCard();
 
-            var resultEmpty = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, new List<OrderItem>());
+            var resultEmpty = Order.Create(Guid.NewGuid(), card, new List<OrderItem>());
 
-            var resultNull = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, null!);
+            var resultNull = Order.Create(Guid.NewGuid(), card, null!);
 
             resultEmpty.IsFailure.Should().BeTrue();
             resultEmpty.Error.Code.Should().Be("Order items");
@@ -132,7 +148,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         {
             var card = GetValidCreditCard();
             var items = new List<OrderItem> { GetValidOrderItem() };
-            var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, card, items).Value;
+            var order = Order.Create(Guid.NewGuid(), card, items).Value;
 
             var confirmResult = order.Confirm();
             confirmResult.IsSuccess.Should().BeTrue();
@@ -155,7 +171,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Confirm_WhenStatusIsNotPlaced_ShouldFail()
         {
-            var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm(); 
 
             var result = order.Confirm();
@@ -167,7 +183,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Ship_WithNullTrackingCode_ShouldFail()
         {
-            var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
             order.MarkAsPrepared();
 
@@ -180,7 +196,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void CancelOrder_BeforeShipping_ShouldSucceed()
         {
-            var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
 
             var result = order.CancelOrder();
 
@@ -191,7 +207,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void CancelOrder_WhenAlreadyShipped_ShouldFail()
         {
-            var order = Order.Create(Guid.NewGuid(), DateTime.UtcNow, GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
             order.MarkAsPrepared();
             order.Ship("TRACK123"); 

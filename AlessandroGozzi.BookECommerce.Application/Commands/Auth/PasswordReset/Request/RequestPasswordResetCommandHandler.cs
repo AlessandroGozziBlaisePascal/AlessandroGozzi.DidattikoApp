@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
@@ -47,8 +48,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.
                 return Result.Success();
             }
 
-            var otp = _otpService.GenerateOtp();
-            await _otpService.StoreOtpAsync(customer.Id, otp);
+            var otp = _otpService.GenerateAhdSaveOtpAsync(request.Identifier, cancellationToken);
 
             if(emailResult.IsSuccess)
             {

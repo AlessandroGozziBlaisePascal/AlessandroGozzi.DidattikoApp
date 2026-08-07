@@ -180,7 +180,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         {
             var book = CreateSampleBook();
 
-            var result = book.RemoveFromMarket();
+            var result = book.RemoveFromMarket(_sellerId);
 
             result.IsSuccess.Should().BeTrue();
             book.IsAvailable.Should().BeFalse();
@@ -191,9 +191,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
         public void RemoveFromMarket_WhenAlreadyRemoved_ShouldReturnFailure()
         {
             var book = CreateSampleBook();
-            book.RemoveFromMarket(); // Prima rimozione
+            book.RemoveFromMarket(_sellerId); // Prima rimozione
 
-            var result = book.RemoveFromMarket(); // Seconda rimozione
+            var result = book.RemoveFromMarket(_sellerId); // Seconda rimozione
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book.Remove");
