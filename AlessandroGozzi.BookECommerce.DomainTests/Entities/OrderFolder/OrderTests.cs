@@ -153,19 +153,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
             var confirmResult = order.Confirm();
             confirmResult.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Confirmed);
-
-            var prepareResult = order.MarkAsPrepared();
-            prepareResult.IsSuccess.Should().BeTrue();
-            order.Status.Should().Be(OrderStatus.Prepared);
-
-            var shipResult = order.Ship("TRACK12345");
-            shipResult.IsSuccess.Should().BeTrue();
-            order.Status.Should().Be(OrderStatus.Shipped);
-            order.TrackingCode.Should().Be("TRACK12345");
-
-            var deliverResult = order.MarkAsDelivered();
-            deliverResult.IsSuccess.Should().BeTrue();
-            order.Status.Should().Be(OrderStatus.Delivered);
         }
 
         [Fact]
@@ -178,19 +165,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order confirmation");
-        }
-
-        [Fact]
-        public void Ship_WithNullTrackingCode_ShouldFail()
-        {
-            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
-            order.Confirm();
-            order.MarkAsPrepared();
-
-            var result = order.Ship(null!);
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tracking code");
         }
 
         [Fact]
@@ -209,8 +183,6 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         {
             var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
-            order.MarkAsPrepared();
-            order.Ship("TRACK123"); 
 
             var result = order.CancelOrder();
 

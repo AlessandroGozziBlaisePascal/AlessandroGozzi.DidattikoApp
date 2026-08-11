@@ -11,12 +11,13 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
     {
         public Guid Id { get; private set; }
         public Guid BookId { get; private set; }
+        public Guid SellerId { get; private set; }
         public string BookTitle { get; private set; }
         public Money Price { get; init; }
         public string MainPhoto { get; init; }
         public int Quantity { get; private set; }
 
-        public CartItem(Guid bookId, string title, Money price, string mainPhoto, int quantity)
+        public CartItem(Guid bookId, Guid sellerId, string title, Money price, string mainPhoto, int quantity)
         {
             Id = Guid.NewGuid();
             BookId = bookId;
@@ -24,14 +25,17 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             Price = price;
             MainPhoto = mainPhoto;
             Quantity = quantity;
+            SellerId = sellerId;
         }
         private CartItem() { }
         public void UpdateQuantity(int quantity) => Quantity = quantity;
 
-        public static Result<CartItem> Create(Guid bookId, string title, Money price, string mainPhoto, int quantity)
+        public static Result<CartItem> Create(Guid bookId, Guid sellerId, string title, Money price, string mainPhoto, int quantity)
         {
             if (bookId == Guid.Empty)
                 return Result.Failure<CartItem>(new Error("Book id", "Book id is empty", ErrorType.Validation));
+            if (sellerId == Guid.Empty)
+                return Result.Failure<CartItem>(new Error("Seller id", "Seller id is empty", ErrorType.Validation));
             if (string.IsNullOrWhiteSpace(title))
                 return Result.Failure<CartItem>(new Error("Book title", "Book title is empty", ErrorType.Validation));
             if (price == null || price.Amount <= 0)
@@ -40,7 +44,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
                 return Result.Failure<CartItem>(new Error("Main photo", "Main photo is empty", ErrorType.Validation));
             if (quantity <= 0)
                 return Result.Failure<CartItem>(new Error("Quantity", "Quantity must be greater than zero.", ErrorType.Validation));
-            var cartItem = new CartItem(bookId, title, price, mainPhoto, quantity);
+            var cartItem = new CartItem(bookId, sellerId, title, price, mainPhoto, quantity);
             return Result.Success(cartItem);
         }
     }

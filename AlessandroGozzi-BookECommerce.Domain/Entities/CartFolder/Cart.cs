@@ -26,7 +26,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             return Result.Success(new Cart(customerId));
         }
 
-        public Result AddItem(Guid bookId, string bookTitle, Money price, string mainPhoto, int quantity)
+        public Result AddItem(Guid bookId, Guid sellerId, string bookTitle, Money price, string mainPhoto, int quantity)
         {
             if (quantity <= 0)
             {
@@ -37,7 +37,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
                 item.UpdateQuantity(item.Quantity + quantity);
             else
             {
-                var result = CartItem.Create(bookId, bookTitle, price, mainPhoto, quantity);
+                var result = CartItem.Create(bookId, sellerId, bookTitle, price, mainPhoto, quantity);
                 if (result.IsFailure)
                     return Result.Failure(new Error("Book", "Book failed to be created", ErrorType.Failure));
                 Items.Add(result.Value);

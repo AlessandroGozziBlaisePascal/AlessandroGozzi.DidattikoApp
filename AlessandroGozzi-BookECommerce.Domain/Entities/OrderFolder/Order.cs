@@ -6,31 +6,82 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
 {
-    public class Order: Entity
+    public class Order : Entity
     {
+        private const decimal FreShipmentTheshold = 30m;
         public Guid CustomerId { get; init; }
         public DateTime Date { get; init; }
         public CreditCard PaymentDetails { get; init; }
         public Money TotalPrice { get; init; }
         public OrderStatus Status { get; private set; }
-        public string? TrackingCode { get; private set;}
+        public bool IsFreeShippingApplied => TotalPrice.Amount >= FreShipmentTheshold;
+
 
         private readonly List<OrderItem> _items = new();
-
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
+
+
+        private readonly List<Guid> _shipmentIds = new();
+        public IReadOnlyCollection<Guid> ShipmentIds => _shipmentIds.AsReadOnly();
+        public ShippingType ShippingType { get; private set; }
+        public static Dictionary<ShippingType, decimal> ShippingCosts { get; private set; } = new()
+            { 
+            { ShippingType.Pieghi_Libri_Ordinario, 1.45m },
+                { ShippingType.Pieghi_Libri_Raccomandato, 4.80m },
+                { ShippingType.Express, 8m }
+            };
+        public decimal ShippingFee { get; private set; }
 
         private Order() { }
 
-        private Order(Guid customerId, CreditCard paymentDetails, List<OrderItem> items)
+        private Order(Guid customerId, CreditCard paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
         {
             CustomerId = customerId;
             PaymentDetails = paymentDetails;
             _items = items;
-            TotalPrice = CalculateTotalPrice(_items);
+            TotalPrice = CalculateTotalPrice(_items) + Money.Create(ShippingFee).Value;
             Status = OrderStatus.Placed;
+            ShippingType = type;
+            ShippingFee = shippingFee;
+        }
+
+        public static Result<Order> Create(Guid customerId, CreditCard paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
+        {
+            if(paymentDetails  == null)
+            {
+                return Result.Failure<Order>(new Error("Order payment details", "Payment details cant be null", ErrorType.Validation));
+            }
+            if(items == null || items.Count == 0)
+                return Result.Failure<Order>(new Error("Order items", "OrderItems must contain at least one item", ErrorType.Validation));
+            if(shippingFee < 0)
+                return Result.Failure<Order>(new Error("Order shipping fee", "Shipping fee must be greater than or equal to zero", ErrorType.Validation));
+            var order = new Order(customerId, paymentDetails, items, type, shippingFee);
+            order.Raise(new OrderPlacedEvent(order.Id));
+            return Result.Success(order);
+        }
+
+        public Result AddShipment(Guid shipmentId)
+        {
+            if(Status != OrderStatus.Confirmed)
+                return Result.Failure(new Error("Order shipment", "The order is not confirmed, can't add shipment", ErrorType.StatusConflict));
+            if(ShipmentIds.Contains(shipmentId))
+                return Result.Failure(new Error("Order shipment", "Shipment id is already in the order", ErrorType.StatusConflict));
+
+            _shipmentIds.Add(shipmentId);
+            return Result.Success();
+        }
+
+        public Result Confirm()
+        {
+            if(Status != OrderStatus.Placed)
+                return Result.Failure(new Error("Order confirmation", "The order is not places, can't confirm", ErrorType.StatusConflict));
+            Status = OrderStatus.Confirmed;
+            Raise(new OrderConfirmedEvent(Id));
+            return Result.Success();
         }
 
         private static Money CalculateTotalPrice(List<OrderItem> items)
@@ -44,64 +95,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
                 : Money.Create(0).Value;
         }
 
-        public static Result<Order> Create(Guid customerId, CreditCard paymentDetails, List<OrderItem> items)
-        {
-            if(paymentDetails  == null)
-            {
-                return Result.Failure<Order>(new Error("Order payment details", "Payment details cant be null", ErrorType.Validation));
-            }
-            if(items == null || items.Count == 0)
-                return Result.Failure<Order>(new Error("Order items", "OrderItems must contain at least one item", ErrorType.Validation));
-            var order = new Order(customerId, paymentDetails, items);
-            order.Raise(new OrderPlacedEvent(order.Id));
-            return Result.Success(order);
-        }
-
-        public Result Confirm()
-        {
-            if(Status != OrderStatus.Placed)
-                return Result.Failure(new Error("Order confirmation", "The order is not places, can't confirm", ErrorType.StatusConflict));
-            Status = OrderStatus.Confirmed;
-            Raise(new OrderConfirmedEvent(Id));
-            return Result.Success();
-        }
-        public Result MarkAsPrepared()
-        {
-            if(Status != OrderStatus.Confirmed)
-                return Result.Failure(new Error("Order status", "The order is not confirmed yet, can't be prepared", ErrorType.StatusConflict));
-            Status = OrderStatus.Prepared;
-            Raise(new OrderPreparedEvent(Id));
-            return Result.Success();
-        }
-
-        public Result Ship(string trackingCode)
-        {
-            if (Status != OrderStatus.Prepared)
-                return Result.Failure(new Error("Order shipping", "The order is not confirmed, can't ship", ErrorType.StatusConflict));
-            
-            if (trackingCode == null)
-                return Result.Failure(new Error("Tracking code", "Tracking code is null", ErrorType.Validation));
-            Status = OrderStatus.Shipped;
-            TrackingCode = trackingCode;
-            Raise(new OrderShippedEvent(Id, TrackingCode));
-            return Result.Success();
-        }
-
-        public Result MarkAsDelivered()
-        {
-            if (Status != OrderStatus.Shipped)
-                return Result.Failure(new Error("Order status", "Order can be delivered only if it got shipped", ErrorType.StatusConflict));
-            Status = OrderStatus.Delivered;
-            Raise(new OrderDeliveredEvent(Id));
-            return Result.Success();
-        }
-
         public Result CancelOrder()
         {
-            if(TrackingCode != null)
-            {
-                return Result.Failure(new Error("Order status", "Order cannot be canceled because it got already shipped", ErrorType.StatusConflict));
-            }
             if(Status == OrderStatus.Cancelled)
             {
                 return Result.Failure(new Error("Order status", "Order is already canceled", ErrorType.StatusConflict));

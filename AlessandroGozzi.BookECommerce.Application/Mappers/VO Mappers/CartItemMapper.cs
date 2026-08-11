@@ -19,6 +19,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
             return new CartItemDto(
                 item.Id,
                 item.BookId,
+                item.SellerId,
                 item.BookTitle,
                 item.MainPhoto,
                 item.Price.ToDto(),

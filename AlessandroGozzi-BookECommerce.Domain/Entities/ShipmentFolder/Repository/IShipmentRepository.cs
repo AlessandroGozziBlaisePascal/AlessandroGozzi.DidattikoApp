@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository
 {
-    internal class IShipmentRepository
+    public interface IShipmentRepository
     {
+        void Add(Shipment shipment);
+        Task<Shipment?> GetByIdAsync(Guid id, CancellationToken token = default);
+        Task<List<Shipment>> GetByOrderIdAsync(Guid orderId, CancellationToken token = default);
+        Task<List<Shipment>> GetBySellerIdAsync(Guid sellerId, CancellationToken token = default);
     }
 }
