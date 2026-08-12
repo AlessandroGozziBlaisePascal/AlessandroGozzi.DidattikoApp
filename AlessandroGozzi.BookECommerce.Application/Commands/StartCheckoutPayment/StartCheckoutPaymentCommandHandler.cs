@@ -6,7 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
+using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
+using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
@@ -45,38 +48,35 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
             var cart = await CartRepo.GetByCustomerIdAsync(command.CustomerId, token);
             if (cart == null)
             {
-                return Result.Failure<CheckoutPaymentResultDto>(new Error("Cart", "Cart not found", ErrorType.NotFound));
+                return Result.Failure<CheckoutPaymentResultDto>(new Error("Cart", "Cart not found", ErrorType.NotFound) );
             }
 
             if (cart.GetItems.Count == 0)
             {
                 return Result.Failure<CheckoutPaymentResultDto>(new Error("Cart", "Cart is empty", ErrorType.StatusConflict));
             }
-            var booksId = cart.GetItems.Select(b => b.Id).ToList();
 
+            var booksId = cart.GetItems.Select(b => b.BookId).ToList();
             var books = await BookRepo.GetByIdsAsync(booksId, token);
 
-            var bookPrices = books.ToDictionary(b => b.Id, b => b.Price);
+            var calculationResult = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
-            decimal totalAmount = 0;
-            foreach (var item in cart.GetItems)
-            {
-                if (!bookPrices.TryGetValue(item.BookId, out var currentPrice))
-                    return Result.Failure<CheckoutPaymentResultDto>(new Error("Book price", "Book price not found", ErrorType.NotFound));
+            long totalInCent = (long)(calculationResult.GrandTotal * 100);
 
-                totalAmount += (currentPrice.Amount * item.Quantity);
-            }
+            var paymentCreationResult = await PaymentService.CreatePaymentIntentAsync(
+                totalInCent,
+                command.CustomerId,
+                cart.Id,
+                token
+            );
 
-            long totalInCent = (long)(totalAmount * 100);
-
-            var paymentCreationResult = await PaymentService.CreatePaymentIntentAsync(totalInCent, command.CustomerId, cart.Id, token);
-            if(paymentCreationResult.IsFailure)
+            if (paymentCreationResult.IsFailure)
             {
                 return Result.Failure<CheckoutPaymentResultDto>(paymentCreationResult.Error);
             }
 
             return Result.Success(paymentCreationResult.Value);
-
         }
+
     }
 }

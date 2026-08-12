@@ -9,7 +9,7 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.CancelOrder
+namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.CancelOrder
 {
     public class CancelOrderCommandHandler: IRequestHandler<CancelOrderCommand, Result>
     {

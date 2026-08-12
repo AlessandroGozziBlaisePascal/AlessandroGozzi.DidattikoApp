@@ -15,7 +15,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
     {
         private const decimal FreeShippingThreshold = 30.00m;
 
-        public static SmartCartCalculationResultDto Calculate(List<CartItemDto> cartItems, ShippingType type)
+        public static SmartCartCalculationDto Calculate(List<CartItemDto> cartItems, ShippingType type)
         {
             decimal itemsTotalPrice = cartItems.Sum(item => item.UnitPrice * item.Quantity);
 
@@ -26,22 +26,24 @@ namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
 
             if (itemsTotalPrice >= FreeShippingThreshold)
             {
-                return new SmartCartCalculationResultDto(
+                return new SmartCartCalculationDto(
                 itemsTotalPrice,
                 0,
                 itemsTotalPrice,
                 false,
+                0,
                 uniqueVendorsCount
                 );
             }
             decimal totalShippingFee = uniqueVendorsCount * Order.ShippingCosts[type];
             decimal grandTotal = itemsTotalPrice + totalShippingFee;
 
-            return new SmartCartCalculationResultDto(
+            return new SmartCartCalculationDto(
                 itemsTotalPrice,
                 totalShippingFee,
                 grandTotal,
                 false,
+                FreeShippingThreshold - itemsTotalPrice,
                 uniqueVendorsCount
                 );
         }

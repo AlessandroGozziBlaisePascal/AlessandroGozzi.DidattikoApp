@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.CancelOrder
+namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.CancelOrder
 {
     public sealed record CancelOrderCommand(Guid OrderId, Guid CustomerId): IRequest<Result>;
 }

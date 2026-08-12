@@ -5,7 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
+using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
@@ -63,11 +65,14 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
 
             var bookIds = cart.GetItems.Select(i => i.BookId).ToList();
             var books = await _bookRepo.GetByIdsAsync(bookIds, token);
+            var booksDict = books.ToDictionary(b => b.Id);
 
             var orderItems = new List<OrderItem>();
+
             foreach (var cartItem in cart.GetItems)
             {
                 var book = books.First(b => b.Id == cartItem.BookId);
+
                 var orderItemResult = OrderItem.Create(
                     book.Id,
                     book.SellerId,
@@ -84,12 +89,22 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                 orderItems.Add(orderItemResult.Value);
             }
 
+            var cartCalculation = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
+
             var customer = await _customerRepo.GetByIdAsync(command.CustomerId, token);
             if (customer == null || customer.CreditCard == null)
             {
                 return Result.Failure<OrderDto>(new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
             }
-                        var orderResult = Order.Create(command.CustomerId, customer.CreditCard, orderItems);
+
+            var orderResult = Order.Create(
+                command.CustomerId,
+                customer.CreditCard,
+                orderItems,
+                command.Type,        
+                cartCalculation.ShippingTotal 
+            );
+
             if (orderResult.IsFailure)
             {
                 return Result.Failure<OrderDto>(new Error("Order", "Order failed to be created", ErrorType.Failure));
@@ -107,11 +122,17 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                 {
                     return Result.Failure<OrderDto>(new Error(
                         "Order.SelfPurchase",
-                        "Non puoi acquistare libri messi in vendita da te stesso.", ErrorType.StatusConflict
+                        "Non puoi acquistare libri messi in vendita da te stesso.",
+                        ErrorType.StatusConflict
                     ));
                 }
 
-                var shipmentResult = Shipment.Create(order.Id, vendorId);
+                var shipmentResult = Shipment.Create(
+                    order.Id,
+                    vendorId,
+                    command.Type 
+                );
+
                 if (shipmentResult.IsFailure)
                 {
                     return Result.Failure<OrderDto>(shipmentResult.Error);
@@ -120,18 +141,14 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                 var shipment = shipmentResult.Value;
 
                 _shipmentRepo.Add(shipment);
-
                 order.AddShipment(shipment.Id);
             }
 
             await _orderRepo.AddAsync(order, token);
-
             cart.ClearCart();
-
             await _unitOfWork.SaveChangesAsync(token);
 
             return Result.Success(order.ToDto());
         }
-
     }
 }

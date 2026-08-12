@@ -25,17 +25,15 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetCartSummary
 
         public async Task<Result<CartSummaryDto>> Handle(GetCartSummaryQuery request, CancellationToken cancellationToken)
         {
-            var cart = await _cartRepository.GetByIdAsync(req, cancellationToken);
+            var cart = await _cartRepository.GetByIdAsync(request.CartId, cancellationToken);
             if (cart == null)
                 return Result.Failure<CartSummaryDto>(new Error("Cart", "Cart not found", ErrorType.NotFound));
             var booksIds = cart.GetItems.Select(item => item.BookId).ToList();
             var books = await _bookRepository.GetByIdsAsync(booksIds, cancellationToken);
 
             var cartDto = cart.ToDto(books);
-            var calculationResult = SmartCartGenerator.Calculate(car), request.Type);
-            if (calculationResult.IsFailure)
-                return Result.Failure<CartSummaryDto>(calculationResult.Error);
-            var summaryDto = new CartSummaryDto(cart.ToDto(), calculationResult.Value);
+            var calculationResult = SmartCartGenerator.Calculate(cartDto.Items.ToList(), request.Type);
+            var summaryDto = new CartSummaryDto(cart.ToDto(books), calculationResult);
             return Result.Success(summaryDto);
         }
     }

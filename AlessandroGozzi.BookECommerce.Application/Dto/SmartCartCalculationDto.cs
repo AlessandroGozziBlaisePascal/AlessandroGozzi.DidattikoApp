@@ -12,7 +12,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto
         decimal GrandTotal, 
         bool IsFreeShippingApplied, 
         decimal AmountNeededForFreeShipping,
-        int UniqueVendorsCount,
         int VendorCount
     );
 }
