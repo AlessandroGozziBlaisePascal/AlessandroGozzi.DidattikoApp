@@ -7,5 +7,5 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Event
 {
-    public record ShipmentDeliveredDomainEvent(Guid Id, Guid OrderId, Guid SellerId): DomainEvent;
+    public record ShipmentDeliveredEvent(Guid Id, Guid OrderId, Guid SellerId): DomainEvent;
 }

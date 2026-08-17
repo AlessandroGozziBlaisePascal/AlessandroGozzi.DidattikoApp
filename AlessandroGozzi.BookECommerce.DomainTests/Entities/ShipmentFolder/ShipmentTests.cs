@@ -118,9 +118,9 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.ShipmentFolder
             var result = shipment.UpdateTracking(trackingInfo, vendorId);
 
             result.IsSuccess.Should().BeTrue();
-            shipment._domainEvents.Should().ContainSingle(e => e is ShipmentTrackingUpdatedDomainEvent);
+            shipment._domainEvents.Should().ContainSingle(e => e is ShipmentTrackingUpdatedEvent);
 
-            var domainEvent = shipment._domainEvents.OfType<ShipmentTrackingUpdatedDomainEvent>().Single();
+            var domainEvent = shipment._domainEvents.OfType<ShipmentTrackingUpdatedEvent>().Single();
             domainEvent.Id.Should().Be(shipment.Id);
             domainEvent.OrderId.Should().Be(shipment.OrderId);
             domainEvent.SellerId.Should().Be(shipment.VendorId);

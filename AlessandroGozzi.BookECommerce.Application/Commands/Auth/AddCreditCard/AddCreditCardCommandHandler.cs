@@ -26,6 +26,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
         public async Task<Result<CreditCardDto>> Handle(AddCreditCardCommand command, CancellationToken token)
         {
             string cleanNumber = command.CardNumber.Replace(" ", "");
+            if(cleanNumber.Length != 4)
+            {
+                return Result.Failure<CreditCardDto>(new Error("CardNumber", "Card number is too short", ErrorType.Validation));
+            }
             string lastFourDigits = cleanNumber.Substring(cleanNumber.Length - 4);
             string maskedCardNumber = $"**** **** **** {lastFourDigits}";
 
@@ -36,8 +40,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
             }
 
             var cardResult = CreditCard.Create(
-                customer.Name.Value,
-                customer.Surname.Value,
+                command.CardHolderName,
+                command.CardHolderSurname,
                 command.ExpiryDate,
                 maskedCardNumber
             );

@@ -8,7 +8,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateCustomerAddress
+namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.UpdateCustomerAddress
 {
     public record UpdateCustomerAddressCommand(Guid Id, AddressDto AddressDto) : IRequest<Result<CustomerDto>>;
 }

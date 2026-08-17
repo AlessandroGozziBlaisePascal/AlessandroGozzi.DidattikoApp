@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
@@ -19,9 +20,9 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository;
 using MediatR;
 using Stripe;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
+namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPayment
 {
-    public class CompleteCheckoutCommandHandler: IRequestHandler<CompleteCheckoutCommand, Result<OrderDto>>
+    public class CompleteCheckoutPaymentCommandHandler: IRequestHandler<CompleteCheckoutPaymentCommand, Result<OrderDto>>
     {
         private readonly ICartRepository _cartRepo;
         private readonly IOrderRepository _orderRepo;
@@ -31,7 +32,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
         private readonly ICustomerRepository _customerRepo;
         private readonly IBookRepository _bookRepo;
 
-        public CompleteCheckoutCommandHandler(
+        public CompleteCheckoutPaymentCommandHandler(
             ICartRepository cartRepo,
             IOrderRepository orderRepo,
             IShipmentRepository shipmentRepo,
@@ -49,18 +50,30 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
             _bookRepo = bookRepo;
         }
 
-        public async Task<Result<OrderDto>> Handle(CompleteCheckoutCommand command, CancellationToken token)
+        public async Task<Result<OrderDto>> Handle(CompleteCheckoutPaymentCommand command, CancellationToken token)
         {
-            var paymentDetails = await _paymentService.IsPaymentSuccessfulAsync(command.PaymentIntentId, token);
-            if (paymentDetails.IsFailure)
+            if (command.PaymentIntentId != "WALLET_PAYMENT")
             {
-                return Result.Failure<OrderDto>(new Error("Payment", "Payment failed", ErrorType.Failure));
+                var paymentDetails = await _paymentService.IsPaymentSuccessfulAsync(command.PaymentIntentId, token);
+                if (paymentDetails.IsFailure)
+                {
+                    return Result.Failure<OrderDto>(
+                        new Error("Payment", "Payment failed", ErrorType.Failure));
+                }
             }
 
             var cart = await _cartRepo.GetByIdAsync(command.CartId, token);
             if (cart == null)
             {
-                return Result.Failure<OrderDto>(new Error("Cart", "Cart not found", ErrorType.Failure));
+                return Result.Failure<OrderDto>(
+                    new Error("Cart", "Cart not found", ErrorType.Failure));
+            }
+
+            var customer = await _customerRepo.GetByIdAsync(command.CustomerId, token);
+            if (customer == null || customer.CreditCard == null)
+            {
+                return Result.Failure<OrderDto>(
+                    new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
             }
 
             var bookIds = cart.GetItems.Select(i => i.BookId).ToList();
@@ -68,11 +81,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
             var booksDict = books.ToDictionary(b => b.Id);
 
             var orderItems = new List<OrderItem>();
-
             foreach (var cartItem in cart.GetItems)
             {
                 var book = books.First(b => b.Id == cartItem.BookId);
-
                 var orderItemResult = OrderItem.Create(
                     book.Id,
                     book.SellerId,
@@ -83,7 +94,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
 
                 if (orderItemResult.IsFailure)
                 {
-                    return Result.Failure<OrderDto>(new Error("Order item", "Order item failed to be generated", ErrorType.Failure));
+                    return Result.Failure<OrderDto>(
+                        new Error("Order item", "Order item failed to be generated", ErrorType.Failure));
                 }
 
                 orderItems.Add(orderItemResult.Value);
@@ -91,23 +103,29 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
 
             var cartCalculation = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
-            var customer = await _customerRepo.GetByIdAsync(command.CustomerId, token);
-            if (customer == null || customer.CreditCard == null)
+            decimal totalAmount = cartCalculation.GrandTotal;
+            decimal availableWallet = customer.Wallet.AvailableBalance;
+            decimal walletToDeduct = Math.Min(totalAmount, availableWallet);
+
+            if (walletToDeduct > 0)
             {
-                return Result.Failure<OrderDto>(new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
+                var walletDeductionResult = customer.Wallet.Withdraw(walletToDeduct);
+                if(walletDeductionResult.IsFailure)
+                    return Result.Failure<OrderDto>(new Error("Wallet", "Failed to deduct from wallet", ErrorType.Failure));
             }
 
             var orderResult = Order.Create(
                 command.CustomerId,
                 customer.CreditCard,
                 orderItems,
-                command.Type,        
-                cartCalculation.ShippingTotal 
+                command.Type,
+                cartCalculation.ShippingTotal
             );
 
             if (orderResult.IsFailure)
             {
-                return Result.Failure<OrderDto>(new Error("Order", "Order failed to be created", ErrorType.Failure));
+                return Result.Failure<OrderDto>(
+                    new Error("Order", "Order failed to be created", ErrorType.Failure));
             }
 
             var order = orderResult.Value;
@@ -127,10 +145,22 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                     ));
                 }
 
+                decimal vendorSalesTotal = vendorGroup.Sum(i => i.Price.Amount * i.Quantity);
+                if(vendorSalesTotal.ToMoneyDomain().IsFailure)
+                {
+                    return Result.Failure<OrderDto>(new Error(
+                        "Order.VendorSalesTotal",
+                        "Vendor sales total calculation failed.",
+                        ErrorType.Failure
+                    ));
+                }
                 var shipmentResult = Shipment.Create(
                     order.Id,
                     vendorId,
-                    command.Type 
+                    command.Type,
+                    vendorSalesTotal.ToMoneyDomain().Value,
+                    command.CustomerId,
+                    customer.Address
                 );
 
                 if (shipmentResult.IsFailure)
@@ -139,16 +169,26 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
                 }
 
                 var shipment = shipmentResult.Value;
-
                 _shipmentRepo.Add(shipment);
                 order.AddShipment(shipment.Id);
+
+                var vendor = await _customerRepo.GetByIdAsync(vendorId, token);
+                if(vendor == null)
+                {
+                    return Result.Failure<OrderDto>(new Error("Vendor", $"Vendor with ID {vendorId} not found.",ErrorType.NotFound ));
+                }
+
+                
+                vendor.Wallet.AddPendingFunds(vendorSalesTotal);
             }
 
-            await _orderRepo.AddAsync(order, token);
+            _orderRepo.Add(order);
             cart.ClearCart();
+
             await _unitOfWork.SaveChangesAsync(token);
 
             return Result.Success(order.ToDto());
         }
+
     }
 }

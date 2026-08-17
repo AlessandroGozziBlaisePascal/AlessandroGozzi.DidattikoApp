@@ -7,6 +7,8 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder;
+using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.CancelOrder
@@ -14,51 +16,48 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.Can
     public class CancelOrderCommandHandler: IRequestHandler<CancelOrderCommand, Result>
     {
         private readonly IOrderRepository OrderRepo;
-        private readonly ICustomerRepository CustomerRepo;
-        private readonly IBookRepository BookRepo;
+        private readonly IShipmentRepository ShipmentRepo;
         private readonly IUnitOfWork UnitOfWork;
 
-        public CancelOrderCommandHandler(IOrderRepository orderRepo, ICustomerRepository customerRepo, IBookRepository bookRepo, IUnitOfWork unitOfWork)
+        public CancelOrderCommandHandler(IOrderRepository orderRepo, IShipmentRepository shipRepo, IUnitOfWork unitOfWork)
         {
             OrderRepo = orderRepo;
-            CustomerRepo = customerRepo;
-            BookRepo = bookRepo;
+            ShipmentRepo = shipRepo;
             UnitOfWork = unitOfWork;
         }
 
         public async Task<Result> Handle(CancelOrderCommand command, CancellationToken token)
         {
-            var customer = await CustomerRepo.GetByIdAsync(command.CustomerId, token);
-            if(customer == null)
-            {
-                return Result.Failure(new Error("Customer","Customer not found",ErrorType.NotFound));
-            }
-            if(customer.Id != command.CustomerId)
-            {
-                return Result.Failure(new Error("Customer", "You are not the buyer, permission denied", ErrorType.PermissionDenied));
-            }
-
             var order = await OrderRepo.GetByIdAsync(command.OrderId, token);
 
             if(order == null)
             {
                 return Result.Failure(new Error("Order", "Order not found", ErrorType.NotFound));
             }
-            var cancelResult = order.CancelOrder();
-            if (cancelResult.IsFailure)
+            if(order.CustomerId != command.CustomerId)
             {
+                return Result.Failure(new Error("Order", "Order customer is not the same", ErrorType.PermissionDenied));
+            }
+
+            var shipments = await ShipmentRepo.GetByIdsAsync(order.ShipmentIds.ToList(), token);
+            var alreadyShipped = shipments.Any(s => s.Status == ShipmentStatus.Shipped);
+            if(alreadyShipped)
+            {
+                return Result.Failure(new Error("Order", "Cannot cancel the order because it has already been shipped", ErrorType.StatusConflict));
+            }
+
+            foreach(var shipment in shipments)
+            {
+                var result = shipment.CancelShipment(command.CustomerId);
+                if(result.IsFailure)
+                {
+                    return Result.Failure(new Error("Shipment", "Cannot cancel the shipment", ErrorType.Failure));
+                }
+            }
+
+            var actionresult = order.CancelOrder();
+            if(actionresult.IsFailure)
                 return Result.Failure(new Error("Order", "Cannot cancel the order", ErrorType.Failure));
-            }
-
-            var bookIds = order.Items.Select(i => i.BookId).ToList();
-            var books = await BookRepo.GetByIdsAsync(bookIds, token);
-
-            foreach(var item in order.Items)
-            {
-                var book = books.FirstOrDefault(b => b.Id == item.BookId);
-                if(book != null)
-                    book.RestoreAvailability();
-            }
 
             await UnitOfWork.SaveChangesAsync(token);
 

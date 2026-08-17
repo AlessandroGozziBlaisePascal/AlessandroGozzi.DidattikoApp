@@ -9,100 +9,72 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
 {
     public class Wallet
     {
-        public Guid WalletId { get; init; }
-        public decimal AvailableBalance { get; private set; }
-        public decimal PendingBalance { get; private set; }
-        public decimal TotalBalance => AvailableBalance + PendingBalance;
-        public Name CustomerName { get; private set; }
-        public Surname CustomerSurname { get; private set; }
+        public Money AvailableBalance { get; private set; }
+        public Money PendingBalance { get; private set; }
+        public Money TotalBalance => AvailableBalance + PendingBalance;
 
-        private Wallet(Guid walletId, Name customerName, Surname customerSurname)
+        public Wallet()
         {
-            WalletId = walletId;
-            AvailableBalance = 0; 
-            PendingBalance = 0;
-            CustomerName = customerName;
-            CustomerSurname = customerSurname;
+            AvailableBalance = Money.Create(0m).Value;   
+            PendingBalance = Money.Create(0m).Value;
         }
 
-        public static Result<Wallet> Create(Guid walletId, Name customerName, Surname customerSurname)
+        public Result Deposit(Money money)
         {
-            if (walletId == Guid.Empty)
-            {
-                return Result.Failure<Wallet>(new Error("Wallet id","WalletId cannot be empty.", ErrorType.Validation));
-            }
-            if (customerName == null)
-            {
-                return Result.Failure<Wallet>(new Error("Customer name","CustomerName cannot be null.",ErrorType.Validation));
-            }
-            if (customerSurname == null)
-            {
-                return Result.Failure<Wallet>(new Error("Customer surname", "CustomerSurname cannot be null.", ErrorType.Validation));
-            }
-            var wallet = new Wallet(walletId, customerName, customerSurname);
-            return Result.Success(wallet);
-        }
-
-        public Result Deposit(decimal amount)
-        {
-            if (amount <= 0)
+            if (money.Amount == 0)
             {
                 return Result.Failure(new Error("Wallet.Deposit", "Deposit amount must be greater than zero.", ErrorType.Validation));
             }
-            AvailableBalance += amount;
+            AvailableBalance += money;
             return Result.Success();
         }
 
-        public Result Withdraw(decimal amount)
+        public Result Withdraw(Money money)
         {
-            if (amount <= 0)
-            {
-                return Result.Failure(new Error("Wallet.Withdraw", "Withdrawal amount must be greater than zero.", ErrorType.Validation));
-            }
-            if (amount > AvailableBalance)
+            if (money.Amount > AvailableBalance.Amount)
             {
                 return Result.Failure(new Error("Wallet.Withdraw", "Insufficient balance for withdrawal.", ErrorType.Validation));
             }
-            AvailableBalance -= amount;
+            AvailableBalance -= money;
             return Result.Success();
         }
 
-        public Result AddPendingFunds(decimal amount)
+        public Result AddPendingFunds(Money money)
         {
-            if (amount <= 0)
+            if (money.Amount == 0)
             {
                 return Result.Failure(new Error("Wallet.AddPendingBalance", "Amount must be greater than zero.", ErrorType.Validation));
             }
-            PendingBalance += amount;
+            PendingBalance += money;
             return Result.Success();
         }
 
-        public Result ReleasePendingFunds(decimal amount)
+        public Result ReleasePendingFunds(Money money)
         {
-            if (amount <= 0)
+            if (money.Amount == 0)
             {
                 return Result.Failure(new Error("Wallet.ReleasePendingFunds", "Amount must be greater than zero.", ErrorType.Validation));
             }
-            if (amount > PendingBalance)
+            if (money.Amount > PendingBalance.Amount)
             {
                 return Result.Failure(new Error("Wallet.ReleasePendingFunds", "Insufficient pending balance to release.", ErrorType.Validation));
             }
-            PendingBalance -= amount;
-            AvailableBalance += amount;
+            PendingBalance -= money;
+            AvailableBalance += money;
             return Result.Success();
         }
 
-        public Result CancelPendingFunds(decimal amount)
+        public Result CancelPendingFunds(Money money)
         {
-            if (amount <= 0)
+            if (money.Amount == 0)
             {
                 return Result.Failure(new Error("Wallet.CancelPendingFunds", "Amount must be greater than zero.", ErrorType.Validation));
             }
-            if (amount > PendingBalance)
+            if (money.Amount > PendingBalance.Amount)
             {
                 return Result.Failure(new Error("Wallet.CancelPendingFunds", "Insufficient pending balance to cancel.", ErrorType.Validation));
             }
-            PendingBalance -= amount;
+            PendingBalance -= money;
             return Result.Success();
         }
     }

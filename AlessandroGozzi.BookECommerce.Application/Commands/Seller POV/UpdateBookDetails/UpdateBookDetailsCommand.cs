@@ -7,7 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateBookDetails
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBookDetails
 {
     public record UpdateBookDetailsCommand(Guid BookId, Guid CustomerId, decimal? NewPrice = null, string? NewStatus = null, IEnumerable<string>? NewPhotos = null)
     :IRequest<Result<BookDto>>;

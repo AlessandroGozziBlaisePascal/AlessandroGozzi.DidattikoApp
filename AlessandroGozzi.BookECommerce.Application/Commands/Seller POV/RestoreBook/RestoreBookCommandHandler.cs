@@ -17,11 +17,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RestoreBook
     {
         private readonly IBookRepository BookRepo;
         private readonly ICustomerRepository CustRepo;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public RestoreBookCommandHandler(IBookRepository bookRepo, ICustomerRepository custRepo)
+        public RestoreBookCommandHandler(IBookRepository bookRepo, ICustomerRepository custRepo, IUnitOfWork unitOfWork)
         {
             BookRepo = bookRepo;
             CustRepo = custRepo;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<BookDto>> Handle(RestoreBookCommand command, CancellationToken token)
@@ -44,7 +46,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RestoreBook
                 return Result.Failure<BookDto>(new Error("Book", "Book cannot be restored", ErrorType.Failure));
             }
 
-            await BookRepo.UpdateAsync(book, token);
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(book.ToDto());
         }

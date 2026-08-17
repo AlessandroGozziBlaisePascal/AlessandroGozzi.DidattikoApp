@@ -23,15 +23,5 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 customer.Address.ToDto(),
                 customer.TaxCode.ToDto()
             );
-        public static Customer ToDomain(this CustomerDto customerDto) =>
-            Customer.Create(
-                customerDto.Name.ToNameDomain(),
-                customerDto.Surname.ToSurnameDomain(),
-                customerDto.Email.ToEmailDomain(),
-                customerDto.Address.ToAddressDomain(),
-                customerDto.PhoneNumber.ToNumberDomain(),
-                customerDto.TaxCode.ToTaxCodeDomain(),
-
-            ).Value;
     }
 }

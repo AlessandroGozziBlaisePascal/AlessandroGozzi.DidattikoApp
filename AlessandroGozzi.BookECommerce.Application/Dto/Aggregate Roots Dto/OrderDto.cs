@@ -10,7 +10,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
 {
     public record OrderDto(
         Guid OrderId,
-        string OrderCode,
         Guid BuyerId,
         DateTime PlacedAt,
         string Status,

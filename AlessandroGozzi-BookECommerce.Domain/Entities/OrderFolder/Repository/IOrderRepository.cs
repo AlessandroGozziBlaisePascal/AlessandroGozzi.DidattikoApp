@@ -7,15 +7,13 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
+using AlessandroGozzi_BookECommerce.Domain.Entities.Repository;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository
 {
-    public interface IOrderRepository
+    public interface IOrderRepository: IRepository<Order>
     {
-        Task<Order?> GetByIdAsync(Guid id, CancellationToken token = default);
         Task<Order?> GetByPaymentIntentIdAsync(string paymenIntentId, CancellationToken token = default);
         Task<IReadOnlyCollection<Order>> GetAllByCustomerIdAsync(Guid customerId, CancellationToken token = default);
-        Task AddAsync(Order order, CancellationToken token = default);
-        Task UpdateAsync(Order order, CancellationToken token = default);
     }
 }

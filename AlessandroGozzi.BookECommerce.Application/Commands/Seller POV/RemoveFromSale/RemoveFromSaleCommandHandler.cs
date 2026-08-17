@@ -16,11 +16,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromSale
     {
         private readonly IBookRepository BookRepo;
         private readonly ICustomerRepository CustRepo;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public RemoveFromSaleCommandHandler(IBookRepository bookRepo, ICustomerRepository custRepo)
+        public RemoveFromSaleCommandHandler(IBookRepository bookRepo, ICustomerRepository custRepo, IUnitOfWork unitOfWork)
         {
             BookRepo = bookRepo;
             CustRepo = custRepo;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<BookDto>> Handle(RemoveFromSaleCommand command, CancellationToken token)
@@ -43,7 +45,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromSale
                 return Result.Failure<BookDto>(new Error("Book", "Book cannot be remove", ErrorType.Failure));
             }
 
-            await BookRepo.UpdateAsync(book, token);
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(book.ToDto());
         }

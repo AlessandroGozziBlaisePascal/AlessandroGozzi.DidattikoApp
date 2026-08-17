@@ -61,6 +61,27 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
 
             var calculationResult = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
+            if(customer.Wallet.AvailableBalance >= calculationResult.GrandTotal)
+            {
+                
+            }
+
+            decimal grandTotal = calculationResult.GrandTotal;
+            decimal walletBalance = customer.Wallet.AvailableBalance;
+
+            decimal amountToChargeOnCard = grandTotal > walletBalance 
+                ? grandTotal - walletBalance 
+                : 0m;
+
+            if(amountToChargeOnCard == 0m)
+                return Result.Success(new CheckoutPaymentResultDto
+                    (
+                        ClientSecret: "WALLET_COVERED",
+                        PaymentIntentId: "WALLET_PAYMENT",
+                        Amount: (long)grandTotal
+                    ));
+
+
             long totalInCent = (long)(calculationResult.GrandTotal * 100);
 
             var paymentCreationResult = await PaymentService.CreatePaymentIntentAsync(

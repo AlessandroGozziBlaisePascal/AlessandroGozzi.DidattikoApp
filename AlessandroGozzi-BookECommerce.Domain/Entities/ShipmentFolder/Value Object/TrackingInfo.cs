@@ -20,7 +20,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Obj
             TrackingUrl = trackingUrl;
         }
 
-        public static Result<TrackingInfo> Create(string carrier, string trackingCode, string? trackingUrl)
+        public static Result<TrackingInfo> Create(string carrier, string trackingCode, string? trackingUrl = null)
         {
             if (string.IsNullOrWhiteSpace(carrier))
                 return Result.Failure<TrackingInfo>(new Error("Carrier", "Carrier cannot be empty.", ErrorType.Validation));

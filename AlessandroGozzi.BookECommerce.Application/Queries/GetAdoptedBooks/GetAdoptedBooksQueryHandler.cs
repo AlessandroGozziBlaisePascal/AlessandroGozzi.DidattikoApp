@@ -21,7 +21,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.GetAdoptedBooks
         }
         public async Task<Result<ClassAdoptionResponseDto>> Handle(GetAdoptedBooksQuery request, CancellationToken cancellationToken)
         {
-            var result = await _ministryApiClient.GetAdoptedBooksAsync(request.SchoolCode, request.Grade, request.Section, request.AcademicYear;
+            var result = await _ministryApiClient.GetAdoptedBooksAsync(request.SchoolCode, request.Grade, request.Section, request.AcademicYear);
             if (result.IsFailure)
             {
                 return Result.Failure<List<ClassAdoptionResponseDto>>(result.Error);

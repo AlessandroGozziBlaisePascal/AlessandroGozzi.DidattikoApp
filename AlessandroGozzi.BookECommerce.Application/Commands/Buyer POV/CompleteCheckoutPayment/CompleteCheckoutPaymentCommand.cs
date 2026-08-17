@@ -8,9 +8,9 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckout
+namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPayment
 {
-    public record CompleteCheckoutCommand(
+    public record CompleteCheckoutPaymentCommand(
         Guid CustomerId,
         Guid CartId,
         string PaymentIntentId,

@@ -22,6 +22,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities
         }
 
         public static Money operator +(Money a, Money b) => new(a.Amount + b.Amount);
+        public static Money operator -(Money a, Money b) => new(a.Amount - b.Amount);
 
         public static Money operator *(Money a, int multiplier) => new(a.Amount * multiplier);
     }

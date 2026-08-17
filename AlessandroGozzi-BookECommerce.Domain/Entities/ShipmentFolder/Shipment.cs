@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Event;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
 
@@ -12,30 +13,43 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
     public class Shipment: Entity
     {
         public Guid VendorId { get; private set; }
+        public Guid BuyerId { get; private set; }
+        public Address ShippingAddress { get; private set; }
         public Guid OrderId { get; private set; }
         public ShipmentStatus Status { get; private set; }
         public ShippingType ShippingType { get; private set; }
+        public Money SubTotal { get; private set; }
         public TrackingInfo? TrackingInfo { get; private set; }
         public DateTime? ShippedAtUtc { get; private set; }
 
         private Shipment() { } // Per EF Core
-        private Shipment(Guid vendorId, Guid orderId, ShippingType type)
+        private Shipment(Guid vendorId, Guid orderId, ShippingType type, Money subTotal, Guid buyerId, Address address)
         {
             VendorId = vendorId;
             OrderId = orderId;
             Status = ShipmentStatus.Preparing;
             ShippingType = type;
+            SubTotal = subTotal;
+            ShippingAddress = address;
+            BuyerId = buyerId;
         }
 
-        public static Result<Shipment> Create(Guid vendorId, Guid orderId, ShippingType type)
+        public static Result<Shipment> Create(Guid vendorId, Guid orderId, ShippingType type, Money subTotal, Guid buyerId, Address address)
         {
             if (vendorId == Guid.Empty)
                 return Result.Failure<Shipment>(new Error("Shipment.VendorId", "VendorId cannot be empty.", ErrorType.Validation));
             if (orderId == Guid.Empty)
                 return Result.Failure<Shipment>(new Error("Shipment.OrderId", "OrderId cannot be empty.", ErrorType.Validation));
-            var shipment = new Shipment(vendorId, orderId, type);
+            if(subTotal == null || subTotal.Amount <= 0)
+                return Result.Failure<Shipment>(new Error("Shipment.SubTotal", "SubTotal must be greater than zero.", ErrorType.Validation));
+            if (vendorId == Guid.Empty)
+                return Result.Failure<Shipment>(new Error("Shipment.BuyerId", "BuyerId cannot be empty.", ErrorType.Validation));
+            if(address == null)
+                return Result.Failure<Shipment>(new Error("Shipment.ShippingAddress","Address of shipping cannot be null",ErrorType.Validation));
 
-            shipment.Raise(new ShipmentCreatedDomainEvent(
+            var shipment = new Shipment(vendorId, orderId, type, subTotal, buyerId, address);
+
+            shipment.Raise(new ShipmentCreatedEvent(
                 Id: shipment.Id,
                 OrderId: shipment.OrderId,
                 SellerId: shipment.VendorId
@@ -43,7 +57,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
             return Result.Success(shipment);
         }
 
-        public Result UpdateTracking(TrackingInfo newTracking, Guid requestingVendorId)
+        public Result UpdateTracking(string trackingNumber, string carrier, Guid requestingVendorId)
         {
             if (VendorId != requestingVendorId)
                 return Result.Failure(new Error("Shipment.Unauthorized", "Non sei autorizzato a modificare questa spedizione.", ErrorType.PermissionDenied));
@@ -51,7 +65,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
             if (Status == ShipmentStatus.Cancelled || Status == ShipmentStatus.Delivered)
                 return Result.Failure(new Error("Shipment.InvalidState", $"Impossibile aggiornare il tracking per una spedizione nello stato {Status}.", ErrorType.StatusConflict));
 
-            TrackingInfo = newTracking;
+            var trackingInfoResult = TrackingInfo.Create(carrier, trackingNumber);
+            if(trackingInfoResult.IsFailure)
+                return Result.Failure(trackingInfoResult.Error);
+            TrackingInfo = trackingInfoResult.Value;
 
             if (Status == ShipmentStatus.Preparing)
             {
@@ -59,7 +76,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
                 ShippedAtUtc = DateTime.UtcNow;
             }
 
-            Raise(new ShipmentTrackingUpdatedDomainEvent(
+            Raise(new ShipmentTrackingUpdatedEvent(
                 Id: Id,
                 OrderId: OrderId,
                 SellerId: VendorId,
@@ -69,12 +86,14 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
             return Result.Success();
         }
 
-        public Result MarkAsDelivered()
+        public Result MarkAsDelivered(Guid requestingBuyerId)
         {
             if (Status != ShipmentStatus.Shipped)
                 return Result.Failure(new Error("Shipment.InvalidState", $"Impossibile contrassegnare come consegnata una spedizione nello stato {Status}.", ErrorType.StatusConflict));
+            if (BuyerId != requestingBuyerId)
+                return Result.Failure(new Error("Shipment.PermissionDenied", "You are not the buyer", ErrorType.PermissionDenied));
             Status = ShipmentStatus.Delivered;
-            Raise(new ShipmentDeliveredDomainEvent(
+            Raise(new ShipmentDeliveredEvent(
                 Id: Id,
                 OrderId: OrderId,
                 SellerId: VendorId
@@ -86,10 +105,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
         {
             if (VendorId != requestingVendorId)
                 return Result.Failure(new Error("Shipment.Unauthorized", "Non sei autorizzato a cancellare questa spedizione.", ErrorType.PermissionDenied));
-            if (Status == ShipmentStatus.Delivered || Status == ShipmentStatus.Cancelled)
+            if (Status == ShipmentStatus.Delivered || Status == ShipmentStatus.Cancelled || Status == ShipmentStatus.Shipped)
                 return Result.Failure(new Error("Shipment.InvalidState", "Impossibile cancellare una spedizione già consegnata o già cancellata.", ErrorType.StatusConflict));
             Status = ShipmentStatus.Cancelled;
-            Raise(new ShipmentCancelledDomainEvent(
+            Raise(new ShipmentCancelledEvent(
                 Id: Id,
                 OrderId: OrderId,
                 SellerId: VendorId

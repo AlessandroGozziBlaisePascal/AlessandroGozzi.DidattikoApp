@@ -44,13 +44,51 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
                 return Result.Failure<CustomerDto>(new Error("New customer credential", "Number already in using", ErrorType.Validation));
             }
 
+            #region Validation of the command properties
+            var nameResult = command.Name.ToNameDomain();
+            if(nameResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Name", nameResult.Error.Description, ErrorType.Validation));
+            }
+
+            var surnameResult = command.Surname.ToSurnameDomain();
+            if(surnameResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Surname", surnameResult.Error.Description, ErrorType.Validation));
+            }
+
+            var emailResult = command.Email.ToEmailDomain();
+            if(emailResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Email", emailResult.Error.Description, ErrorType.Validation));
+            }
+
+            var addressResult = command.Address.ToAddressDomain();
+            if(addressResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Address", addressResult.Error.Description, ErrorType.Validation));
+            }
+
+            var numberResult = command.PhoneNumber.ToNumberDomain();
+            if(numberResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Phone number", numberResult.Error.Description, ErrorType.Validation));
+            }
+
+            var taxCodeResult = command.TaxCode.ToTaxCodeDomain();
+            if(taxCodeResult.IsFailure)
+            {
+                return Result.Failure<CustomerDto>(new Error("Tax code", taxCodeResult.Error.Description, ErrorType.Validation));
+            }
+            #endregion
+
             var customerResult = Customer.Create(
-                command.Name.ToNameDomain(),
-                command.Surname.ToSurnameDomain(),
-                command.Email.ToEmailDomain(),
-                command.Address.ToAddressDomain(),
-                command.PhoneNumber.ToNumberDomain(),
-                command.TaxCode.ToTaxCodeDomain(),
+                nameResult.Value,
+                surnameResult.Value,
+                emailResult.Value,
+                addressResult.Value,
+                numberResult.Value,
+                taxCodeResult.Value,
                 passwordHash);
             
             if(customerResult.IsFailure)
@@ -58,7 +96,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
                 return Result.Failure<CustomerDto>(new Error("Customer", "Customer failed to be created", ErrorType.Failure));
             }
 
-            await CustRepo.AddAsync(customerResult.Value, token);
+            CustRepo.Add(customerResult.Value);
 
             await UnitOfWork.SaveChangesAsync(token);
 

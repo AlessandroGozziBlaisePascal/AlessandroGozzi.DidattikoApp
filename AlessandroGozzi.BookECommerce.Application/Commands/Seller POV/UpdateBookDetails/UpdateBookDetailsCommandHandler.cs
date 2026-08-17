@@ -11,17 +11,19 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateBookDetails
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBookDetails
 {
     public class UpdateBookDetailsCommandHandler : IRequestHandler<UpdateBookDetailsCommand, Result<BookDto>>
     {
         private readonly IBookRepository BookRepo;
+        private readonly IUnitOfWork UnitOfWork;
         private readonly ICustomerRepository CustRepo;
 
-        public UpdateBookDetailsCommandHandler(IBookRepository bookRepo, ICustomerRepository cRepo)
+        public UpdateBookDetailsCommandHandler(IBookRepository bookRepo, ICustomerRepository cRepo, IUnitOfWork unitOfWork)
         {
             BookRepo = bookRepo;
             CustRepo = cRepo;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<BookDto>> Handle(UpdateBookDetailsCommand command, CancellationToken token)
@@ -41,7 +43,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateBookDetails
 
             if (command.NewPrice.HasValue)
             {
-                var result = book.UpdatePrice(command.NewPrice.Value.ToMoneyDomain(), customer.Id);
+                var priceResult = command.NewPrice.Value.ToMoneyDomain();
+                if (priceResult.IsFailure)
+                {
+                    return Result.Failure<BookDto>(new Error("Book new price", "Invalid new price", ErrorType.Validation));
+                }
+                var result = book.UpdatePrice(command.NewPrice.Value.ToMoneyDomain().Value, customer.Id);
                 if (result.IsFailure)
                 {
                     return Result.Failure<BookDto>(new Error("Book new price", "Failed to change book price", ErrorType.Failure));
@@ -49,7 +56,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateBookDetails
             }
             if (!string.IsNullOrWhiteSpace(command.NewStatus))
             {
-                var result = book.UpdateStatus(command.NewStatus.ToDomain(), customer.Id);
+                var statusResult = command.NewStatus.ToDomain();
+                if (statusResult.IsFailure)
+                {
+                    return Result.Failure<BookDto>(new Error("Book new status", "Invalid new status", ErrorType.Validation));
+                }
+                var result = book.UpdateStatus(command.NewStatus.ToDomain().Value, customer.Id);
                 if (result.IsFailure)
                 {
                     return Result.Failure<BookDto>(new Error("Book new status", "Failed to change book status", ErrorType.Failure));
@@ -60,11 +72,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateBookDetails
                 var result = book.AddPhotos(command.NewPhotos.ToList(), customer.Id);
                 if (result.IsFailure)
                 {
-                    return Result.Failure<BookDto>(new Error("Book new status", "Failed to change book status", ErrorType.Failure));
+                    return Result.Failure<BookDto>(new Error("Book new photos", "Failed to change book photos", ErrorType.Failure));
                 }
             }
 
-            await BookRepo.UpdateAsync(book, token);
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(book.ToDto());
         }

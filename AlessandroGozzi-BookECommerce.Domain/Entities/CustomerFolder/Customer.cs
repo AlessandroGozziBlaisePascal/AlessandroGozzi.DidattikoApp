@@ -13,7 +13,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public Surname Surname { get; private set; }
         public Email Email { get; private set; }
         public Address Address {  get; private set; }
+
         public CreditCard? CreditCard { get; private set; }
+        public Wallet Wallet { get; private set; } = new Wallet();
+
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set;}

@@ -12,15 +12,17 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 using MediatR;
 using Stripe;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateCustomerAddress
+namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.UpdateCustomerAddress
 {
     public class UpdateCustomerAddressCommandHandler: IRequestHandler<UpdateCustomerAddressCommand, Result<CustomerDto>>
     {
         private readonly ICustomerRepository CustomerRepo;
+        private readonly IUnitOfWork UnitOfWork;
 
-        public UpdateCustomerAddressCommandHandler(ICustomerRepository customerRepo)
+        public UpdateCustomerAddressCommandHandler(ICustomerRepository customerRepo, IUnitOfWork unitOfWork)
         {
             CustomerRepo = customerRepo;
+            UnitOfWork = unitOfWork;
         }
 
         public async Task<Result<CustomerDto>> Handle(UpdateCustomerAddressCommand command, CancellationToken token)
@@ -50,7 +52,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.UpdateCustomerAddre
                 return Result.Failure<CustomerDto>(new Error("New address", "Address failed to be changed", ErrorType.Failure));
             }
 
-            await CustomerRepo.UpdateAsync(customer, token);
+            await UnitOfWork.SaveChangesAsync(token);
 
             return Result.Success(customer.ToDto());
 
