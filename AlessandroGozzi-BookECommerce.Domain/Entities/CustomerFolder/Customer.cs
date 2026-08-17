@@ -30,6 +30,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             Number = number;
             TaxCode = TCode;
             PasswordHash = passwordHash;
+            Wallet = new Wallet();
         }
 
         public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)

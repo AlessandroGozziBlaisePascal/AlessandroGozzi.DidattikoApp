@@ -61,13 +61,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
 
             var calculationResult = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
-            if(customer.Wallet.AvailableBalance >= calculationResult.GrandTotal)
-            {
-                
-            }
-
             decimal grandTotal = calculationResult.GrandTotal;
-            decimal walletBalance = customer.Wallet.AvailableBalance;
+            decimal walletBalance = customer.Wallet.AvailableBalance.Amount;
 
             decimal amountToChargeOnCard = grandTotal > walletBalance 
                 ? grandTotal - walletBalance 

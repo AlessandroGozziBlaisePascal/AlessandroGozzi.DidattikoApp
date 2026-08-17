@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlessandroGozzi.BookECommerce.Application.Dto;
+using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder;

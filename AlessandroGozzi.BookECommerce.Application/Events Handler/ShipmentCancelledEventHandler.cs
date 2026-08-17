@@ -41,7 +41,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
                 throw new Exception($"Seller with ID {notification.SellerId} not found.");
             }
 
-            seller.Wallet.CancelPendingFunds(shipment.SubTotal.Amount);
+            seller.Wallet.CancelPendingFunds(shipment.SubTotal);
 
             var order = await OrderRepo.GetByIdAsync(notification.OrderId, cancellationToken);
             if(order == null)
@@ -55,7 +55,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
                 throw new Exception($"Buyer with ID {order.CustomerId} not found.");
             }
             
-            buyer.Wallet.Deposit(shipment.SubTotal.Amount);
+            buyer.Wallet.Deposit(shipment.SubTotal);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
         }

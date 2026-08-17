@@ -5,10 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 
-namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
+namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
 {
-    public interface IJwtProvider
-    {
-        string GenerateToken(Guid customerId, string identifier);
-    }
+    public record CartSummaryDto(CartDto Cart, SmartCartCalculationDto Calculation);
 }

@@ -10,6 +10,7 @@ using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
+using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
@@ -104,12 +105,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
             var cartCalculation = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
             decimal totalAmount = cartCalculation.GrandTotal;
-            decimal availableWallet = customer.Wallet.AvailableBalance;
+            decimal availableWallet = customer.Wallet.AvailableBalance.Amount;
             decimal walletToDeduct = Math.Min(totalAmount, availableWallet);
 
             if (walletToDeduct > 0)
             {
-                var walletDeductionResult = customer.Wallet.Withdraw(walletToDeduct);
+                var walletDeductionResult = customer.Wallet.Withdraw(Money.Create(walletToDeduct).Value);
                 if(walletDeductionResult.IsFailure)
                     return Result.Failure<OrderDto>(new Error("Wallet", "Failed to deduct from wallet", ErrorType.Failure));
             }
@@ -179,7 +180,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
                 }
 
                 
-                vendor.Wallet.AddPendingFunds(vendorSalesTotal);
+                vendor.Wallet.AddPendingFunds(vendorSalesTotal.ToMoneyDomain().Value);
             }
 
             _orderRepo.Add(order);
