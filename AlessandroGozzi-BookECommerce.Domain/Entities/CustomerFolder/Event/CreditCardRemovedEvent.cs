@@ -8,5 +8,9 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
 {
-    public record SurnameChangedEvent(Guid CustomerId, Surname OldSurname, Surname NewSurname) : DomainEvent { }
+    public record CreditCardRemovedEvent(
+        Guid CustomerId,
+        FullName CardOwner,
+        string DisplayName
+        ): DomainEvent;
 }

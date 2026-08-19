@@ -8,5 +8,5 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
 {
-    public record NameChangedEvent(Guid CustomerId, Name OldName, Name NewName) : DomainEvent { }
+    public record NameChangedEvent(Guid CustomerId, FullName OldName, FullName NewName) : DomainEvent { }
 }

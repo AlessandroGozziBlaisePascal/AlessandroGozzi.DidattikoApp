@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Value_Object;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
@@ -15,7 +16,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
         private const decimal FreShipmentTheshold = 30m;
         public Guid CustomerId { get; init; }
         public DateTime Date { get; init; }
-        public CreditCard PaymentDetails { get; init; }
+        public PaymentDetails PaymentDetails { get; init; }
         public Money TotalPrice { get; init; }
         public OrderStatus Status { get; private set; }
         public bool IsFreeShippingApplied => TotalPrice.Amount >= FreShipmentTheshold;
@@ -38,7 +39,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
 
         private Order() { }
 
-        private Order(Guid customerId, CreditCard paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
+        private Order(Guid customerId, PaymentDetails paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
         {
             CustomerId = customerId;
             PaymentDetails = paymentDetails;
@@ -49,7 +50,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
             ShippingFee = shippingFee;
         }
 
-        public static Result<Order> Create(Guid customerId, CreditCard paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
+        public static Result<Order> Create(Guid customerId, PaymentDetails paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
         {
             if(paymentDetails  == null)
             {

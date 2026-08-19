@@ -17,6 +17,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
         {
             if (string.IsNullOrWhiteSpace(value))
                 return Result.Failure<Surname>(new Error("Surname creation", "Surname cannot be null ro white spaces", ErrorType.Validation));
+            var surnameCounter = value.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+            if(surnameCounter.Length > 4)
+                return Result.Failure<Surname>(new Error("Surname creation", "You can have max 4 surnames", ErrorType.Validation));
             var trimmedSurname = value.Trim();
             if (!Regex.IsMatch(trimmedSurname, @"^[a-zA-ZÀ-ÿ'\s\-]+$"))
                 return Result.Failure<Surname>(new Error("Surname creation", "Surname must contains only letters", ErrorType.Validation));

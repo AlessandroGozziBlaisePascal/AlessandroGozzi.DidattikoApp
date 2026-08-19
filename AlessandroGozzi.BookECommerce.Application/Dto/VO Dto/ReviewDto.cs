@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record ReviewDto(
-        string Comment,
         int Rating,
         string ReviewerName,
         string ReviewerSurname,

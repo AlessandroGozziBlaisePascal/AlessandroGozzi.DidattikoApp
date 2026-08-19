@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
-using AlessandroGozzi.BookECommerce.Application.Dto.Access;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
@@ -21,7 +20,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 customer.Email.Value,
                 customer.Number.Value,
                 customer.Address.ToDto(),
-                customer.TaxCode.ToDto()
+                customer.TaxCode.ToDto(),
+                customer.Wallet.ToDto()
             );
     }
 }

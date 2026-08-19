@@ -29,6 +29,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         //SURNAME
         public static Result<Surname> ToSurnameDomain(this string value) => Surname.Create(value);
         public static string ToDto(this Surname value) => value.ToString();
+        //FULLNAME
+        public static FullName ToFullNameDomain(string name, string surname)
+        {
+
+        }
         //EXPIRYDATE
         public static Result<ExpiryDate> ToExpiryDateDomain(this string value) => ExpiryDate.Create(value);
         public static string ToDto(this ExpiryDate value) => value.ToString();
@@ -45,7 +50,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static Result<TaxCode> ToTaxCodeDomain(this string value) => TaxCode.Create(value);
         public static string ToDto(this TaxCode value) => value.ToString();
         //BOOK REVIEW
-        public static Result<BookReview> ToReviewDomain(Guid customerId, string comment, int rating) => BookReview.Create(customerId, rating, comment);
+        public static Result<BookReview> ToReviewDomain(Guid customerId,  int rating) => BookReview.Create(customerId, rating);
         public static string ToDto(this BookReview value) => value.ToString();
         //MONEY
         public static Result<Money> ToMoneyDomain(this decimal price) => Money.Create(price);

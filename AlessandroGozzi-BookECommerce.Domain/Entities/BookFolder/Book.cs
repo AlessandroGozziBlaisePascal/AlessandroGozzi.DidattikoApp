@@ -20,8 +20,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
         public int PublicationYear { get; init; }
         public Money Price { get; private set; }
         public BookStatus Status { get; private set; }
-        public string MainPhoto => BookPhotos.FirstOrDefault() ?? "default_book_cover.png";
-        public List<string> BookPhotos { get; private set; }
+        public ImageUrl MainPhoto { get; private set;}
         public double AverageRating { get; private set; } 
         public int RatingsNumber { get; private set; }
         public bool IsAvailable { get; private set; }
@@ -32,7 +31,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
 
         public List<BookReview> Reviews { get; private set; }
 
-        private Book(string title, Guid sellerId, Subject sbj, ISBN code, int schoolYear, int publYear, Money price, BookStatus bookStatus)
+        private Book(string title, Guid sellerId, Subject sbj, ISBN code, int schoolYear, int publYear, Money price, BookStatus bookStatus, ImageUrl mainPhoto)
         {
             Title = title;
             SellerId = sellerId;
@@ -41,14 +40,14 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             SchoolYear = schoolYear;
             PublicationYear = publYear;
             Price = price;
-            BookPhotos = new();
             Status = bookStatus;
             Reviews = new();
             IsAvailable = true;
+            MainPhoto = mainPhoto;
         }
         private Book() { }
 
-        public static Result<Book> Create(string title, Guid sellerId, Subject sbj, ISBN code, int schoolYear, int publYear, Money price, BookStatus bookStatus)
+        public static Result<Book> Create(string title, Guid sellerId, Subject sbj, ISBN code, int schoolYear, int publYear, Money price, BookStatus bookStatus, ImageUrl mainPhoto)
         {
             if (string.IsNullOrWhiteSpace(title))
                 return Result.Failure<Book>(new Error("Title", "Title cannot be null", ErrorType.Validation));
@@ -62,7 +61,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
                 return Result.Failure<Book>(new Error("Publication book year", "Book publication must be between 2000 and current year", ErrorType.Validation));
             if(price == null)
                 return Result.Failure<Book>(new Error("Price", "Book price can't be null", ErrorType.Validation));
-            return Result.Success(new Book(title, sellerId, sbj, code, schoolYear, publYear, price, bookStatus));
+            if(mainPhoto == null)
+                return Result.Failure<Book>(new Error("Photo", "Book photo can't be null", ErrorType.Validation));
+            return Result.Success(new Book(title, sellerId, sbj, code, schoolYear, publYear, price, bookStatus, mainPhoto));
         }
 
         public Result AddReview(BookReview r)
@@ -104,14 +105,14 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             return Result.Success();
         }
 
-        public Result AddPhotos(List<string> photos, Guid requesterCustomer)
+        public Result ChangePhoto(Guid requesterCustomerId, ImageUrl imgUrl)
         {
-            if (SellerId != requesterCustomer)
-                return Result.Failure(new Error("New price", "Cannot update price. You are not the seller", ErrorType.PermissionDenied));
-            if (photos == null || photos.Count == 0)
-                return Result.Failure<Book>(new Error("Photos", "Cannot add null or empty photos", ErrorType.Validation));
-            BookPhotos.AddRange(photos);
-            Raise(new PhotosAddedEvent(Id, photos));
+            if (SellerId != requesterCustomerId)
+                return Result.Failure(new Error("New photo", "Cannot update photo. You are not the seller", ErrorType.PermissionDenied));
+            if(imgUrl == null)
+                return Result.Failure(new Error("New photo", "Cannot update null photo", ErrorType.Validation));
+            MainPhoto = imgUrl;
+            Raise(new PhotoChangedEvent(Id, MainPhoto));
             return Result.Success();
         }
 
@@ -131,7 +132,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder
             return Result.Success();
         }
 
-        public Result UpdateStatus (BookStatus status, Guid requesterCustomer)
+        public Result UpdateStatus(BookStatus status, Guid requesterCustomer)
         {
             if(SellerId != requesterCustomer)
                 return Result.Failure(new Error("New status", "Cannot update status. You are not the seller", ErrorType.PermissionDenied));

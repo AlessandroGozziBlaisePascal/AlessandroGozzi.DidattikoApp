@@ -18,6 +18,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
         {
             if (string.IsNullOrWhiteSpace(value))
                 return Result.Failure<Name>(new Error("Name creation", "Name cannot be null or white spaces", ErrorType.Validation));
+            var nameCounter = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (nameCounter.Length > 3)
+                return Result.Failure<Name>(new Error("Name creation", "You can have max 3 names", ErrorType.Validation));
             var trimmedName = value.Trim();
             if (!Regex.IsMatch(trimmedName, @"^[a-zA-ZÀ-ÿ'\s\-]+$"))
                 return Result.Failure<Name>(new Error("Name creation", "Name must contain only letters", ErrorType.Validation));

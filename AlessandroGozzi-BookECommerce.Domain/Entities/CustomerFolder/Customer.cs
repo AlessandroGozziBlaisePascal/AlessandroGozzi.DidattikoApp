@@ -9,22 +9,18 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 {
     public class Customer: Entity
     {
-        public Name Name { get; private set; }
-        public Surname Surname { get; private set; }
+        public FullName FullName { get; private set; }
         public Email Email { get; private set; }
         public Address Address {  get; private set; }
-
         public CreditCard? CreditCard { get; private set; }
         public Wallet Wallet { get; private set; } = new Wallet();
-
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set;}
 
-        private Customer(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
+        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
-            Name = name;
-            Surname = surname;
+            FullName = fullName;
             Email = email;
             Address = address;
             Number = number;
@@ -33,36 +29,24 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             Wallet = new Wallet();
         }
 
-        public static Result<Customer> Create(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
+        public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
-            var customer = new Customer(name, surname, email, address, number, TCode, passwordHash);
+            var customer = new Customer(fullName, email, address, number, TCode, passwordHash);
 
             customer.Raise(new CustomerCreatedEvent(customer.Id));
 
             return Result.Success(customer);
         }
 
-        public Result ChangeName(Name name)
+        public Result ChangeName(FullName newFullname)
         {
-            if (name == null)
+            if (newFullname == null)
                 return Result.Failure(new Error("Change name", "Cannot change to a null value", ErrorType.Validation));
-            if (Name == name)
+            if (FullName == newFullname)
                 return Result.Success();
-            var n = Name;
-            Name = name;
-            Raise(new NameChangedEvent(Id, n, Name));
-            return Result.Success();
-        }
-
-        public Result ChangeSurname(Surname surname)
-        {
-            if (surname == null)
-                return Result.Failure(new Error("Change surname", "Cannot change to a null value", ErrorType.Validation));
-            if (Surname == surname)
-                return Result.Success();
-            var sn = Surname;
-            Surname = surname;
-            Raise(new SurnameChangedEvent(Id, sn, Surname));
+            var n = FullName;
+            FullName = newFullname;
+            Raise(new NameChangedEvent(Id, n, FullName));
             return Result.Success();
         }
 
@@ -111,6 +95,15 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 
             CreditCard = card;
             Raise(new CreditCardAddedEvent(Id, card.CardOwner, card.DisplayName));
+            return Result.Success();
+        }
+        public Result RemoveCreditCard(CreditCard card)
+        {
+            if (CreditCard == null)
+                return Result.Failure(new Error("Credit card", "Cannot remove null credit card", ErrorType.NotFound));
+            var oldCard = CreditCard;
+            CreditCard = null;
+            Raise(new CreditCardRemovedEvent(Id, oldCard.CardOwner, oldCard.DisplayName));
             return Result.Success();
         }
 
