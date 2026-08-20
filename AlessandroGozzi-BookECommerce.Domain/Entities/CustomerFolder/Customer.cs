@@ -13,7 +13,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public Email Email { get; private set; }
         public Address Address {  get; private set; }
         public CreditCard? CreditCard { get; private set; }
-        public Wallet Wallet { get; private set; } = new Wallet();
+        public Wallet Wallet { get; private set; }
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set;}
@@ -26,7 +26,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             Number = number;
             TaxCode = TCode;
             PasswordHash = passwordHash;
-            Wallet = new Wallet();
+            Wallet = new Wallet(Id);
         }
 
         public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
@@ -113,11 +113,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             {
                 return Result.Failure(new Error("New password", "New password hash is null or white spaces",ErrorType.Validation));
             }
-            if (PasswordHash == newPasswordHash)
-                return Result.Success();
-            var p = PasswordHash;
+
             PasswordHash = newPasswordHash;
-            Raise(new CustomerPasswordChangedEvent(Id, p, PasswordHash));
+            Raise(new CustomerPasswordChangedEvent(Id));
             return Result.Success();
         }
     }

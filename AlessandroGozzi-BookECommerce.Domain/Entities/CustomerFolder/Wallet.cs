@@ -4,17 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 {
-    public class Wallet
+    public class Wallet: Entity
     {
+        public Guid CustomerId { get; init; }
         public Money AvailableBalance { get; private set; }
         public Money PendingBalance { get; private set; }
         public Money TotalBalance => AvailableBalance + PendingBalance;
 
-        public Wallet()
+        private decimal MinTransitionsTheshold = 1m;
+
+        public Wallet(Guid customerId)
         {
+            CustomerId = customerId;
             AvailableBalance = Money.Create(0m).Value;   
             PendingBalance = Money.Create(0m).Value;
         }
@@ -25,6 +30,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
             {
                 return Result.Failure(new Error("Wallet.Deposit", "Deposit amount must be greater than zero.", ErrorType.Validation));
             }
+            if (money.Amount < MinTransitionsTheshold)
+                return Result.Failure(new Error("Transition amount", "Transitions threshold is 1 €", ErrorType.Validation));
             AvailableBalance += money;
             return Result.Success();
         }
@@ -36,6 +43,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
                 return Result.Failure(new Error("Wallet.Withdraw", "Insufficient balance for withdrawal.", ErrorType.Validation));
             }
             AvailableBalance -= money;
+            Raise(new BalanceWithdrawedEvent(CustomerId, money));
             return Result.Success();
         }
 

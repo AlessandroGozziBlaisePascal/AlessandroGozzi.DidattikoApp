@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
@@ -18,13 +20,15 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
         private readonly ICustomerRepository CustRepo;
         private readonly IUnitOfWork UnitOfWork;
         private readonly IOrderRepository OrderRepo;
+        private readonly IEmailSender EmailSender;
 
-        public ShipmentCancelledEventHandler(IShipmentRepository shipRepo, IUnitOfWork unitOfWork, ICustomerRepository custRepo, IOrderRepository ordRepo)
+        public ShipmentCancelledEventHandler(IShipmentRepository shipRepo, IEmailSender emailServer,IUnitOfWork unitOfWork, ICustomerRepository custRepo, IOrderRepository ordRepo)
         {
             ShipRepo = shipRepo;
             UnitOfWork = unitOfWork;
             CustRepo = custRepo;
             OrderRepo = ordRepo;
+            EmailSender = emailServer;
         }
 
         public async Task Handle(ShipmentCancelledEvent notification, CancellationToken cancellationToken)
@@ -56,6 +60,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
             }
             
             buyer.Wallet.Deposit(shipment.SubTotal);
+
+            await EmailSender.SendEmailAsync(buyer.Email.ToDto(), "Shipment cancelled", $"You shipment got cancelled, refund got deposited in your wallet at {notification.OccurredOnUtc}", cancellationToken);
+            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Shipment cancelled", "Your shipment got cancelled, pending funds got cancelled", cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
         }

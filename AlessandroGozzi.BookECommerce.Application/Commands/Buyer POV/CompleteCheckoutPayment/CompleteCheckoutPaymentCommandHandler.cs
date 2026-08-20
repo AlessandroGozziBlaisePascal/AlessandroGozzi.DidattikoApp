@@ -16,6 +16,7 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Value_Object;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder;
 using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository;
 using MediatR;
@@ -104,20 +105,35 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
 
             var cartCalculation = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
+            
             decimal totalAmount = cartCalculation.GrandTotal;
             decimal availableWallet = customer.Wallet.AvailableBalance.Amount;
             decimal walletToDeduct = Math.Min(totalAmount, availableWallet);
+            decimal cardAmount = totalAmount - walletToDeduct;
+
+            if(cardAmount > 0 && cardAmount < 1)
+            {
+                cardAmount = 1m;
+                walletToDeduct = totalAmount - cardAmount;
+            }
+
+            PaymentDetails orderPaymentDetails;
+            if (walletToDeduct > 0 && cardAmount > 0)
+                orderPaymentDetails = PaymentDetails.FromHybridPayment(customer.CreditCard.DisplayName);
+            else if (walletToDeduct > 0)
+                orderPaymentDetails = PaymentDetails.FromWallet();
+            else
+                orderPaymentDetails= PaymentDetails.FromCreditCard(customer.CreditCard.DisplayName);
 
             if (walletToDeduct > 0)
             {
                 var walletDeductionResult = customer.Wallet.Withdraw(Money.Create(walletToDeduct).Value);
-                if(walletDeductionResult.IsFailure)
+                if (walletDeductionResult.IsFailure)
                     return Result.Failure<OrderDto>(new Error("Wallet", "Failed to deduct from wallet", ErrorType.Failure));
             }
-
             var orderResult = Order.Create(
                 command.CustomerId,
-                customer.CreditCard,
+                orderPaymentDetails,
                 orderItems,
                 command.Type,
                 cartCalculation.ShippingTotal

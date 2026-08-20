@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Buyer_POV.UpdateCartItemQuantity
+namespace AlessandroGozzi.BookECommerce.Application.Commands.Buyer_POV.TopUpWallet.Action
 {
-    public record UpdateCartItemQuantityCommand(
+    public record TopUpWalletActionCommand(
         Guid CustomerId,
-        Guid BookId,
-        int NewQuantity
+        decimal Amount,
+        string PaymentIntentId
         ): IRequest<Result>;
 }

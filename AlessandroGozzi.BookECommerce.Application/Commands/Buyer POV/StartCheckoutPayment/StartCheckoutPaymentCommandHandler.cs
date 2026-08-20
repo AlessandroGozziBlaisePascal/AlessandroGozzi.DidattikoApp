@@ -44,6 +44,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
             {
                 return Result.Failure<CheckoutPaymentResultDto>(new Error("Customer", "Customer not found or null credit card", ErrorType.Failure));
             }
+            if(customer.CreditCard.IsExpired())
+                return Result.Failure<CheckoutPaymentResultDto>(new Error("Credit card","Credit card is expired",ErrorType.Failure));
 
             var cart = await CartRepo.GetByCustomerIdAsync(command.CustomerId, token);
             if (cart == null)
@@ -76,8 +78,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
                         Amount: (long)grandTotal
                     ));
 
+            if(amountToChargeOnCard > 0 && amountToChargeOnCard < 1)
+            {
+                amountToChargeOnCard = 1m;
+            }
 
-            long totalInCent = (long)(calculationResult.GrandTotal * 100);
+            long totalInCent = (long)(amountToChargeOnCard * 100);
 
             var paymentCreationResult = await PaymentService.CreatePaymentIntentAsync(
                 totalInCent,

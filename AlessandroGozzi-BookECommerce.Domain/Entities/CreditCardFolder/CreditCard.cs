@@ -50,5 +50,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder
 
             return Result.Success(new CreditCard(new FullName(nameResult.Value, surnameResult.Value), expiryDateResult.Value, last4digit, custId));
         }
+
+        public bool IsExpired(DateTime? referenceDate = null) => ExpiryDate.IsExpired(referenceDate);
     }
 }

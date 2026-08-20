@@ -29,5 +29,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Obj
             var trackingInfo = new TrackingInfo(carrier, trackingCode, trackingUrl);
             return Result.Success(trackingInfo);
         }
+
+        public static TrackingInfo SetUntracked() => new TrackingInfo("PosteItaliane_PieghiLibriOrdinario", "Untracked", null);
     }
 }

@@ -7,5 +7,5 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
 {
-    public record CustomerPasswordChangedEvent(Guid Id, string OldPassword, string NewPassword) : DomainEvent { }
+    public record CustomerPasswordChangedEvent(Guid CustomerId) : DomainEvent { }
 }

@@ -57,7 +57,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
             return Result.Success(shipment);
         }
 
-        public Result UpdateTracking(string trackingNumber, string carrier, Guid requestingVendorId)
+        public Result MarkAsShipped(Guid requestingVendorId, string? trackingNumber = null, string? carrier = null)
         {
             if (VendorId != requestingVendorId)
                 return Result.Failure(new Error("Shipment.Unauthorized", "Non sei autorizzato a modificare questa spedizione.", ErrorType.PermissionDenied));
@@ -65,10 +65,21 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
             if (Status == ShipmentStatus.Cancelled || Status == ShipmentStatus.Delivered)
                 return Result.Failure(new Error("Shipment.InvalidState", $"Impossibile aggiornare il tracking per una spedizione nello stato {Status}.", ErrorType.StatusConflict));
 
-            var trackingInfoResult = TrackingInfo.Create(carrier, trackingNumber);
-            if(trackingInfoResult.IsFailure)
-                return Result.Failure(trackingInfoResult.Error);
-            TrackingInfo = trackingInfoResult.Value;
+            bool hasCarrier = !string.IsNullOrWhiteSpace(carrier);
+            bool hasTrackingNumber = !string.IsNullOrWhiteSpace(trackingNumber);
+            if (hasCarrier && hasTrackingNumber)
+            {
+                var trackingInfoResult = TrackingInfo.Create(carrier!, trackingNumber!);
+                if (trackingInfoResult.IsFailure)
+                    return Result.Failure(trackingInfoResult.Error);
+                TrackingInfo = trackingInfoResult.Value;
+            }
+            else if (hasCarrier ^ hasTrackingNumber)
+                return Result.Failure(new Error("Tracking info", "Cannot have only one parameter: 0=untracked, 2=tracked", ErrorType.Validation));
+            else
+            {
+                TrackingInfo = TrackingInfo.SetUntracked();
+            }
 
             if (Status == ShipmentStatus.Preparing)
             {
@@ -76,7 +87,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
                 ShippedAtUtc = DateTime.UtcNow;
             }
 
-            Raise(new ShipmentTrackingUpdatedEvent(
+            Raise(new ShipmentShippedEvent(
                 Id: Id,
                 OrderId: OrderId,
                 SellerId: VendorId,

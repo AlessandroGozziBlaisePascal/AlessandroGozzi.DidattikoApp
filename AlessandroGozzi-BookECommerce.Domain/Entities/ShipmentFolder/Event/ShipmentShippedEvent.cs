@@ -8,5 +8,5 @@ using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Event
 {
-    public record ShipmentTrackingUpdatedEvent (Guid Id, Guid OrderId, Guid SellerId, TrackingInfo TrackInfo): DomainEvent;
+    public record ShipmentShippedEvent (Guid Id, Guid OrderId, Guid SellerId, TrackingInfo TrackInfo): DomainEvent;
 }

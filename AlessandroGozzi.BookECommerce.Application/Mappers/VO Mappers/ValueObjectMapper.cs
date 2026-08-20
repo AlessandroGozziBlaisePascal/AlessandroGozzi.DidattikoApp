@@ -30,9 +30,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static Result<Surname> ToSurnameDomain(this string value) => Surname.Create(value);
         public static string ToDto(this Surname value) => value.ToString();
         //FULLNAME
-        public static FullName ToFullNameDomain(string name, string surname)
+        public static Result<FullName> ToFullNameDomain(string name, string surname)
         {
-
+            return name.ToNameDomain().IsFailure || surname.ToSurnameDomain().IsFailure
+                ? Result.Failure<FullName>(new Error("Fullname.ToDomain","Name or surname is incorrect",ErrorType.Validation))
+                : Result.Success(new FullName(name.ToNameDomain().Value,surname.ToSurnameDomain().Value));
         }
         //EXPIRYDATE
         public static Result<ExpiryDate> ToExpiryDateDomain(this string value) => ExpiryDate.Create(value);
@@ -50,7 +52,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static Result<TaxCode> ToTaxCodeDomain(this string value) => TaxCode.Create(value);
         public static string ToDto(this TaxCode value) => value.ToString();
         //BOOK REVIEW
-        public static Result<BookReview> ToReviewDomain(Guid customerId,  int rating) => BookReview.Create(customerId, rating);
+        public static Result<BookReview> ToReviewDomain(Guid customerId, string name, string surname, int rating)
+        {
+            var fullNameResult = ToFullNameDomain(name, surname);
+            if (fullNameResult.IsFailure)
+                return Result.Failure<BookReview>(fullNameResult.Error);
+            return BookReview.Create(customerId, fullNameResult.Value, rating);
+        } 
         public static string ToDto(this BookReview value) => value.ToString();
         //MONEY
         public static Result<Money> ToMoneyDomain(this decimal price) => Money.Create(price);

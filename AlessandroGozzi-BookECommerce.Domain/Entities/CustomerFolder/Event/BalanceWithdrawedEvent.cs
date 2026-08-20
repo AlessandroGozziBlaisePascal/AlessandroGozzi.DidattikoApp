@@ -4,9 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.Buyer_POV.ClearCart
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
 {
-    public record ClearCartCommand(Guid CustomerId): IRequest<Result>;
+    public record BalanceWithdrawedEvent(Guid CustomerId, Money Money): DomainEvent;
 }

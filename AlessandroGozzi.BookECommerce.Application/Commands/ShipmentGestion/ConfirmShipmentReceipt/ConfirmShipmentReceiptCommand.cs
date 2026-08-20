@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using MediatR;
 
-namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.UpdateShipmentTracking
+namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.ConfirmShipmentReceipt
 {
-    public record UpdateShipmentTrackingCommand(
+    public record ConfirmShipmentReceiptCommand(
         Guid ShipmentId,
-        string TrackingNumber,
-        string Carrier,
-        Guid CustomerId
+        Guid BuyerId
         ): IRequest<Result>;
 }
