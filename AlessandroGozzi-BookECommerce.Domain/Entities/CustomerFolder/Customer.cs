@@ -97,7 +97,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             Raise(new CreditCardAddedEvent(Id, card.CardOwner, card.DisplayName));
             return Result.Success();
         }
-        public Result RemoveCreditCard(CreditCard card)
+        public Result RemoveCreditCard()
         {
             if (CreditCard == null)
                 return Result.Failure(new Error("Credit card", "Cannot remove null credit card", ErrorType.NotFound));
@@ -117,6 +117,11 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             PasswordHash = newPasswordHash;
             Raise(new CustomerPasswordChangedEvent(Id));
             return Result.Success();
+        }
+
+        public void ProfileUpdated(List<string> updatedFields)
+        {
+            Raise(new ProfileUpdatedEvent(Id, updatedFields));
         }
     }
 }

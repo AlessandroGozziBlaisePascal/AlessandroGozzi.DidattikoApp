@@ -52,7 +52,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
             {
                 throw new Exception($"Order with ID {notification.OrderId} not found.");
             }   
-
             var buyer = await CustRepo.GetByIdAsync(order.CustomerId, cancellationToken);
             if(buyer == null)
             {

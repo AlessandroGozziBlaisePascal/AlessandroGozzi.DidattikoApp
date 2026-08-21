@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Event
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent
 {
-    internal class OrderConfirmedEvent
+    internal class BalanceDepositedEvent
     {
     }
 }

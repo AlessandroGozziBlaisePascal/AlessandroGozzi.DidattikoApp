@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.CustomerEvent
 {
-    public record EmailChangedEvent(Guid CustomerId, Email OldMail, Email NewMail) : DomainEvent { }
+    public record CreditCardRemovedEvent(
+        Guid CustomerId,
+        FullName CardOwner,
+        string DisplayName
+        ): DomainEvent;
 }

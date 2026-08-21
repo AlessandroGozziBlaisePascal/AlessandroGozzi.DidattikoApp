@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlessandroGozzi.BookECommerce.Application", "AlessandroGozzi.BookECommerce.Application\AlessandroGozzi.BookECommerce.Application.csproj", "{41F0BB16-964F-49A9-B540-FAD056A43327}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6C83A596-D32D-B35F-00DD-F0C99B673980}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{61D12A6A-F82A-4A39-9BC3-1B09F90F3FFB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{98E5C7B7-D278-4840-9695-DF8E3E424FBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +42,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C9E5DCA4-9728-4A4F-BAF2-08CFE8423C90} = {6C83A596-D32D-B35F-00DD-F0C99B673980}
+		{44BBD259-57E9-48D8-8F62-7467CE83C254} = {6C83A596-D32D-B35F-00DD-F0C99B673980}
+		{E24D101F-9A0B-4788-B12E-D4CC41DA87B2} = {98E5C7B7-D278-4840-9695-DF8E3E424FBC}
+		{41F0BB16-964F-49A9-B540-FAD056A43327} = {6C83A596-D32D-B35F-00DD-F0C99B673980}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0B371027-0D82-4B54-BA3B-E9E5675483F4}

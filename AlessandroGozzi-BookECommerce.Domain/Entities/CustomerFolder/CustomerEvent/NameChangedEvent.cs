@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.CustomerEvent
 {
-    public record NumberChangedEvent(Guid CustomerId, PhoneNumber OldNumber, PhoneNumber NewNumber) : DomainEvent { }
+    public record NameChangedEvent(Guid CustomerId, FullName OldName, FullName NewName) : DomainEvent { }
 }

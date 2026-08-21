@@ -32,6 +32,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             }
             if (money.Amount < MinTransitionsTheshold)
                 return Result.Failure(new Error("Transition amount", "Transitions threshold is 1 €", ErrorType.Validation));
+            Raise(new BalanceDepositedEvent(CustomerId, money));
             AvailableBalance += money;
             return Result.Success();
         }

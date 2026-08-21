@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Event
+namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent
 {
-    public record OrderPreparedEvent(Guid OrderId): DomainEvent { }
+    public record BalanceWithdrawedEvent(Guid CustomerId, Money Money): DomainEvent;
 }
