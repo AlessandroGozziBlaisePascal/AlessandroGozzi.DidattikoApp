@@ -42,7 +42,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder
                 return Result.Failure<Shipment>(new Error("Shipment.OrderId", "OrderId cannot be empty.", ErrorType.Validation));
             if(subTotal == null || subTotal.Amount <= 0)
                 return Result.Failure<Shipment>(new Error("Shipment.SubTotal", "SubTotal must be greater than zero.", ErrorType.Validation));
-            if (vendorId == Guid.Empty)
+            if (buyerId == Guid.Empty)
                 return Result.Failure<Shipment>(new Error("Shipment.BuyerId", "BuyerId cannot be empty.", ErrorType.Validation));
             if(address == null)
                 return Result.Failure<Shipment>(new Error("Shipment.ShippingAddress","Address of shipping cannot be null",ErrorType.Validation));

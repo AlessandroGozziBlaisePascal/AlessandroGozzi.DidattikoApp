@@ -3,395 +3,398 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FluentAssertions;
+using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object;
 using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
+using FluentAssertions;
 
 namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.BookFolder
 {
     public class BookTests
     {
-        private readonly Guid _validSellerId = Guid.NewGuid();
-        private readonly Subject _validSubject = Subject.Create("Informatica").Value;
-        private readonly ISBN _validIsbn = ISBN.Create("978-88-04-66823-7").Value;
-        private readonly Money _validPrice = Money.Create(29.99m).Value;
-        private readonly BookStatus _validStatus = BookStatus.PencilMarked; 
+        private static Subject ValidSubject => Subject.Create("Informatica").Value;
+        private static ISBN ValidIsbn => ISBN.Create("978-0-306-40615-7").Value;
+        private static ImageUrl ValidPhoto => ImageUrl.Create("book.jpg").Value;
+        private static Money ValidPrice => Money.Create(19.99m).Value; // Assuming Money exists
 
-        private Book CreateValidBook()
+        // ==========================================
+        // CREATE TESTS
+        // ==========================================
+        [Fact]
+        public void Create_WithValidParameters_ShouldReturnSuccess()
         {
+            var sellerId = Guid.NewGuid();
 
-            var bookResult = Book.Create("TPSIT", _validSellerId, _validSubject, _validIsbn, 2, 2021, _validPrice, _validStatus);
+            var result = Book.Create("Clean Code", sellerId, ValidSubject, ValidIsbn, 3, 2020, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
-            if (bookResult.IsFailure)
-            {
-                throw new InvalidOperationException($"Setup Book fallito: {bookResult.Error.Description}");
-            }
-
-            return bookResult.Value;
+            result.IsSuccess.Should().BeTrue();
+            result.Value.Should().NotBeNull();
+            result.Value.Title.Should().Be("Clean Code");
+            result.Value.SellerId.Should().Be(sellerId);
+            result.Value.SchoolYear.Should().Be(3);
+            result.Value.PublicationYear.Should().Be(2020);
+            result.Value.IsAvailable.Should().BeTrue();
+            result.Value.AverageRating.Should().Be(0);
+            result.Value.RatingsNumber.Should().Be(0);
+            result.Value.Reviews.Should().BeEmpty();
         }
-
-        private BookReview CreateValidReview(Guid customerId, int rating = 5)
-        {
-            return BookReview.Create(customerId, rating, "Great book!").Value;
-        }
-
-        #region Create Tests
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Create_ShouldFail_WhenTitleIsEmpty(string? invalidTitle)
+        public void Create_WhenTitleIsNullOrEmpty_ShouldReturnFailure(string? invalidTitle)
         {
-            var result = Book.Create(invalidTitle!, _validSellerId, _validSubject, _validIsbn, 3, 2021, _validPrice, _validStatus);
+            var result = Book.Create(invalidTitle!, Guid.NewGuid(), ValidSubject, ValidIsbn, 3, 2020, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Title");
+            result.Error.Description.Should().Be("Title cannot be null");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
 
         [Fact]
-        public void Create_ShouldFail_WhenSubjectIsNull()
+        public void Create_WhenSubjectIsNull_ShouldReturnFailure()
         {
-            var result = Book.Create("Title", _validSellerId, null!, _validIsbn, 3, 2021, _validPrice, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), null!, ValidIsbn, 3, 2020, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Subject");
+            result.Error.Description.Should().Be("Subject cannot be null");
         }
 
         [Fact]
-        public void Create_ShouldFail_WhenIsbnIsNull()
+        public void Create_WhenIsbnIsNull_ShouldReturnFailure()
         {
-            var result = Book.Create("Title", _validSellerId, _validSubject, null!, 3, 2021, _validPrice, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), ValidSubject, null!, 3, 2020, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("ISBN code");
+            result.Error.Description.Should().Be("ISBN cannot be null");
         }
 
         [Theory]
         [InlineData(0)]
-        [InlineData(6)]
         [InlineData(-1)]
-        public void Create_ShouldFail_WhenSchoolYearIsOutOfRange(int invalidSchoolYear)
+        [InlineData(6)]
+        public void Create_WhenSchoolYearIsInvalid_ShouldReturnFailure(int invalidSchoolYear)
         {
-            var result = Book.Create("Title", _validSellerId, _validSubject, _validIsbn, invalidSchoolYear, 2021, _validPrice, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), ValidSubject, ValidIsbn, invalidSchoolYear, 2020, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("School book year");
+            result.Error.Description.Should().Be("School year of book must be between 1 and 5");
         }
 
         [Theory]
         [InlineData(1999)]
         [InlineData(2030)]
-        public void Create_ShouldFail_WhenPublicationYearIsInvalid(int invalidPubYear)
+        public void Create_WhenPublicationYearIsInvalid_ShouldReturnFailure(int invalidPubYear)
         {
-            var result = Book.Create("Title", _validSellerId, _validSubject, _validIsbn, 3, invalidPubYear, _validPrice, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), ValidSubject, ValidIsbn, 3, invalidPubYear, ValidPrice, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Publication book year");
+            result.Error.Description.Should().Be("Book publication must be between 2000 and current year");
         }
 
         [Fact]
-        public void Create_ShouldFail_WhenPriceIsNull()
+        public void Create_WhenPriceIsNull_ShouldReturnFailure()
         {
-            var result = Book.Create("Title", _validSellerId, _validSubject, _validIsbn, 3, 2021, null!, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), ValidSubject, ValidIsbn, 3, 2020, null!, BookStatus.LikeNew, ValidPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Price");
+            result.Error.Description.Should().Be("Book price can't be null");
         }
 
         [Fact]
-        public void Create_ShouldSucceed_WhenParametersAreValid()
+        public void Create_WhenPhotoIsNull_ShouldReturnFailure()
         {
-            var result = Book.Create("Clean Code", _validSellerId, _validSubject, _validIsbn, 3, 2021, _validPrice, _validStatus);
+            var result = Book.Create("Title", Guid.NewGuid(), ValidSubject, ValidIsbn, 3, 2020, ValidPrice, BookStatus.LikeNew, null!);
 
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Title.Should().Be("Clean Code");
-            result.Value.SellerId.Should().Be(_validSellerId);
-            result.Value.Subject.Should().Be(_validSubject);
-            result.Value.ISBNCode.Should().Be(_validIsbn);
-            result.Value.SchoolYear.Should().Be(3);
-            result.Value.PublicationYear.Should().Be(2021);
-            result.Value.Price.Should().Be(_validPrice);
-            result.Value.Status.Should().Be(_validStatus);
-            result.Value.IsAvailable.Should().BeTrue();
-            result.Value.MainPhoto.Should().Be("default_book_cover.png");
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Photo");
+            result.Error.Description.Should().Be("Book photo can't be null");
         }
 
-        #endregion
-
-        #region AddReview & RemoveReview Tests
-
+        // ==========================================
+        // REVIEWS TESTS
+        // ==========================================
         [Fact]
-        public void AddReview_ShouldFail_WhenSellerTriesToReviewOwnBook()
+        public void AddReview_WithValidData_ShouldUpdateRatingsAndAddReview()
         {
             var book = CreateValidBook();
-            var review = CreateValidReview(_validSellerId);
-
-            var result = book.AddReview(review);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void AddReview_ShouldFail_WhenCustomerHasAlreadyReviewed()
-        {
-            var book = CreateValidBook();
-            var customerId = Guid.NewGuid();
-            var review1 = CreateValidReview(customerId, 5);
-            var review2 = CreateValidReview(customerId, 4);
-
-            book.AddReview(review1);
-            var result = book.AddReview(review2);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void AddReview_ShouldSucceedAndUpdateRatings_WhenReviewIsValid()
-        {
-            var book = CreateValidBook();
-            var customerId = Guid.NewGuid();
-            var review = CreateValidReview(customerId, 4);
+            var review = BookReview.Create(Guid.NewGuid(), new FullName(Name.Create("Jane").Value, Surname.Create("Doe").Value), 4).Value;
 
             var result = book.AddReview(review);
 
             result.IsSuccess.Should().BeTrue();
-            book.Reviews.Should().Contain(review);
+            book.Reviews.Should().ContainSingle().Which.Should().Be(review);
             book.RatingsNumber.Should().Be(1);
             book.AverageRating.Should().Be(4.0);
         }
 
         [Fact]
-        public void RemoveReview_ShouldFail_WhenReviewDoesNotExist()
+        public void AddReview_WhenSellerTriesToReviewOwnBook_ShouldReturnSelfReviewError()
         {
-            var book = CreateValidBook();
-            var nonExistentCustomerId = Guid.NewGuid();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+            var review = BookReview.Create(sellerId, new FullName(Name.Create("Jane").Value, Surname.Create("Doe").Value), 5).Value;
 
-            var result = book.RemoveReview(nonExistentCustomerId);
+            var result = book.AddReview(review);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Review.SelfReview");
+            result.Error.Description.Should().Be("Book seller cannot add self review");
+            result.Error.Type.Should().Be(ErrorType.StatusConflict);
         }
 
         [Fact]
-        public void RemoveReview_ShouldSucceedAndUpdateRatings_WhenReviewExists()
+        public void AddReview_WhenCustomerAlreadyReviewed_ShouldReturnDuplicateError()
         {
             var book = CreateValidBook();
             var customerId = Guid.NewGuid();
-            var review = CreateValidReview(customerId, 4);
+            var review1 = BookReview.Create(customerId, new FullName(Name.Create("Jane").Value, Surname.Create("Doe").Value), 4).Value;
+            var review2 = BookReview.Create(customerId, new FullName(Name.Create("Jane").Value, Surname.Create("Doe").Value), 5).Value;
+
+            book.AddReview(review1);
+            var result = book.AddReview(review2);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Review.Duplicate");
+            result.Error.Description.Should().Be("This customer has already reviewed this book.");
+            result.Error.Type.Should().Be(ErrorType.StatusConflict);
+        }
+
+        [Fact]
+        public void RemoveReview_WhenReviewExists_ShouldRecalculateAverageAndRemove()
+        {
+            var book = CreateValidBook();
+            var customerId = Guid.NewGuid();
+            var review = BookReview.Create(customerId, new FullName(Name.Create("Jane").Value, Surname.Create("Doe").Value), 4).Value;
             book.AddReview(review);
 
             var result = book.RemoveReview(customerId);
 
             result.IsSuccess.Should().BeTrue();
-            book.Reviews.Should().NotContain(review);
+            book.Reviews.Should().BeEmpty();
             book.RatingsNumber.Should().Be(0);
             book.AverageRating.Should().Be(0.0);
         }
 
-        #endregion
-
-        #region AddPhotos Tests
-
         [Fact]
-        public void AddPhotos_ShouldFail_WhenRequesterIsNotSeller()
+        public void RemoveReview_WhenReviewDoesNotExist_ShouldReturnNotFoundError()
         {
             var book = CreateValidBook();
-            var strangerId = Guid.NewGuid();
 
-            var result = book.AddPhotos(new List<string> { "photo1.jpg" }, strangerId);
+            var result = book.RemoveReview(Guid.NewGuid());
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Review");
+            result.Error.Description.Should().Be("No review found for this customer on this book.");
+            result.Error.Type.Should().Be(ErrorType.NotFound);
         }
 
-        [Theory]
-        [InlineData(null)]
-        public void AddPhotos_ShouldFail_WhenPhotosListIsNull(List<string>? photos)
-        {
-            var book = CreateValidBook();
-
-            var result = book.AddPhotos(photos!, _validSellerId);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
+        // ==========================================
+        // CHANGE PHOTO TESTS
+        // ==========================================
         [Fact]
-        public void AddPhotos_ShouldFail_WhenPhotosListIsEmpty()
+        public void ChangePhoto_WhenRequesterIsSeller_ShouldUpdatePhoto()
         {
-            var book = CreateValidBook();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+            var newPhoto = ImageUrl.Create("new_cover.png").Value;
 
-            var result = book.AddPhotos(new List<string>(), _validSellerId);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void AddPhotos_ShouldSucceed_WhenRequesterIsSellerAndPhotosAreValid()
-        {
-            var book = CreateValidBook();
-            var photos = new List<string> { "cover.jpg", "back.jpg" };
-
-            var result = book.AddPhotos(photos, _validSellerId);
+            var result = book.ChangePhoto(sellerId, newPhoto);
 
             result.IsSuccess.Should().BeTrue();
-            book.BookPhotos.Should().BeEquivalentTo(photos);
-            book.MainPhoto.Should().Be("cover.jpg");
+            book.MainPhoto.Should().Be(newPhoto);
         }
 
-        #endregion
-
-        #region UpdatePrice Tests
-
         [Fact]
-        public void UpdatePrice_ShouldFail_WhenRequesterIsNotSeller()
+        public void ChangePhoto_WhenRequesterIsNotSeller_ShouldReturnPermissionDenied()
         {
             var book = CreateValidBook();
-            var strangerId = Guid.NewGuid();
-            var newPrice = Money.Create(15.00m).Value;
+            var newPhoto = ImageUrl.Create("new_cover.png").Value;
 
-            var result = book.UpdatePrice(newPrice, strangerId);
+            var result = book.ChangePhoto(Guid.NewGuid(), newPhoto);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("New photo");
+            result.Error.Description.Should().Be("Cannot update photo. You are not the seller");
+            result.Error.Type.Should().Be(ErrorType.PermissionDenied);
         }
 
         [Fact]
-        public void UpdatePrice_ShouldFail_WhenNewPriceIsNull()
+        public void ChangePhoto_WhenPhotoIsNull_ShouldReturnValidationError()
         {
-            var book = CreateValidBook();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
 
-            var result = book.UpdatePrice(null!, _validSellerId);
+            var result = book.ChangePhoto(sellerId, null!);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("New photo");
+            result.Error.Description.Should().Be("Cannot update null photo");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
 
+        // ==========================================
+        // UPDATE PRICE TESTS
+        // ==========================================
         [Fact]
-        public void UpdatePrice_ShouldSucceed_WhenPriceIsSame()
+        public void UpdatePrice_WhenRequesterIsSeller_ShouldUpdatePrice()
         {
-            var book = CreateValidBook();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+            var newPrice = Money.Create(25.00m).Value;
 
-            var result = book.UpdatePrice(_validPrice, _validSellerId);
-
-            result.IsSuccess.Should().BeTrue();
-            book.Price.Should().Be(_validPrice);
-        }
-
-        [Fact]
-        public void UpdatePrice_ShouldUpdatePrice_WhenValidNewPriceGiven()
-        {
-            var book = CreateValidBook();
-            var newPrice = Money.Create(39.99m).Value;
-
-            var result = book.UpdatePrice(newPrice, _validSellerId);
+            var result = book.UpdatePrice(newPrice, sellerId);
 
             result.IsSuccess.Should().BeTrue();
             book.Price.Should().Be(newPrice);
         }
 
-        #endregion
-
-        #region UpdateStatus Tests
-
         [Fact]
-        public void UpdateStatus_ShouldFail_WhenRequesterIsNotSeller()
+        public void UpdatePrice_WhenPriceIsSame_ShouldReturnSuccessWithoutError()
         {
-            var book = CreateValidBook();
-            var strangerId = Guid.NewGuid();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
 
-            var result = book.UpdateStatus(BookStatus.PenMarked, strangerId);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void UpdateStatus_ShouldSucceed_WhenStatusIsSame()
-        {
-            var book = CreateValidBook();
-
-            var result = book.UpdateStatus(_validStatus, _validSellerId);
+            var result = book.UpdatePrice(ValidPrice, sellerId);
 
             result.IsSuccess.Should().BeTrue();
-            book.Status.Should().Be(_validStatus);
         }
 
         [Fact]
-        public void UpdateStatus_ShouldUpdateStatus_WhenValidNewStatusGiven()
+        public void UpdatePrice_WhenRequesterIsNotSeller_ShouldReturnPermissionDenied()
         {
             var book = CreateValidBook();
+            var newPrice = Money.Create(25.00m).Value;
 
-            var result = book.UpdateStatus(BookStatus.PenMarked, _validSellerId);
+            var result = book.UpdatePrice(newPrice, Guid.NewGuid());
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("New price");
+            result.Error.Type.Should().Be(ErrorType.PermissionDenied);
+        }
+
+        [Fact]
+        public void UpdatePrice_WhenPriceIsNull_ShouldReturnValidationError()
+        {
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+
+            var result = book.UpdatePrice(null!, sellerId);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("New price");
+            result.Error.Description.Should().Be("Cannot update to a null price");
+            result.Error.Type.Should().Be(ErrorType.Validation);
+        }
+
+        // ==========================================
+        // UPDATE STATUS TESTS
+        // ==========================================
+        [Fact]
+        public void UpdateStatus_WhenRequesterIsSeller_ShouldUpdateStatus()
+        {
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+
+            var result = book.UpdateStatus(BookStatus.LikeNew, sellerId);
 
             result.IsSuccess.Should().BeTrue();
-            book.Status.Should().Be(BookStatus.PenMarked);
+            book.Status.Should().Be(BookStatus.LikeNew);
         }
 
-        #endregion
-
-        #region RemoveFromMarket & RestoreInMarket Tests
-
         [Fact]
-        public void RemoveFromMarket_ShouldFail_WhenRequesterIsNotSeller()
+        public void UpdateStatus_WhenRequesterIsNotSeller_ShouldReturnPermissionDenied()
         {
             var book = CreateValidBook();
-            var strangerId = Guid.NewGuid();
 
-            var result = book.RemoveFromMarket(strangerId);
+            var result = book.UpdateStatus(BookStatus.LikeNew, Guid.NewGuid());
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("New status");
+            result.Error.Type.Should().Be(ErrorType.PermissionDenied);
         }
 
+        // ==========================================
+        // MARKET AVAILABILITY TESTS
+        // ==========================================
         [Fact]
-        public void RemoveFromMarket_ShouldFail_WhenAlreadyRemoved()
+        public void RemoveFromMarket_WhenAvailableAndSeller_ShouldSetIsAvailableToFalse()
         {
-            var book = CreateValidBook();
-            book.RemoveFromMarket(_validSellerId);
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
 
-            var result = book.RemoveFromMarket(_validSellerId);
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void RemoveFromMarket_ShouldSetIsAvailableToFalse()
-        {
-            var book = CreateValidBook();
-
-            var result = book.RemoveFromMarket(_sellerId);
+            var result = book.RemoveFromMarket(sellerId);
 
             result.IsSuccess.Should().BeTrue();
             book.IsAvailable.Should().BeFalse();
         }
 
         [Fact]
-        public void RestoreInMarket_ShouldFail_WhenRequesterIsNotSeller()
+        public void RemoveFromMarket_WhenAlreadyRemoved_ShouldReturnStatusConflict()
         {
-            var book = CreateValidBook();
-            book.RemoveFromMarket(_validSellerId);
-            var strangerId = Guid.NewGuid();
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+            book.RemoveFromMarket(sellerId);
 
-            var result = book.RestoreInMarket(strangerId);
+            var result = book.RemoveFromMarket(sellerId);
 
             result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Book.Remove");
+            result.Error.Description.Should().Be("Book is already removed from market");
+            result.Error.Type.Should().Be(ErrorType.StatusConflict);
         }
 
         [Fact]
-        public void RestoreInMarket_ShouldFail_WhenAlreadyAvailable()
+        public void RestoreInMarket_WhenNotAvailableAndSeller_ShouldSetIsAvailableToTrue()
         {
-            var book = CreateSampleBook();
-            book.RemoveFromMarket(_sellerId); // Prima rimozione
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
+            book.RemoveFromMarket(sellerId);
 
-            var result = book.RemoveFromMarket(_sellerId); // Seconda rimozione
-
-            result.IsFailure.Should().BeTrue();
-        }
-
-        [Fact]
-        public void RestoreInMarket_ShouldSetIsAvailableToTrue()
-        {
-            var book = CreateValidBook();
-            book.RemoveFromMarket(_validSellerId);
-
-            var result = book.RestoreInMarket(_validSellerId);
+            var result = book.RestoreInMarket(sellerId);
 
             result.IsSuccess.Should().BeTrue();
             book.IsAvailable.Should().BeTrue();
-        } 
+        }
 
-        #endregion
+        [Fact]
+        public void RestoreInMarket_WhenAlreadyAvailable_ShouldReturnStatusConflict()
+        {
+            var sellerId = Guid.NewGuid();
+            var book = CreateValidBook(sellerId);
 
+            var result = book.RestoreInMarket(sellerId);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Book.Restore");
+            result.Error.Description.Should().Be("Book is already restored in market");
+            result.Error.Type.Should().Be(ErrorType.StatusConflict);
+        }
+
+        // Helper method
+        private static Book CreateValidBook(Guid? sellerId = null)
+        {
+            return Book.Create(
+                "Test Book",
+                sellerId ?? Guid.NewGuid(),
+                ValidSubject,
+                ValidIsbn,
+                3,
+                2020,
+                ValidPrice,
+                BookStatus.LikeNew,
+                ValidPhoto
+            ).Value;
+        }
     }
 }

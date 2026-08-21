@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder;
 using FluentAssertions;
@@ -11,140 +12,131 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CartFolder
 {
     public class CartItemTests
     {
-        private static Money CreateValidMoney(decimal amount = 10.0m) => Money.Create(amount).Value;
+        private static Money ValidPrice => Money.Create(15.00m).Value;
 
-        #region Factory Method (Create) Tests - Success
-
+        // ==========================================
+        // CREATE TESTS
+        // ==========================================
         [Fact]
-        public void Create_WithValidParameters_ShouldReturnSuccessResultWithCartItem()
+        public void Create_WithValidParameters_ShouldReturnSuccess()
         {
             var bookId = Guid.NewGuid();
-            var title = "Il Nome della Rosa";
-            var price = CreateValidMoney(15.99m);
-            var mainPhoto = "https://example.com/photo.jpg";
-            var quantity = 2;
+            var sellerId = Guid.NewGuid();
 
-            var result = CartItem.Create(bookId, title, price, mainPhoto, quantity);
+            var result = CartItem.Create(bookId, sellerId, "Clean Code", ValidPrice, "cover.jpg");
 
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
-            result.Value.Id.Should().NotBeEmpty();
             result.Value.BookId.Should().Be(bookId);
-            result.Value.BookTitle.Should().Be(title);
-            result.Value.Price.Should().Be(price);
-            result.Value.MainPhoto.Should().Be(mainPhoto);
-            result.Value.Quantity.Should().Be(quantity);
+            result.Value.SellerId.Should().Be(sellerId);
+            result.Value.BookTitle.Should().Be("Clean Code");
+            result.Value.Price.Should().Be(ValidPrice);
+            result.Value.MainPhoto.Should().Be("cover.jpg");
+            result.Value.Quantity.Should().Be(1);
         }
 
-        #endregion
-
-        #region Factory Method (Create) Tests - Validations
-
         [Fact]
-        public void Create_WithEmptyBookId_ShouldReturnFailureError()
+        public void Create_WhenBookIdIsEmpty_ShouldReturnFailure()
         {
-            var result = CartItem.Create(
-                Guid.Empty,
-                "Valid Title",
-                CreateValidMoney(),
-                "photo.jpg",
-                1);
+            var result = CartItem.Create(Guid.Empty, Guid.NewGuid(), "Clean Code", ValidPrice, "cover.jpg");
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book id");
             result.Error.Description.Should().Be("Book id is empty");
+            result.Error.Type.Should().Be(ErrorType.Validation);
+        }
+
+        [Fact]
+        public void Create_WhenSellerIdIsEmpty_ShouldReturnFailure()
+        {
+            var result = CartItem.Create(Guid.NewGuid(), Guid.Empty, "Clean Code", ValidPrice, "cover.jpg");
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Seller id");
+            result.Error.Description.Should().Be("Seller id is empty");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Create_WithInvalidTitle_ShouldReturnFailureError(string? invalidTitle)
+        public void Create_WhenTitleIsNullOrEmpty_ShouldReturnFailure(string? invalidTitle)
         {
-            var result = CartItem.Create(
-                Guid.NewGuid(),
-                invalidTitle!,
-                CreateValidMoney(),
-                "photo.jpg",
-                1);
+            var result = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), invalidTitle!, ValidPrice, "cover.jpg");
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Book title");
             result.Error.Description.Should().Be("Book title is empty");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
 
         [Fact]
-        public void Create_WithNullPrice_ShouldReturnFailureError()
+        public void Create_WhenPriceIsNull_ShouldReturnFailure()
         {
-            var result = CartItem.Create(
-                Guid.NewGuid(),
-                "Valid Title",
-                null!,
-                "photo.jpg",
-                1);
+            var result = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Clean Code", null!, "cover.jpg");
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Price");
             result.Error.Description.Should().Be("Price is invalid");
+            result.Error.Type.Should().Be(ErrorType.Validation);
+        }
+
+        [Fact]
+        public void Create_WhenPriceAmountIsZeroOrNegative_ShouldReturnFailure()
+        {
+            var invalidPrice = Money.Create(0.00m).Value;
+
+            var result = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Clean Code", invalidPrice, "cover.jpg");
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Price");
+            result.Error.Description.Should().Be("Price is invalid");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
 
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Create_WithInvalidMainPhoto_ShouldReturnFailureError(string? invalidMainPhoto)
+        public void Create_WhenMainPhotoIsNullOrEmpty_ShouldReturnFailure(string? invalidPhoto)
         {
-            var result = CartItem.Create(
-                Guid.NewGuid(),
-                "Valid Title",
-                CreateValidMoney(),
-                invalidMainPhoto!,
-                1);
+            var result = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Clean Code", ValidPrice, invalidPhoto!);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Main photo");
             result.Error.Description.Should().Be("Main photo is empty");
+            result.Error.Type.Should().Be(ErrorType.Validation);
+        }
+
+        // ==========================================
+        // UPDATE QUANTITY TESTS
+        // ==========================================
+        [Fact]
+        public void UpdateQuantity_WithValidQuantity_ShouldReturnSuccessAndSetQuantity()
+        {
+            var cartItem = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Clean Code", ValidPrice, "cover.jpg").Value;
+
+            var result = cartItem.UpdateQuantity(5);
+
+            result.IsSuccess.Should().BeTrue();
+            cartItem.Quantity.Should().Be(5);
         }
 
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        [InlineData(-10)]
-        public void Create_WithQuantityZeroOrNegative_ShouldReturnFailureError(int invalidQuantity)
+        [InlineData(-5)]
+        public void UpdateQuantity_WhenQuantityIsZeroOrLess_ShouldReturnFailure(int invalidQuantity)
         {
-            var result = CartItem.Create(
-                Guid.NewGuid(),
-                "Valid Title",
-                CreateValidMoney(),
-                "photo.jpg",
-                invalidQuantity);
+            var cartItem = CartItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Clean Code", ValidPrice, "cover.jpg").Value;
+
+            var result = cartItem.UpdateQuantity(invalidQuantity);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Quantity");
-            result.Error.Description.Should().Be("Quantity must be greater than zero.");
+            result.Error.Description.Should().Be("Quantity must be greater than 1");
+            result.Error.Type.Should().Be(ErrorType.Validation);
         }
-
-        #endregion
-
-        #region UpdateQuantity Tests
-
-        [Fact]
-        public void UpdateQuantity_ShouldUpdateQuantityProperty()
-        {
-            var cartItem = CartItem.Create(
-                Guid.NewGuid(),
-                "Title",
-                CreateValidMoney(),
-                "photo.jpg",
-                1).Value;
-
-            var newQuantity = 5;
-
-            cartItem.UpdateQuantity(newQuantity);
-
-            cartItem.Quantity.Should().Be(newQuantity);
-        }
-
-        #endregion
     }
 }

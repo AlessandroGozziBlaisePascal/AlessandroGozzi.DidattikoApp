@@ -68,6 +68,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
                 var remotionResult = RemoveItem(bookId);
                 if (remotionResult.IsFailure)
                     return Result.Failure(remotionResult.Error);
+                return Result.Success();
             }
 
             var result = item.UpdateQuantity(newQuantity);

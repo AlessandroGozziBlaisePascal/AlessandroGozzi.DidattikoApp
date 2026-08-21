@@ -46,10 +46,10 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
             Date = DateTime.UtcNow;
             PaymentDetails = paymentDetails;
             _items = items;
-            TotalPrice = CalculateTotalPrice(_items) + Money.Create(ShippingFee).Value;
+            ShippingFee = shippingFee;
+            TotalPrice = CalculateTotalPrice(_items);
             Status = OrderStatus.Placed;
             ShippingType = type;
-            ShippingFee = shippingFee;
         }
 
         public static Result<Order> Create(Guid customerId, PaymentDetails paymentDetails, List<OrderItem> items, ShippingType type, decimal shippingFee)
@@ -92,23 +92,16 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder
             return Result.Success();
         }
 
-        private static Money CalculateTotalPrice(List<OrderItem> items)
-        {
-            decimal TotalAmount = items.Sum(item => item.Price.Amount);
-
-            var moneyResult = Money.Create(TotalAmount);
-
-            return moneyResult.IsSuccess
-                ? moneyResult.Value
-                : Money.Create(0).Value;
-        }
+        private Money CalculateTotalPrice(List<OrderItem> items) => Money.Create(
+            Items.Sum(i => i.Price.Amount * i.Quantity) + ShippingFee
+            ).Value;
 
         public Result CancelOrder()
         {
-            if(Status == OrderStatus.Cancelled)
+            if (Status == OrderStatus.Cancelled)
             {
                 return Result.Failure(new Error("Order status", "Order is already canceled", ErrorType.StatusConflict));
-
+            }
             Status = OrderStatus.Cancelled;
             Raise(new OrderCanceledEvent(Id));
 

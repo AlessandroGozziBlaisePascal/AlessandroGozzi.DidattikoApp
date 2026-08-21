@@ -15,7 +15,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public Money PendingBalance { get; private set; }
         public Money TotalBalance => AvailableBalance + PendingBalance;
 
-        private decimal MinTransitionsTheshold = 1m;
+        private readonly decimal MinTransitionsTheshold = 1m;
 
         public Wallet(Guid customerId)
         {

@@ -18,16 +18,20 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
         {
             if (string.IsNullOrWhiteSpace(value))
                 return Result.Failure<Name>(new Error("Name creation", "Name cannot be null or white spaces", ErrorType.Validation));
-            var nameCounter = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            if (nameCounter.Length > 3)
-                return Result.Failure<Name>(new Error("Name creation", "You can have max 3 names", ErrorType.Validation));
-            var trimmedName = value.Trim();
 
-            if (!Regex.IsMatch(trimmedName, @"^[a-zA-Z\u00C0-\u024F'\s-]+$"))
+            var nameParts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (nameParts.Length > 3)
+                return Result.Failure<Name>(new Error("Name creation", "You can have max 3 names", ErrorType.Validation));
+
+            var cleanedName = string.Join(" ", nameParts);
+
+            if (!Regex.IsMatch(cleanedName, @"^[a-zA-Z\u00C0-\u024F'\s-]+$"))
                 return Result.Failure<Name>(new Error("Name creation", "Name must contain only letters", ErrorType.Validation));
 
-            return Result.Success(new Name(trimmedName));
+            return Result.Success(new Name(cleanedName));
         }
+
+        public override string ToString() => Value;
 
     }
 }

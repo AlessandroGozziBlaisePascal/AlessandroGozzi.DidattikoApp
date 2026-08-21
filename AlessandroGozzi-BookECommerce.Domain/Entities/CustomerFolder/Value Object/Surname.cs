@@ -28,5 +28,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Obj
 
             return Result.Success(new Surname(trimmedSurname));
         }
+
+        public override string ToString() => Value;
     }
 }

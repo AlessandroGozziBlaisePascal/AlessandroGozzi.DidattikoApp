@@ -18,7 +18,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set; }
 
-        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
+        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode tCode, string passwordHash)
         {
             FullName = fullName;
             Email = email;
@@ -32,8 +32,6 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
         public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
             var customer = new Customer(fullName, email, address, number, TCode, passwordHash);
-
-            var customer = new Customer(name, surname, email, address, number, tCode, passwordHash);
 
             customer.Raise(new CustomerCreatedEvent(customer.Id));
 
