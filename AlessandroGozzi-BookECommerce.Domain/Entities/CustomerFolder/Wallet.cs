@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 {

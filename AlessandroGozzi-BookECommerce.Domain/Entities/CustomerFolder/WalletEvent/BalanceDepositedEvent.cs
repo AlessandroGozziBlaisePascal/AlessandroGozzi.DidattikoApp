@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent
 {
-    internal class BalanceDepositedEvent
-    {
-    }
+    public record BalanceDepositedEvent(Guid CustomerId, Money Money): DomainEvent;
 }

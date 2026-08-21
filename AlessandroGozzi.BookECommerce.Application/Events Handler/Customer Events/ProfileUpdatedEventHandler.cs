@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.CustomerEvent;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
 using MediatR;
 

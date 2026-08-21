@@ -6,31 +6,32 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
 {
-    public class CreditCardRemovedEventHandler: INotificationHandler<CreditCardRemovedEvent>
+    public class BalanceDepositedInWalletEventHandler: INotificationHandler<BalanceDepositedEvent>
     {
-        private readonly IEmailSender EmailSender;
         private readonly ICustomerRepository CustomerRepo;
+        private readonly IEmailSender EmailSender;
         private readonly IUnitOfWork UnitOfWork;
 
-        public CreditCardRemovedEventHandler(IEmailSender emailSender, IUnitOfWork unitOfWork, ICustomerRepository custRepo)
+        public BalanceDepositedInWalletEventHandler(ICustomerRepository custRepo, IEmailSender emailSender, IUnitOfWork unitOfWork)
         {
+            CustomerRepo = custRepo;
             EmailSender = emailSender;
             UnitOfWork = unitOfWork;
-            CustomerRepo = custRepo;
         }
 
-        public async Task Handle(CreditCardRemovedEvent notification, CancellationToken token)
-        { 
+        public async Task Handle(BalanceDepositedEvent notification, CancellationToken token)
+        {
             var customer = await CustomerRepo.GetByIdAsync(notification.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(),"Credit card removed",$"Your credit card {notification.CardOwner} {notification.DisplayName} got removed with success at {notification.OccurredOnUtc}", token);
+            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Wallet transitin", 
+                $"Balance of {notification.Money.ToDto()} got deposited in your wallet at {notification.OccurredOnUtc}", token);
 
             await UnitOfWork.SaveChangesAsync(token);
         }

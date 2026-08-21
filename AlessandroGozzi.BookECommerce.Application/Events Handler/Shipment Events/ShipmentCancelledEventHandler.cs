@@ -60,8 +60,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
             
             buyer.Wallet.Deposit(shipment.SubTotal);
 
-            await EmailSender.SendEmailAsync(buyer.Email.ToDto(), "Shipment cancelled", $"You shipment got cancelled, refund got deposited in your wallet at {notification.OccurredOnUtc}", cancellationToken);
-            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Shipment cancelled", "Your shipment got cancelled, pending funds got cancelled", cancellationToken);
+            await EmailSender.SendEmailAsync(buyer.Email.ToDto(), "Shipment cancelled", 
+                $"You shipment got cancelled, refund got deposited in your wallet at {notification.OccurredOnUtc}", cancellationToken);
+
+            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Shipment cancelled",
+                "Your shipment got cancelled, pending funds got cancelled", cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
         }

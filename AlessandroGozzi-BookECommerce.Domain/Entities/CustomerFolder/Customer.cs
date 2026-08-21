@@ -2,7 +2,7 @@
 using System.Net.NetworkInformation;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.CustomerEvent;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
