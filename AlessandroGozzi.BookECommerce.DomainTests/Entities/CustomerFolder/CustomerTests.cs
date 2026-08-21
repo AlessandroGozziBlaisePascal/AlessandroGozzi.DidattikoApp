@@ -39,13 +39,14 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         public void Create_ShouldSucceed_AndRaiseCustomerCreatedEvent_WhenParametersAreValid()
         {
             var result = Customer.Create(
-                _validName,
-                _validSurname,
-                _validEmail,
-                _validAddress,
-                _validPhone,
-                _validTaxCode,
-                ValidPasswordHash);
+                GetValidName(),
+                GetValidSurname(),
+                GetValidEmail(),
+                GetValidAddress(),
+                GetValidPhoneNumber(),
+                GetValidTaxCode(),
+                "hashedPassword123"
+            );
 
             result.IsSuccess.Should().BeTrue();
             result.Value.Name.Should().Be(_validName);
@@ -74,7 +75,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void ChangeName_ShouldFail_WhenNameIsNull()
         {
-            var customer = CreateSampleCustomer();
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
 
             var result = customer.ChangeName(null!);
 
@@ -97,9 +101,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void ChangeName_ShouldUpdateNameAndRaiseEvent_WhenNameIsNew()
         {
-            var customer = CreateSampleCustomer();
-            customer._domainEvents.Clear();
-            var newName = Name.Create("Luigi").Value;
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
 
             var result = customer.ChangeName(newName);
 
@@ -115,9 +120,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void ChangeSurname_ShouldUpdateSurnameAndRaiseEvent_WhenSurnameIsNew()
         {
-            var customer = CreateSampleCustomer();
-            customer._domainEvents.Clear();
-            var newSurname = Surname.Create("Verdi").Value;
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
 
             var result = customer.ChangeSurname(newSurname);
 
@@ -133,9 +139,12 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void ChangeEmail_ShouldUpdateEmailAndRaiseEvent_WhenEmailIsNew()
         {
-            var customer = CreateSampleCustomer();
-            customer._domainEvents.Clear();
-            var newEmail = Email.Create("new.email@example.com").Value;
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
+
+            var newEmail = Email.Create("nuova.email@example.com").Value;
 
             var result = customer.ChangeEmail(newEmail);
 
@@ -151,9 +160,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void ChangeAddress_ShouldUpdateAddressAndRaiseEvent_WhenAddressIsNew()
         {
-            var customer = CreateSampleCustomer();
-            customer._domainEvents.Clear();
-            var newAddress = Address.Create("Corso Vittorio", "5", "Torino", "10100").Value;
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
+            CreditCard nullCard = null;
 
             var result = customer.ChangeAddress(newAddress);
 
@@ -169,7 +180,14 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void AddCreditCard_ShouldFail_WhenCardIsNull()
         {
-            var customer = CreateSampleCustomer();
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
+            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
+
+            customer.AddCreditCard(card);
+            customer.ClearEvents(); 
 
             var result = customer.AddCreditCard(null!);
 
@@ -180,9 +198,16 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         [Fact]
         public void AddCreditCard_ShouldSetCardAndRaiseEvent_WhenCardIsValid()
         {
-            var customer = CreateSampleCustomer();
-            customer._domainEvents.Clear();
-            var card = CreditCard.Create("Mario", "Rossi", "12/28", "1234").Value;
+            var customer = Customer.Create(
+                GetValidName(), GetValidSurname(), GetValidEmail(),
+                GetValidAddress(), GetValidPhoneNumber(), GetValidTaxCode(), "hashedPassword123"
+            ).Value;
+
+            var card = CreditCard.Create("Alessandro", "Gozzi", "10/30", "0672").Value;
+            customer.AddCreditCard(card);
+            customer.ClearEvents();
+
+            var card2 = CreditCard.Create("Noemi", "Colciago", "10/31", "0670").Value;
 
             var result = customer.AddCreditCard(card);
 

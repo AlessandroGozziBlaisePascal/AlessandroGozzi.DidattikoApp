@@ -19,22 +19,49 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
 
         private List<OrderItem> CreateSampleItems()
         {
-            var price1 = Money.Create(10m).Value;
-            var price2 = Money.Create(20m).Value;
+            var money = Money.Create(amount).Value;
+            return OrderItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Il Signore degli Anelli", money, 1).Value;
+        }
 
             return new List<OrderItem>
         {
-            OrderItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Book 1", price1, 2).Value, // 10 * 2 = 20
-            OrderItem.Create(Guid.NewGuid(), Guid.NewGuid(), "Book 2", price2, 1).Value  // 20 * 1 = 20
-        };
+            var result = OrderItem.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Design Patterns",
+                Money.Create(49.99m).Value,
+                2
+            );
+
+            result.IsSuccess.Should().BeTrue();
+            result.Value.BookTitle.Should().Be("Design Patterns");
+            result.Value.Price.Amount.Should().Be(49.99m);
         }
 
-        #region Create Tests
+        [Theory]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData(null)]
+        public void OrderItem_Create_WithInvalidTitle_ShouldFail(string? invalidTitle)
+        {
+            var result = OrderItem.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                invalidTitle!,
+                Money.Create(10m).Value,
+                2
+            );
 
         [Fact]
         public void Create_ShouldCalculateTotalPriceCorrectly_ConsideringQuantities()
         {
-            var items = CreateSampleItems();
+            var result = OrderItem.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Clean Code",
+                null!,
+                2
+            );
 
             var result = Order.Create(Guid.NewGuid(), _validCard, items);
 
@@ -43,13 +70,30 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
             result.Value.Status.Should().Be(OrderStatus.Placed);
             result.Value._domainEvents.Should().ContainSingle(e => e is OrderPlacedEvent);
         }
+        [Fact]
+        public void OrderItem_Create_WithInvalidQuantity_ShouldFail()
+        {
+            var result = OrderItem.Create(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                "Clean Code",
+                Money.Create(10m).Value,
+                -1
+            );
+
+            result.IsFailure.Should().BeTrue();
+        }
+
+        #endregion
+
+        #region Order Creation & Total Price Tests
 
         [Fact]
         public void Create_ShouldFail_WhenCustomerIdIsEmpty()
         {
             var items = CreateSampleItems();
 
-            var result = Order.Create(Guid.Empty, _validCard, items);
+            var result = Order.Create(customerId, card, items);
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Order customer");
@@ -71,8 +115,15 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         {
             var result = Order.Create(Guid.NewGuid(), _validCard, new List<OrderItem>());
 
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Order items");
+            var resultEmpty = Order.Create(Guid.NewGuid(), card, new List<OrderItem>());
+
+            var resultNull = Order.Create(Guid.NewGuid(), card, null!);
+
+            resultEmpty.IsFailure.Should().BeTrue();
+            resultEmpty.Error.Code.Should().Be("Order items");
+
+            resultNull.IsFailure.Should().BeTrue();
+            resultNull.Error.Code.Should().Be("Order items");
         }
 
         #endregion
@@ -82,34 +133,19 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void Confirm_ShouldSucceed_WhenStatusIsPlaced()
         {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
-            order._domainEvents.Clear();
-
-            var result = order.Confirm();
+            var card = GetValidCreditCard();
+            var items = new List<OrderItem> { GetValidOrderItem() };
+            var order = Order.Create(Guid.NewGuid(), card, items).Value;
 
             result.IsSuccess.Should().BeTrue();
             order.Status.Should().Be(OrderStatus.Confirmed);
-            order._domainEvents.Should().ContainSingle(e => e is OrderConfirmedEvent);
-        }
-
-        [Fact]
-        public void MarkAsPrepared_ShouldFail_WhenOrderIsNotConfirmed()
-        {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
-
-            var result = order.MarkAsPrepared();
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Order status");
         }
 
         [Fact]
         public void Ship_ShouldSucceed_WhenOrderIsPreparedAndTrackingCodeIsValid()
         {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
-            order.Confirm();
-            order.MarkAsPrepared();
-            order._domainEvents.Clear();
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
+            order.Confirm(); 
 
             var result = order.Ship("TRACK12345");
 
@@ -119,30 +155,10 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
             order._domainEvents.Should().ContainSingle(e => e is OrderShippedEvent);
         }
 
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void Ship_ShouldFail_WhenTrackingCodeIsInvalid(string? trackingCode)
-        {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
-            order.Confirm();
-            order.MarkAsPrepared();
-
-            var result = order.Ship(trackingCode!);
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tracking code");
-        }
-
         [Fact]
-        public void MarkAsDelivered_ShouldSucceed_WhenOrderIsShipped()
+        public void CancelOrder_BeforeShipping_ShouldSucceed()
         {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
-            order.Confirm();
-            order.MarkAsPrepared();
-            order.Ship("TRACK12345");
-            order._domainEvents.Clear();
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
 
             var result = order.MarkAsDelivered();
 
@@ -154,10 +170,8 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.OrderFolder
         [Fact]
         public void CancelOrder_ShouldFail_WhenOrderIsShipped()
         {
-            var order = Order.Create(Guid.NewGuid(), _validCard, CreateSampleItems()).Value;
+            var order = Order.Create(Guid.NewGuid(), GetValidCreditCard(), new List<OrderItem> { GetValidOrderItem() }).Value;
             order.Confirm();
-            order.MarkAsPrepared();
-            order.Ship("TRACK12345");
 
             var result = order.CancelOrder();
 

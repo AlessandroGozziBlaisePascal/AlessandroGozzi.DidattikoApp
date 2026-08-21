@@ -9,6 +9,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
     public record CartItemDto(
     Guid CartItemId,            
     Guid BookId,  
+    Guid SellerId,
     string Title,        
     string MainPhoto,
     decimal UnitPrice,         

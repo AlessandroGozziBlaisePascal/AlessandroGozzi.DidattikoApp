@@ -5,15 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
+using AlessandroGozzi_BookECommerce.Domain.Entities.Repository;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository
 {
-    public interface ICustomerRepository
+    public interface ICustomerRepository: IRepository<Customer>
     {
-        Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<Customer?> GetByIdentifierAsync(string identifier, CancellationToken cancellationToken = default);
-        Task AddAsync(Customer customer, CancellationToken cancellationToken = default);
-        Task UpdateAsync(Customer customer, CancellationToken cancellationToken = default);
-        Task DeleteAsync(Customer customer, CancellationToken cancellationToken = default);
     }
 }

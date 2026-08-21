@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.BookSearching
 {
     public record AdoptedBookItemDto(
-        Guid? InternalBookId,
         string ISBN,
         string Title,
         string Authors,

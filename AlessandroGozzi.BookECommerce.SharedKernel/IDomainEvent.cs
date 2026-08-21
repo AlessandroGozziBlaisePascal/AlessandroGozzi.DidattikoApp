@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MediatR;
 using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.SharedKernel
 {
-    public interface IDomainEvent
+    public interface IDomainEvent: INotification
     {
         DateTime OccurredOnUtc { get; }
     }

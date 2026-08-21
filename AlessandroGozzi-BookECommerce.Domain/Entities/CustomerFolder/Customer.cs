@@ -2,58 +2,36 @@
 using System.Net.NetworkInformation;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Event;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.CustomerEvent;
 using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 {
     public class Customer: Entity
     {
-        public Name Name { get; private set; }
-        public Surname Surname { get; private set; }
+        public FullName FullName { get; private set; }
         public Email Email { get; private set; }
         public Address Address { get; private set; }
         public CreditCard? CreditCard { get; private set; }
+        public Wallet Wallet { get; private set; }
         public PhoneNumber Number { get; private set; }
         public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set; }
 
-        private Customer() { }
-
-        private Customer(Name name, Surname surname, Email email, Address address, PhoneNumber number, TaxCode tCode, string passwordHash)
+        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
-            Name = name;
-            Surname = surname;
+            FullName = fullName;
             Email = email;
             Address = address;
             Number = number;
             TaxCode = tCode;
             PasswordHash = passwordHash;
+            Wallet = new Wallet(Id);
         }
 
-        public static Result<Customer> Create(
-            Name name,
-            Surname surname,
-            Email email,
-            Address address,
-            PhoneNumber number,
-            TaxCode tCode,
-            string passwordHash)
+        public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
         {
-            if (name is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "Name cannot be null", ErrorType.Validation));
-            if (surname is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "Surname cannot be null", ErrorType.Validation));
-            if (email is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "Email cannot be null", ErrorType.Validation));
-            if (address is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "Address cannot be null", ErrorType.Validation));
-            if (number is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "Phone number cannot be null", ErrorType.Validation));
-            if (tCode is null)
-                return Result.Failure<Customer>(new Error("Customer.Create", "TaxCode cannot be null", ErrorType.Validation));
-            if (string.IsNullOrWhiteSpace(passwordHash))
-                return Result.Failure<Customer>(new Error("Customer.Create", "Password hash cannot be null or empty", ErrorType.Validation));
+            var customer = new Customer(fullName, email, address, number, TCode, passwordHash);
 
             var customer = new Customer(name, surname, email, address, number, tCode, passwordHash);
 
@@ -62,33 +40,15 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
             return Result.Success(customer);
         }
 
-        public Result ChangeName(Name name)
+        public Result ChangeName(FullName newFullname)
         {
-            if (name is null)
+            if (newFullname == null)
                 return Result.Failure(new Error("Change name", "Cannot change to a null value", ErrorType.Validation));
-
-            if (Name == name)
+            if (FullName == newFullname)
                 return Result.Success();
-
-            var oldName = Name;
-            Name = name;
-
-            Raise(new NameChangedEvent(Id, oldName, Name));
-            return Result.Success();
-        }
-
-        public Result ChangeSurname(Surname surname)
-        {
-            if (surname is null)
-                return Result.Failure(new Error("Change surname", "Cannot change to a null value", ErrorType.Validation));
-
-            if (Surname == surname)
-                return Result.Success();
-
-            var oldSurname = Surname;
-            Surname = surname;
-
-            Raise(new SurnameChangedEvent(Id, oldSurname, Surname));
+            var n = FullName;
+            FullName = newFullname;
+            Raise(new NameChangedEvent(Id, n, FullName));
             return Result.Success();
         }
 
@@ -150,20 +110,31 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 
             return Result.Success();
         }
+        public Result RemoveCreditCard()
+        {
+            if (CreditCard == null)
+                return Result.Failure(new Error("Credit card", "Cannot remove null credit card", ErrorType.NotFound));
+            var oldCard = CreditCard;
+            CreditCard = null;
+            Raise(new CreditCardRemovedEvent(Id, oldCard.CardOwner, oldCard.DisplayName));
+            return Result.Success();
+        }
 
         public Result ChangePassword(string newPasswordHash)
         {
             if (string.IsNullOrWhiteSpace(newPasswordHash))
-                return Result.Failure(new Error("New password", "New password hash is null or white spaces", ErrorType.Validation));
+            {
+                return Result.Failure(new Error("New password", "New password hash is null or white spaces",ErrorType.Validation));
+            }
 
-            if (PasswordHash == newPasswordHash)
-                return Result.Success();
-
-            var oldPasswordHash = PasswordHash;
             PasswordHash = newPasswordHash;
-
-            Raise(new CustomerPasswordChangedEvent(Id, oldPasswordHash, PasswordHash));
+            Raise(new CustomerPasswordChangedEvent(Id));
             return Result.Success();
+        }
+
+        public void ProfileUpdated(List<string> updatedFields)
+        {
+            Raise(new ProfileUpdatedEvent(Id, updatedFields));
         }
     }
 }

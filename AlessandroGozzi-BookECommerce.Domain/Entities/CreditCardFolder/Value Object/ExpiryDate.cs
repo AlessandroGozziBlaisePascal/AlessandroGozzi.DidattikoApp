@@ -29,10 +29,12 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder.Value_O
             return Result.Success(new ExpiryDate(int.Parse(parts[0]), 2000 + int.Parse(parts[1])));
         }
 
-        public bool IsExpired(DateTime referenceDate)
+        public bool IsExpired(DateTime? referenceDate = null)
         {
+            var currentDate = referenceDate ?? DateTime.UtcNow;
+            
             var lastDayOfMonth = new DateTime(Year, Month, DateTime.DaysInMonth(Year, Month), 23, 59, 59);
-            return lastDayOfMonth < referenceDate;
+            return lastDayOfMonth < currentDate;
         }
 
         public override string ToString() => $"{Month}/{Year}";

@@ -20,7 +20,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
 
             return new OrderDto(
                 OrderId: order.Id,
-                OrderCode: order.TrackingCode,
                 BuyerId: order.CustomerId,
                 PlacedAt: order.Date,
                 Status: order.Status.ToString(),

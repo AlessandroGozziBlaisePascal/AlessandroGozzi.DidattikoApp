@@ -7,5 +7,5 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Event
 {
-    public record BookRemovedFromCartEvent(Guid CustomerId, Guid CartId, Guid BookId, int Quantity) : DomainEvent { }
+    public record BookRemovedFromCartEvent(Guid CustomerId, Guid CartId, Guid BookId) : DomainEvent { }
 }

@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
-    internal class CreditCardDto
-    {
-    }
+    public record CreditCardDto(
+    Guid Id,
+    string MaskedNumber, 
+    string ExpirationDate
+    );
 }

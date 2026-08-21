@@ -5,48 +5,38 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
+using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Value_Object
 {
     public record BookReview
     {
         public Guid CustomerId { get; init; }
-        public string Text { get; init; }
+        public FullName CustomerName { get; init; }
         public int Rating { get; init; }
         public DateTime CreatedAt { get; init; }
-        private BookReview(Guid customerId, string text, int rating)
+
+        private BookReview(Guid custId, FullName custName, int rating)
         {
-            CustomerId = customerId;
-            Text = text;
+            CustomerId = custId;
+            CustomerName = custName;
             Rating = rating;
             CreatedAt = DateTime.Now;
         }
 
-        public static Result<BookReview> Create(Guid customerId, int rating, string text)
+        public static Result<BookReview> Create(Guid custId, FullName custName, int rating)
         {
-            if (customerId == Guid.Empty)
-            {
-                return Result.Failure<BookReview>(new Error("Review.InvalidCustomer","A valid Customer ID must be provided.", ErrorType.Validation));
-            }
+            if (custName == null)
+                return Result.Failure<BookReview>(new Error("Customer name", "Customer name is null", ErrorType.Validation));
             if (rating < 1 || rating > 5)
             {
                 return Result.Failure<BookReview>(new Error("Review.InvalidRating", "The rating must be between 1 and 5 stars.",ErrorType.Validation));
             }
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                return Result.Failure<BookReview>(new Error("Review.EmptyText", "Comment text cannot be empty.",ErrorType.Validation));
-            }
 
-            return Result.Success(new BookReview(customerId, text.Trim(), rating));
+            return Result.Success(new BookReview(custId, custName, rating));
         }
 
-        public override string ToString()
-        {
-            StringBuilder sb = new();
-            sb.Append($"{CustomerId} {Rating}");
-            sb.Append($"{Text} {CreatedAt}");
-            return sb.ToString();
-        }
+        public override string ToString() => $"{CustomerName} {Rating} {CreatedAt}";
     }
 
 }

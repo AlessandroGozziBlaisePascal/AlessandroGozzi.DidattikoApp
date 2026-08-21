@@ -26,44 +26,53 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder
             return Result.Success(new Cart(customerId));
         }
 
-        public Result AddItem(Guid bookId, string bookTitle, Money price, string mainPhoto, int quantity)
+        public Result AddItem(Guid bookId, Guid sellerId, string bookTitle, Money price, string mainPhoto)
         {
-            if (quantity <= 0)
-            {
-                return Result.Failure(new Error("Book", "Quantity must be greater than zero.", ErrorType.StatusConflict));
-            }
             var item = Items.FirstOrDefault(i  => i.BookId == bookId);
             if (item != null)
-                item.UpdateQuantity(item.Quantity + quantity);
+            {
+                var result = item.UpdateQuantity(item.Quantity + 1);
+                if (result.IsFailure)
+                    return Result.Failure(result.Error);
+            }   
             else
             {
-                var result = CartItem.Create(bookId, bookTitle, price, mainPhoto, quantity);
+                var result = CartItem.Create(bookId, sellerId, bookTitle, price, mainPhoto);
                 if (result.IsFailure)
                     return Result.Failure(new Error("Book", "Book failed to be created", ErrorType.Failure));
                 Items.Add(result.Value);
             }
                      
-            Raise(new BookAddedToCartEvent(CustomerId, Id, bookId, quantity));
+            Raise(new BookAddedToCartEvent(CustomerId, Id, bookId));
 
             return Result.Success();
         }
 
-        public Result RemoveItem(Guid bookId, int quantity)
+        public Result RemoveItem(Guid bookId)
         {
-            if (quantity <= 0)
-            {
-                return Result.Failure(new Error("Book", "Quantity must be greater than zero.", ErrorType.StatusConflict));
-            }
             var item = Items.FirstOrDefault(i => i.BookId == bookId);
             if(item == null)
                 return Result.Failure(new Error("Book", "Product not found in the shopping cart.", ErrorType.NotFound));
-            if(item.Quantity < quantity)
-                return Result.Failure(new Error("Book", "Not enough quantity to remove.", ErrorType.StatusConflict));
-            if(item.Quantity == quantity)
-                Items.Remove(item);
-            else
-                item.UpdateQuantity(item.Quantity - quantity);
-            Raise(new BookRemovedFromCartEvent(CustomerId, Id, bookId, quantity));
+            Items.Remove(item);
+            Raise(new BookRemovedFromCartEvent(CustomerId, Id, bookId));
+            return Result.Success();
+        }
+
+        public Result UpdateItemQuantity(Guid bookId, int newQuantity)
+        {
+            var item = Items.FirstOrDefault(i => i.BookId == bookId);
+            if (item == null)
+                return Result.Failure(new Error("Book", "Product not found in the shopping cart.", ErrorType.NotFound));
+            if(newQuantity == 0)
+            {
+                var remotionResult = RemoveItem(bookId);
+                if (remotionResult.IsFailure)
+                    return Result.Failure(remotionResult.Error);
+            }
+
+            var result = item.UpdateQuantity(newQuantity);
+            if (result.IsFailure)
+                return Result.Failure(result.Error);
             return Result.Success();
         }
 

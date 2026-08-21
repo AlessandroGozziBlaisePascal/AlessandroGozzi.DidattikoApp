@@ -7,5 +7,5 @@ using AlessandroGozzi.BookECommerce.SharedKernel;
 
 namespace AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Event
 {
-    public record OrderConfirmedEvent(Guid OrderId): DomainEvent { }
+    public record OrderConfirmedEvent(Guid Id): DomainEvent;
 }
