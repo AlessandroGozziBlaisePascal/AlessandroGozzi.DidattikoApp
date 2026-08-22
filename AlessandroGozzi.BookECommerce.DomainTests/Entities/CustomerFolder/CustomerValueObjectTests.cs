@@ -198,7 +198,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
 
             result.IsFailure.Should().BeTrue();
             result.Error.Code.Should().Be("Surname creation");
-            result.Error.Description.Should().Be("Surname cannot be null ro white spaces");
+            result.Error.Description.Should().Be("Surname cannot be null or white spaces");
             result.Error.Type.Should().Be(ErrorType.Validation);
         }
 

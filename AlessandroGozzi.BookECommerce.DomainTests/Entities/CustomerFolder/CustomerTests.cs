@@ -43,7 +43,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
             result.Value.TaxCode.Should().Be(_taxCode);
             result.Value.PasswordHash.Should().Be(PasswordHash);
             result.Value.Wallet.Should().NotBeNull();
-            result.Value.Wallet.Id.Should().Be(result.Value.Id);
+            result.Value.Wallet.CustomerId.Should().Be(result.Value.Id);
 
             result.Value._domainEvents.Should().ContainSingle(e => e is CustomerCreatedEvent);
         }
@@ -81,7 +81,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = CreateValidCustomer();
             customer._domainEvents.Clear();
-            var newFullName = new FullName(Name.Create("Alessandro").Value, Surname.Create("Gozzi").Value);
+            var newFullName = new FullName(Name.Create("Riccardo").Value, Surname.Create("Gozzi").Value);
 
             var result = customer.ChangeName(newFullName);
 
@@ -237,7 +237,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         {
             var customer = CreateValidCustomer();
             customer._domainEvents.Clear();
-            var creditCard = CreditCard.Create("Mario", "Rossi", "8/30", "0654", customer.Id).Value;
+            var creditCard = CreditCard.Create("Mario", "Rossi", "08/30", "0654", customer.Id).Value;
 
             var result = customer.AddCreditCard(creditCard);
 
@@ -250,7 +250,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         public void AddCreditCard_WhenSameCard_ShouldReturnSuccessWithoutDomainEvent()
         {
             var customer = CreateValidCustomer();
-            var creditCard = CreditCard.Create("Mario", "Rossi", "8/30", "0654", customer.Id).Value;
+            var creditCard = CreditCard.Create("Mario", "Rossi", "08/30", "0654", customer.Id).Value;
             customer.AddCreditCard(creditCard);
             customer._domainEvents.Clear();
 
@@ -277,7 +277,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.Entities.CustomerFolder
         public void RemoveCreditCard_WhenCreditCardExists_ShouldSetToNullAndRaiseCreditCardRemovedEvent()
         {
             var customer = CreateValidCustomer();
-            var creditCard = CreditCard.Create("Mario","Rossi","8/30","0654",customer.Id).Value;
+            var creditCard = CreditCard.Create("Mario","Rossi","08/30","0654",customer.Id).Value;
             customer.AddCreditCard(creditCard);
             customer._domainEvents.Clear();
 

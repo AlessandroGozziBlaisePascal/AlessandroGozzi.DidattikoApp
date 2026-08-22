@@ -97,7 +97,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder
 
         public Result AddCreditCard(CreditCard card)
         {
-            if (card is null)
+            if (card == null)
                 return Result.Failure(new Error("Credit card", "Cannot add null credit card", ErrorType.Validation));
 
             if (CreditCard == card)
