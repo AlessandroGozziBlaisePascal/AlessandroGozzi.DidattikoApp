@@ -7,8 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBookDetails
@@ -56,12 +55,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBo
             }
             if (!string.IsNullOrWhiteSpace(command.NewStatus))
             {
-                var statusResult = command.NewStatus.ToDomain();
+                var statusResult = command.NewStatus.ToBookStatusDomain();
                 if (statusResult.IsFailure)
                 {
                     return Result.Failure<BookDto>(new Error("Book new status", "Invalid new status", ErrorType.Validation));
                 }
-                var result = book.UpdateStatus(command.NewStatus.ToDomain().Value, customer.Id);
+                var result = book.UpdateStatus(command.NewStatus.ToBookStatusDomain().Value, customer.Id);
                 if (result.IsFailure)
                 {
                     return Result.Failure<BookDto>(new Error("Book new status", "Failed to change book status", ErrorType.Failure));

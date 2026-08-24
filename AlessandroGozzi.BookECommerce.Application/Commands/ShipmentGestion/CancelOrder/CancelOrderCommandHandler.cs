@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi_BookECommerce.Domain.BooksRepository;
+using AlessandroGozzi_BookECommerce.Domain.CustomersRepository;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.CancelOrder

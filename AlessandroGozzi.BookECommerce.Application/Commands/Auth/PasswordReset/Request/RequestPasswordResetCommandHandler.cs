@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 using Stripe;
 

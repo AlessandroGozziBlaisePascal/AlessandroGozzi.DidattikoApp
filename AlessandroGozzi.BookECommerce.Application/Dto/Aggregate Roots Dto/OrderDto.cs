@@ -14,7 +14,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
         DateTime PlacedAt,
         string Status,
         decimal TotalAmount,
-        string? PaymentTransactionId,
+        PaymentDetailsDto PaymentDetails,
         IReadOnlyCollection<OrderItemDto> Items
     );
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.WalletEvent;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets.Events;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Events_Handler

@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Value_Object;
+using AlessandroGozzi_BookECommerce.Domain.CustomersValue_Object;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.UpdateProfile

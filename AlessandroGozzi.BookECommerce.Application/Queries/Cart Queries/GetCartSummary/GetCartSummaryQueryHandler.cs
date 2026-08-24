@@ -7,8 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.Cart_Queries.GetCartSummary

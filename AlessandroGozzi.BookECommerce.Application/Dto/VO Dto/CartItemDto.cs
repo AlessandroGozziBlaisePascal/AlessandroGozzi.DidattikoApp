@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
-    public record CartItemDto(
-    Guid CartItemId,            
+    public record CartItemDto(           
     Guid BookId,  
     Guid SellerId,
     string Title,        

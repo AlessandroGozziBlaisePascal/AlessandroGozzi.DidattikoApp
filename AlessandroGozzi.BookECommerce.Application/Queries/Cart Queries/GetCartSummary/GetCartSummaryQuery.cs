@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Value_Object;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.Cart_Queries.GetCartSummary

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {

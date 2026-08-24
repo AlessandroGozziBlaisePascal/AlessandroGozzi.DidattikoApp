@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Checkout
 {
     public record PaymentDetailsDto(
-        bool IsSuccess,
-        string PaymentIntentId,
-        string CardBrand,
-        string CardLast4Digits
+        string PaymentMethod,
+        string Description
         );
 }

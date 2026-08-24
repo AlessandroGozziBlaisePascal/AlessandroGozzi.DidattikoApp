@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.CreditCardFolder;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard

@@ -7,8 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromSale;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.RestoreBook

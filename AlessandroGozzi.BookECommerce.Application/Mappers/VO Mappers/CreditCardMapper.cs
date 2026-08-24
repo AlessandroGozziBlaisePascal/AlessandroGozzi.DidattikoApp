@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
+using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {
@@ -13,9 +13,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static CreditCardDto ToDto(this CreditCard card)
         {
             return new CreditCardDto(
-                Id: card.Id,
                 MaskedNumber: card.DisplayName,
-                ExpirationDate: card.ExpiryDate.ToString()
+                ExpirationDate: card.ExpiryDate.ToDto()
             );
         }
     }

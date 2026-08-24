@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record CreditCardDto(
-    Guid Id,
     string MaskedNumber, 
     string ExpirationDate
     );

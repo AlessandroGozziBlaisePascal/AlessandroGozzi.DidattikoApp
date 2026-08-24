@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CreditCardFolder;
+using AlessandroGozzi_BookECommerce.Domain.CreditCardFolder;
 
 namespace AlessandroGozzi.BookECommerce.Application
 {

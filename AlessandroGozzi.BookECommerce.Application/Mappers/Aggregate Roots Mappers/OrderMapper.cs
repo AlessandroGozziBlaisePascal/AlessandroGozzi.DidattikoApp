@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers
 {
@@ -24,7 +22,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 PlacedAt: order.Date,
                 Status: order.Status.ToString(),
                 TotalAmount: order.TotalPrice.Amount,
-                PaymentTransactionId: order.PaymentDetails?.Id.ToString(), 
+                PaymentDetails: order.PaymentDetails?.ToDto(),
                 Items: itemDtos
             );
         }

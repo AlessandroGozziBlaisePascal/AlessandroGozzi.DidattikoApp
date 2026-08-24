@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.SellNewBook
@@ -54,7 +53,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.SellNewBook
                 return Result.Failure(priceResult.Error);
             }
 
-            var conditionResult = command.Condition.ToDomain();
+            var conditionResult = command.Condition.ToBookStatusDomain();
             if(conditionResult.IsFailure)
             {
                 return Result.Failure(conditionResult.Error);

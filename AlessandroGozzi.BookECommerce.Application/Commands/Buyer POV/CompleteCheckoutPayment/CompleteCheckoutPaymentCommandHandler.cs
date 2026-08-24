@@ -10,15 +10,11 @@ using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Entities;
-using AlessandroGozzi_BookECommerce.Domain.Entities.BookFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CartFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.CustomerFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Repository;
-using AlessandroGozzi_BookECommerce.Domain.Entities.OrderFolder.Value_Object;
-using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder;
-using AlessandroGozzi_BookECommerce.Domain.Entities.ShipmentFolder.Repository;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.ValueObjects;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
 using MediatR;
 using Stripe;
 
@@ -91,6 +87,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
                     book.SellerId,
                     book.Title,
                     book.Price,
+                    book.MainPhoto,
                     cartItem.Quantity
                 );
 

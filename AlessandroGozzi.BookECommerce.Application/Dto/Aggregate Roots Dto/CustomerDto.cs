@@ -9,8 +9,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
 {
     public record CustomerDto(
         Guid CustomerId,
-        string Name,
-        string Surname,
+        string FullName,
         string Email,
         string PhoneNumber,
         AddressDto Address,
