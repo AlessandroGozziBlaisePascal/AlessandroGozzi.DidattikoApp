@@ -3,6 +3,7 @@ using System.Data;
 using System.Windows;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance;
 using Microsoft.EntityFrameworkCore;
+using Stripe.BillingPortal;
 
 namespace AlessandroGozzi.BookECommerce.WPF
 {

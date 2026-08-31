@@ -11,7 +11,6 @@ namespace AlessandroGozzi_BookECommerce.Domain.Repositories
 {
     public interface IOrderRepository: IRepository<Order>
     {
-        Task<Order?> GetByPaymentIntentIdAsync(string paymenIntentId, CancellationToken token = default);
         Task<IReadOnlyCollection<Order>> GetAllByCustomerIdAsync(Guid customerId, CancellationToken token = default);
     }
 }
