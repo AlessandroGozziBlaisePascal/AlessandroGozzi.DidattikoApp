@@ -1,0 +1,47 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
+using Microsoft.EntityFrameworkCore;
+
+namespace AlessandroGozzi.BookECommerce.Infrastructure.Persistance
+{
+    public class ApplicationDbContext : DbContext
+    {
+        public ApplicationDbContext() { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Book> Books => Set<Book>();
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<Customer> Customers => Set<Customer>();
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<Shipment> Shipments => Set<Shipment>();
+        public DbSet<Wallet> Wallets => Set<Wallet>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=BookECommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+            }
+        }
+
+    }
+}
+

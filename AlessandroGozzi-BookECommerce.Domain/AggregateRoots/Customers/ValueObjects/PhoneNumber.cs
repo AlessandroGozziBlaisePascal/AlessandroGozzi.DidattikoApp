@@ -11,6 +11,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObj
     {
         public string Value { get; init; }
 
+        private PhoneNumber() { }
         private PhoneNumber(string n) => Value = n;
 
         public string InternationalNumber => $"+39{Value}";

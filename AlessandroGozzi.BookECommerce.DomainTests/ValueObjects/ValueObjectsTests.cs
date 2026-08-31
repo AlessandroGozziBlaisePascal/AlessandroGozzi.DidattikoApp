@@ -293,5 +293,59 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.ValueObjects
                 (moneyA == moneyB).Should().BeTrue();
             }
         }
+        public class IbanTests
+        {
+            [Theory]
+            [InlineData("IT60X0542811101000000123456")]
+            [InlineData("IT60 X054 2811 1010 0000 0123 456")]
+            public void Create_ShouldReturnSuccess_WhenIbanIsValid(string validIban)
+            {
+                Result<IBAN> result = IBAN.Create(validIban);
+
+                result.IsSuccess.Should().BeTrue();
+                result.Value.Should().NotBeNull();
+                result.Value.Value.Should().Be(validIban);
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("")]
+            [InlineData("   ")]
+            public void Create_ShouldReturnFailure_WhenIbanIsNullOrWhitespace(string invalidIban)
+            {
+                Result<IBAN> result = IBAN.Create(invalidIban);
+
+                result.IsFailure.Should().BeTrue();
+                result.Error.Code.Should().Be("IBAN");
+                result.Error.Description.Should().Be("IBAN cannot be null");
+                result.Error.Type.Should().Be(ErrorType.Validation);
+            }
+
+            [Fact]
+            public void Create_ShouldReturnFailure_WhenIbanContainsSpecialCharacters()
+            {
+                string ibanWithSpecialChars = "IT60X0542811101000000123456@";
+
+                Result<IBAN> result = IBAN.Create(ibanWithSpecialChars);
+
+                result.IsFailure.Should().BeTrue();
+                result.Error.Code.Should().Be("IBAN");
+                result.Error.Description.Should().Be("IBAN cannot have special chars");
+                result.Error.Type.Should().Be(ErrorType.Validation);
+            }
+
+            [Theory]
+            [InlineData("IT123")]
+            [InlineData("IT60X05428111010000001234567890123456789")]
+            public void Create_ShouldReturnFailure_WhenIbanLengthIsInvalid(string invalidLengthIban)
+            {
+                Result<IBAN> result = IBAN.Create(invalidLengthIban);
+
+                result.IsFailure.Should().BeTrue();
+                result.Error.Code.Should().Be("IBAN");
+                result.Error.Description.Should().Be("Invalid Iban lenght");
+                result.Error.Type.Should().Be(ErrorType.Validation);
+            }
+        }
     }
 }

@@ -9,6 +9,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
 {
     public interface IPayoutService
     {
-        Task<Result> SendPayoutAsync(Guid customerId, decimal amount, CancellationToken token = default);
+        Task<Result> SendPayoutAsync(Guid customerId, decimal amount, string iban, CancellationToken token = default);
     }
 }

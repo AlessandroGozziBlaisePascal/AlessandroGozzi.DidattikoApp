@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.BooksRepository;
 using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
@@ -31,7 +30,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromCart
                 return Result.Failure(new Error("Cart", "Cart not found", ErrorType.NotFound));
             }
 
-            var removeResult = cart.RemoveItem(command.BookId, command.Quantity);
+            var removeResult = cart.RemoveItem(command.BookId);
             if(removeResult.IsFailure)
             {
                 return Result.Failure(removeResult.Error);

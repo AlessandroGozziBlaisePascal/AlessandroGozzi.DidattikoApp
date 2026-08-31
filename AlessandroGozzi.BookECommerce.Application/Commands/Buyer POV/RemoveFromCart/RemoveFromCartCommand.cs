@@ -8,5 +8,5 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.RemoveFromCart
 {
-    public sealed record RemoveFromCartCommand(Guid CustomerId, Guid BookId, int Quantity): IRequest<Result>;
+    public sealed record RemoveFromCartCommand(Guid CustomerId, Guid BookId): IRequest<Result>;
 }

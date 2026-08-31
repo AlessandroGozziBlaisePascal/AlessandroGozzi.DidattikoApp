@@ -34,10 +34,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.Book_Queries.GetFilt
 
             var bookDtos = books.Select(book => new CatalogBookDto(
                 book.Id,
-                book.ISBNCode.ToDto(),
+                book.ISBNCode.Value,
                 book.Status.ToDto(),
-                book.MainPhoto,
-                book.Price.ToDto(),
+                book.MainPhoto.Value,
+                book.Price.Amount,
                 book.IsAvailable
             )).ToList();
 

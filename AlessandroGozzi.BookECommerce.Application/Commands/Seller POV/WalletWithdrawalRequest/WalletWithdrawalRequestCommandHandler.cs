@@ -6,19 +6,20 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.WalletWithdrawalRequest
 {
     public class WalletWithdrawalRequestCommandHandler: IRequestHandler<WalletWithdrawalRequestCommand, Result>
     {
-        private readonly ICustomerRepository CustomerRepository;
         private readonly IUnitOfWork UnitOfWork;
+        private readonly IWalletRepository WalletRepo;
 
-        public WalletWithdrawalRequestCommandHandler(ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
+        public WalletWithdrawalRequestCommandHandler(IUnitOfWork unitOfWork, IWalletRepository walletRepo)
         {
-            CustomerRepository = customerRepository;
             UnitOfWork = unitOfWork;
+            WalletRepo = walletRepo;
         }
 
         public async Task<Result> Handle(WalletWithdrawalRequestCommand command, CancellationToken token)
@@ -28,19 +29,16 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.WalletWi
                 return Result.Failure(new Error("Withdrawal amount", "Min withdrawal amount is 5 €", ErrorType.Validation));
             }
 
-            var customer = await CustomerRepository.GetByIdAsync(command.CustomerId, token);
-            if(customer == null)
-            {
-                return Result.Failure(new Error("Customer", "Customer not found", ErrorType.NotFound));
-            }
-
+            var wallet = await WalletRepo.GetByCustomerId(command.CustomerId, token);
+            if (wallet == null)
+                return Result.Failure(new Error("Wallet", "Wallet not found", ErrorType.NotFound));
             var conversionResult = command.Amount.ToMoneyDomain();
-            if(conversionResult.IsFailure)
-            {
+            if (conversionResult.IsFailure)
                 return Result.Failure(conversionResult.Error);
-            }
-
-            var result = customer.Wallet.Withdraw(conversionResult.Value);
+            var ibanResult = IBAN.Create(command.Iban);
+            if (ibanResult.IsFailure)
+                return Result.Failure(ibanResult.Error);
+            var result = wallet.RequestPayout(conversionResult.Value, ibanResult.Value);
             if (result.IsFailure)
                 return Result.Failure(result.Error);
 

@@ -49,6 +49,18 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets
             return Result.Success();
         }
 
+        public Result RequestPayout(Money money, IBAN iban)
+        {
+            if (money == null)
+                return Result.Failure(new Error("Amount","Amount is null",ErrorType.Validation));
+            if (iban == null)
+                return Result.Failure(new Error("IBAN", "IBAN is null", ErrorType.Validation));
+            if(AvailableBalance.Amount < money.Amount)
+                return Result.Failure(new Error("Available amount","Not enough available balance",ErrorType.StatusConflict));
+            AvailableBalance -= money;
+            return Result.Success();
+        }
+
         public Result AddPendingFunds(Money money)
         {
             if (money.Amount == 0)

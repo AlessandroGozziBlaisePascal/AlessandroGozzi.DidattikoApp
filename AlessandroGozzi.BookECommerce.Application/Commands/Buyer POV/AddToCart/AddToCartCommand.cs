@@ -8,5 +8,5 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.AddToCart
 {
-    public sealed record AddToCartCommand(Guid CustomerId, Guid BookId, int quantity): IRequest<Result>;
+    public sealed record AddToCartCommand(Guid CustomerId, Guid BookId): IRequest<Result>;
 }

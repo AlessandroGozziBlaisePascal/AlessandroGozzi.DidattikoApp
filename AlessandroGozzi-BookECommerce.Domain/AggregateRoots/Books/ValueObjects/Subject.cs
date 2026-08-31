@@ -13,6 +13,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects
     {
         public string Value { get; init; }
 
+        private Subject() { }
+
         private Subject(string val) => Value = val;
 
         public static Result<Subject> Create(string val)

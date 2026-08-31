@@ -12,32 +12,50 @@ using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.TransitionsEvents
 {
-    public class WalletWithdrawalRequestEventHandler: INotificationHandler<BalanceWithdrawedEvent>
+    public class WalletWithdrawalRequestEventHandler: INotificationHandler<WithdrawalRequestedEvent>
     {
         private readonly IPayoutService _payoutService;
         private readonly ICustomerRepository CustomerRepository;
         private readonly IUnitOfWork UnitOfWork;
         private readonly IEmailSender EmailSender;
+        private readonly IWalletRepository WalletRepo;
 
-        public WalletWithdrawalRequestEventHandler(IPayoutService payoutService, ICustomerRepository custRepo, IUnitOfWork unitOfWork, IEmailSender emailSender)
+        public WalletWithdrawalRequestEventHandler(IPayoutService payoutService, IWalletRepository walletRepo, ICustomerRepository custRepo, IUnitOfWork unitOfWork, IEmailSender emailSender)
         {
             _payoutService = payoutService;
             CustomerRepository = custRepo;
             UnitOfWork = unitOfWork;
             EmailSender = emailSender;
+            WalletRepo = walletRepo;
         }
 
-        public async Task Handle(BalanceWithdrawedEvent request, CancellationToken cancellationToken)
+        public async Task Handle(WithdrawalRequestedEvent request, CancellationToken cancellationToken)
         {
-            var result = await _payoutService.SendPayoutAsync(request.CustomerId, request.Money.ToDto(), cancellationToken);
-            if (result.IsFailure) return;
+            var wallet = await WalletRepo.GetByCustomerId(request.CustomerId, cancellationToken);
+            if (wallet == null)
+            {
+                throw new InvalidOperationException("Wallet not found");
+            }
 
             var customer = await CustomerRepository.GetByIdAsync(request.CustomerId, cancellationToken);
-            if (customer == null) return;
+            if (customer == null)
+            {
+                wallet.Deposit(request.Amount);
+                await UnitOfWork.SaveChangesAsync(cancellationToken);
+                return;
+            }
 
-            customer.Wallet.Deposit(request.Money);
-
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Wallet withdrawal", $"Your amount got deposited from your card({customer.CreditCard!.DisplayName} to your wallet balance at {request.OccurredOnUtc})", cancellationToken);
+            var result = await _payoutService.SendPayoutAsync(request.CustomerId, request.Amount.Amount, request.Iban.Value, cancellationToken);
+            if (result.IsFailure)
+            {
+                wallet.Deposit(request.Amount);
+                await EmailSender.SendEmailAsync(customer!.Email.Value, "Wallet withdrawal error",
+                    $"An error occurred during withdraw operation, balance redeposited in your wallet", cancellationToken);
+                await UnitOfWork.SaveChangesAsync(cancellationToken);
+                return;
+            }
+               
+            await EmailSender.SendEmailAsync(customer!.Email.Value, "Wallet withdrawal", $"Your amount got send {request.OccurredOnUtc})", cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
 

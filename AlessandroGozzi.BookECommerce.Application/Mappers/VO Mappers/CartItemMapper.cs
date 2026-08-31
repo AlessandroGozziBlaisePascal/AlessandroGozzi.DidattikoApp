@@ -19,8 +19,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
                 item.BookId,
                 item.SellerId,
                 item.BookTitle,
-                item.MainPhoto.ToDto(),
-                item.Price.ToDto(),
+                item.MainPhoto.Value,
+                item.Price.Amount,
                 item.Quantity,
                 book.IsAvailable
             );

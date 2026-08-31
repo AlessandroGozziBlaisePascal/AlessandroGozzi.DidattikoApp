@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.CreditCardGestion
 {
-    public record AddCreditCardRequestDto(string CardOwnerName, string CardOwnerSurname, string CardNumber, string ExpiryDate, string CVV)
+    public record AddCreditCardRequestDto(string CardOwnerName, string CardOwnerSurname, string CardNumber, string ExpiryDate)
     {
-        public override string ToString() => $"AddCreditCardRequestDto  {{ Owner = {CardOwnerName} {CardOwnerSurname}, Expiry = {ExpiryDate}, CardNumber = [PROTECTED], CVV = [PROTECTED] }}";
+        public override string ToString() => $"AddCreditCardRequestDto  {{ Owner = {CardOwnerName} {CardOwnerSurname}, Expiry = {ExpiryDate}, CardNumber = [PROTECTED]}}";
 
     }
 }

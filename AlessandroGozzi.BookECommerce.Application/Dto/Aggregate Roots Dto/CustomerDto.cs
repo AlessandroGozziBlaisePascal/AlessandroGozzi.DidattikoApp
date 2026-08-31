@@ -12,9 +12,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
         string FullName,
         string Email,
         string PhoneNumber,
-        AddressDto Address,
-        string TaxCode,
-        WalletDto Wallet
+        AddressDto Address
         )
     { }
 }

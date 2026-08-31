@@ -18,7 +18,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Orders
     {
         private readonly Guid _customerId = Guid.NewGuid();
         private readonly PaymentDetails _paymentDetails = PaymentDetails.FromWallet(); // Instanza/Mock di PaymentDetails
-        private readonly ShippingType _shippingType = ShippingType.Pieghi_Libri_Raccomandato;
+        private readonly ShippingType _shippingType = ShippingType.Pieghe_Libri_Raccomandato;
         private const decimal ShippingFee = 4.80m;
 
         private OrderItem CreateSampleOrderItem(decimal priceAmount = 10m, int quantity = 1)

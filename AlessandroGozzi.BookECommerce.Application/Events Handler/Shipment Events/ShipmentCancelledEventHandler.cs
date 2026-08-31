@@ -19,14 +19,16 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
         private readonly IUnitOfWork UnitOfWork;
         private readonly IOrderRepository OrderRepo;
         private readonly IEmailSender EmailSender;
+        private readonly IWalletRepository WalletRepo;
 
-        public ShipmentCancelledEventHandler(IShipmentRepository shipRepo, IEmailSender emailServer,IUnitOfWork unitOfWork, ICustomerRepository custRepo, IOrderRepository ordRepo)
+        public ShipmentCancelledEventHandler(IShipmentRepository shipRepo, IWalletRepository walletRepo, IEmailSender emailServer,IUnitOfWork unitOfWork, ICustomerRepository custRepo, IOrderRepository ordRepo)
         {
             ShipRepo = shipRepo;
             UnitOfWork = unitOfWork;
             CustRepo = custRepo;
             OrderRepo = ordRepo;
             EmailSender = emailServer;
+            WalletRepo = walletRepo;
         }
 
         public async Task Handle(ShipmentCancelledEvent notification, CancellationToken cancellationToken)
@@ -42,26 +44,28 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler.ShipmentCance
             {
                 throw new Exception($"Seller with ID {notification.SellerId} not found.");
             }
-
-            seller.Wallet.CancelPendingFunds(shipment.SubTotal);
-
-            var order = await OrderRepo.GetByIdAsync(notification.OrderId, cancellationToken);
-            if(order == null)
+            var sellerWallet = await WalletRepo.GetByCustomerId(notification.SellerId, cancellationToken);
+            if (sellerWallet == null)
             {
-                throw new Exception($"Order with ID {notification.OrderId} not found.");
-            }   
-            var buyer = await CustRepo.GetByIdAsync(order.CustomerId, cancellationToken);
+                throw new Exception($"Wallet not found.");
+            }
+            sellerWallet.CancelPendingFunds(shipment.SubTotal); 
+            var buyer = await CustRepo.GetByIdAsync(shipment.BuyerId, cancellationToken);
             if(buyer == null)
             {
-                throw new Exception($"Buyer with ID {order.CustomerId} not found.");
+                throw new Exception($"Buyer with ID {shipment.BuyerId} not found.");
             }
-            
-            buyer.Wallet.Deposit(shipment.SubTotal);
+            var buyerWallet = await WalletRepo.GetByCustomerId(buyer.Id, cancellationToken);
+            if (buyerWallet == null)
+            {
+                throw new Exception($"Wallet not found.");
+            }
+            buyerWallet.Deposit(shipment.SubTotal);
 
-            await EmailSender.SendEmailAsync(buyer.Email.ToDto(), "Shipment cancelled", 
+            await EmailSender.SendEmailAsync(buyer.Email.Value, "Shipment cancelled", 
                 $"You shipment got cancelled, refund got deposited in your wallet at {notification.OccurredOnUtc}", cancellationToken);
 
-            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Shipment cancelled",
+            await EmailSender.SendEmailAsync(seller.Email.Value, "Shipment cancelled",
                 "Your shipment got cancelled, pending funds got cancelled", cancellationToken);
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);

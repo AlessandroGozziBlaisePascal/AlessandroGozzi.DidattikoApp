@@ -14,6 +14,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObj
         public string City { get; init; }
         public string CAP { get; init; }
 
+        private Address() { }
         private Address(string street, string civicN, string city, string cap)
         {
             Street = street;

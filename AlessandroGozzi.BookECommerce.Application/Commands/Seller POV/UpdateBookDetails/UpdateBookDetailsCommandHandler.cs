@@ -66,9 +66,14 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBo
                     return Result.Failure<BookDto>(new Error("Book new status", "Failed to change book status", ErrorType.Failure));
                 }
             }
-            if (command.NewPhotos != null && command.NewPhotos.Any())
+            if (command.NewPhoto != null)
             {
-                var result = book.AddPhotos(command.NewPhotos.ToList(), customer.Id);
+                var urlConvertionResult = command.NewPhoto.ToImageUrlDomain();
+                if(urlConvertionResult.IsFailure)
+                {
+                    return Result.Failure<BookDto>(urlConvertionResult.Error);
+                }
+                var result = book.ChangePhoto(command.CustomerId, urlConvertionResult.Value);
                 if (result.IsFailure)
                 {
                     return Result.Failure<BookDto>(new Error("Book new photos", "Failed to change book photos", ErrorType.Failure));

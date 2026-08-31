@@ -35,7 +35,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustRepo.GetByIdAsync(order.CustomerId, token);
             if(customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Order cancelled", 
+            await EmailSender.SendEmailAsync(customer.Email.Value, "Order cancelled", 
                 $"Your order got cancelled at {notification.OccurredOnUtc}", token);
 
             await UnitOfWork.SaveChangesAsync(token);

@@ -9,6 +9,7 @@ using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
 using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
 using FluentAssertions;
@@ -22,6 +23,7 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         private readonly Mock<ICustomerRepository> _customerRepoMock = new();
         private readonly Mock<IBookRepository> _bookRepoMock = new();
         private readonly Mock<IPaymentService> _paymentServiceMock = new();
+        private readonly Mock<IWalletRepository> _walletRepoMock = new();
 
         private readonly StartCheckoutPaymentCommandHandler _handler;
 
@@ -29,9 +31,11 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         {
             _handler = new StartCheckoutPaymentCommandHandler(
                 _cartRepoMock.Object,
+                _walletRepoMock.Object,
                 _bookRepoMock.Object,
                 _paymentServiceMock.Object,
                 _customerRepoMock.Object
+
             );
         }
 
@@ -117,10 +121,11 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         public async Task Handle_WhenWalletCoversTotal_ShouldReturnWalletCoveredResultWithoutPaymentIntent()
         {
             var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
-            var customer = CreateCustomerWithBalanceAndValidCard(command.CustomerId, balanceAmount: 1000m);
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
             var cart = CreateCartWithItems(command.CustomerId);
+            var wallet = CreateWallet(command.CustomerId, balanceAmount: 1000m);
 
-            SetupMocksForValidCart(customer, cart);
+            SetupMocksForValidCart(customer, cart, wallet);
 
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -144,10 +149,11 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         public async Task Handle_WhenPaymentServiceFails_ShouldReturnPaymentServiceError()
         {
             var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
-            var customer = CreateCustomerWithBalanceAndValidCard(command.CustomerId, balanceAmount: 0m);
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
             var cart = CreateCartWithItems(command.CustomerId);
+            var wallet = CreateWallet(command.CustomerId, balanceAmount: 0m);
 
-            SetupMocksForValidCart(customer, cart);
+            SetupMocksForValidCart(customer, cart, wallet);
 
             var expectedError = new Error("PaymentService", "Stripe Gateway Error", ErrorType.Failure);
 
@@ -170,41 +176,114 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         public async Task Handle_WhenPaymentServiceSucceeds_ShouldReturnCheckoutResult()
         {
             var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
-            var customer = CreateCustomerWithBalanceAndValidCard(command.CustomerId, balanceAmount: 0m);
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
             var cart = CreateCartWithItems(command.CustomerId);
+            var wallet = CreateWallet(command.CustomerId, balanceAmount: 0m);
 
-            SetupMocksForValidCart(customer, cart);
+            SetupMocksForValidCart(customer, cart, wallet);
 
             var expectedDto = new CheckoutPaymentResultDto("secret_123", "pi_123", 5000);
 
             _paymentServiceMock
-            .Setup(x => x.CreatePaymentIntentAsync(
-                It.IsAny<decimal>(),
-                command.CustomerId,
-                cart.Id,
-                It.IsAny<CancellationToken>(),
-                It.IsAny<string>()))
-            .ReturnsAsync(Result.Success(expectedDto));
-            
+                .Setup(x => x.CreatePaymentIntentAsync(
+                    It.IsAny<decimal>(),
+                    command.CustomerId,
+                    cart.Id,
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(Result.Success(expectedDto));
+
             var result = await _handler.Handle(command, CancellationToken.None);
 
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().BeEquivalentTo(expectedDto);
         }
 
-        private void SetupMocksForValidCart(Customer customer, Cart cart)
+        [Fact]
+        public async Task Handle_WhenWalletNotFound_ShouldReturnNotFoundFailure()
         {
+            var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
+            var cart = CreateCartWithItems(command.CustomerId);
+
             _customerRepoMock
-                .Setup(x => x.GetByIdAsync(customer.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetByIdAsync(command.CustomerId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(customer);
 
             _cartRepoMock
-                .Setup(x => x.GetByCustomerIdAsync(customer.Id, It.IsAny<CancellationToken>()))
+                .Setup(x => x.GetByCustomerIdAsync(command.CustomerId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(cart);
 
             _bookRepoMock
                 .Setup(x => x.GetByIdsAsync(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<Book>());
+
+            _walletRepoMock
+                .Setup(x => x.GetByCustomerId(command.CustomerId, It.IsAny<CancellationToken>()))
+                .ReturnsAsync((Wallet?)null);
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.IsFailure.Should().BeTrue();
+            result.Error.Code.Should().Be("Wallet");
+            result.Error.Description.Should().Be("Walle tnot found");
+            result.Error.Type.Should().Be(ErrorType.NotFound);
+        }
+
+        [Fact]
+        public async Task Handle_WhenAmountToChargeIsFractionalLessThanOneEuro_ShouldAdjustTo100Cents()
+        {
+            var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
+            var cart = CreateCartWithItems(command.CustomerId);
+            var wallet = CreateWallet(command.CustomerId, balanceAmount: 19.49m);
+
+            SetupMocksForValidCart(customer, cart, wallet);
+
+            _paymentServiceMock
+                .Setup(x => x.CreatePaymentIntentAsync(
+                    It.IsAny<decimal>(),
+                    command.CustomerId,
+                    cart.Id,
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(Result.Success(new CheckoutPaymentResultDto("secret", "pi", 100)));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.IsSuccess.Should().BeTrue();
+            _paymentServiceMock.Verify(
+                x => x.CreatePaymentIntentAsync(100m, command.CustomerId, cart.Id, It.IsAny<CancellationToken>(), "eur"),
+                Times.Once
+            );
+        }
+
+        [Fact]
+        public async Task Handle_WhenAmountToChargeIsGreaterThanOneEuro_ShouldConvertTotalToCentsCorrectly()
+        {
+            var command = new StartCheckoutPaymentCommand(Guid.NewGuid(), default(ShippingType));
+            var customer = CreateCustomerWithValidCard(command.CustomerId);
+            var cart = CreateCartWithItems(command.CustomerId);
+            var wallet = CreateWallet(command.CustomerId, balanceAmount: 0m);
+
+            SetupMocksForValidCart(customer, cart, wallet);
+
+            _paymentServiceMock
+                .Setup(x => x.CreatePaymentIntentAsync(
+                    It.IsAny<decimal>(),
+                    command.CustomerId,
+                    cart.Id,
+                    It.IsAny<CancellationToken>(),
+                    It.IsAny<string>()))
+                .ReturnsAsync(Result.Success(new CheckoutPaymentResultDto("secret", "pi", 1999)));
+
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            result.IsSuccess.Should().BeTrue();
+            _paymentServiceMock.Verify(
+                x => x.CreatePaymentIntentAsync(1999m, command.CustomerId, cart.Id, It.IsAny<CancellationToken>(), "eur"),
+                Times.Once
+            );
         }
 
         private static Customer CreateCustomerWithValidCard(Guid customerId)
@@ -223,30 +302,61 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
             return customer;
         }
 
-        private static Customer CreateCustomerWithBalanceAndValidCard(Guid customerId, decimal balanceAmount)
-        {
-            var customer = CreateCustomerWithValidCard(customerId);
-            if (balanceAmount > 0)
-            {
-                customer.Wallet.Deposit(balanceAmount.ToMoneyDomain().Value);
-            }
-            return customer;
-        }
-
         private static Customer CreateBaseCustomer(Guid customerId)
         {
             var fullName = new FullName(Name.Create("Mario").Value, Surname.Create("Rossi").Value);
             var email = Email.Create("mario.rossi@example.com").Value;
             var address = Address.Create("Via Roma", "10", "Milano", "40100").Value;
             var phone = PhoneNumber.Create("3331234567").Value;
-            var taxCode = TaxCode.Create("RSSMRA80A01H501U").Value;
 
-            var customer = Customer.Create(fullName, email, address, phone, taxCode, "HashedPassword123!").Value;
+            var customer = Customer.Create(fullName, email, address, phone, "HashedPassword123!").Value;
 
             var idProperty = typeof(Entity).GetProperty("Id") ?? typeof(Customer).GetProperty("Id");
             idProperty?.SetValue(customer, customerId);
 
             return customer;
+        }
+        private static Wallet CreateWallet(Guid customerId, decimal balanceAmount)
+        {
+            var wallet = new Wallet(customerId);
+            if (balanceAmount > 0)
+            {
+                var moneyResult = balanceAmount.ToMoneyDomain();
+
+                if (moneyResult.IsFailure)
+                {
+                    throw new InvalidOperationException($"CreateWallet ha fallito la creazione del Money ({balanceAmount}): {moneyResult.Error}");
+                }
+
+                wallet.Deposit(moneyResult.Value);
+            }
+            return wallet;
+        }
+        private void SetupMocksForValidCart(Customer customer, Cart cart, Wallet wallet)
+        {
+            var books = cart.GetItems.Select(item =>
+            {
+                var book = Book.Create(
+                    "Titolo Esempio",
+                    Guid.NewGuid(),
+                    Subject.Create("MondoAltruista").Value,
+                    ISBN.Create("9788804668237").Value,
+                    3,
+                    2024,
+                    Money.Create(19.99m).Value,
+                    BookStatus.LikeNew,
+                    ImageUrl.Create("image_example.png").Value
+                ).Value;
+
+                var idProperty = typeof(Entity).GetProperty("Id") ?? typeof(Book).GetProperty("Id");
+                idProperty?.SetValue(book, item.BookId);
+
+                return book;
+            }).ToList();
+
+            _bookRepoMock
+                .Setup(x => x.GetByIdsAsync(It.IsAny<List<Guid>>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(books);
         }
 
         private static Cart CreateEmptyCart(Guid customerId)
@@ -257,7 +367,17 @@ namespace AlessandroGozzi.BookECommerce.ApplicationTests
         private static Cart CreateCartWithItems(Guid customerId)
         {
             var cart = Cart.Create(customerId).Value;
-            cart.AddItem(Guid.NewGuid(), Guid.NewGuid(), "Promessi sposi", Money.Create(19.99m).Value, ImageUrl.Create(null).Value);
+
+            var bookId = Guid.NewGuid();
+
+            cart.AddItem(
+                bookId,
+                Guid.NewGuid(),
+                "Promessi sposi",
+                Money.Create(19.99m).Value,
+                ImageUrl.Create("image_example.jpg").Value
+            );
+
             return cart;
         }
     }

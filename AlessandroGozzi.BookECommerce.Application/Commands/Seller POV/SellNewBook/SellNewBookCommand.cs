@@ -16,6 +16,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.SellNewBook
         int SchoolYear,
         int PublicationYear,
         decimal Price,
-        string Condition
+        string Condition, 
+        string PhotoUrl
     ) : IRequest<Result>;
 }

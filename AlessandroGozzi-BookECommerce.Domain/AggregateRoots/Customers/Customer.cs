@@ -14,25 +14,22 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers
         public Email Email { get; private set; }
         public Address Address { get; private set; }
         public CreditCard? CreditCard { get; private set; }
-        public Wallet Wallet { get; private set; }
         public PhoneNumber Number { get; private set; }
-        public TaxCode TaxCode { get; init; }
         public string PasswordHash { get; private set; }
 
-        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode tCode, string passwordHash)
+        private Customer() { }
+        private Customer(FullName fullName, Email email, Address address, PhoneNumber number, string passwordHash)
         {
             FullName = fullName;
             Email = email;
             Address = address;
             Number = number;
-            TaxCode = tCode;
             PasswordHash = passwordHash;
-            Wallet = new Wallet(Id);
         }
 
-        public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, TaxCode TCode, string passwordHash)
+        public static Result<Customer> Create(FullName fullName, Email email, Address address, PhoneNumber number, string passwordHash)
         {
-            var customer = new Customer(fullName, email, address, number, TCode, passwordHash);
+            var customer = new Customer(fullName, email, address, number, passwordHash);
 
             customer.Raise(new CustomerCreatedEvent(customer.Id));
 

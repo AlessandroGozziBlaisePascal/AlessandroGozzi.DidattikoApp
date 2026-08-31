@@ -30,8 +30,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustomerRepo.GetByIdAsync(notification.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Wallet transitin", 
-                $"Balance of {notification.Money.ToDto()} got deposited in your wallet at {notification.OccurredOnUtc}", token);
+            await EmailSender.SendEmailAsync(customer.Email.Value, "Wallet transitin", 
+                $"Balance of {notification.Money.Amount} got deposited in your wallet at {notification.OccurredOnUtc}", token);
 
             await UnitOfWork.SaveChangesAsync(token);
         }

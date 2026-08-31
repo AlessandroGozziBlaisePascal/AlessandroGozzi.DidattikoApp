@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.CreditCardFolder;
 using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
@@ -43,7 +43,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
                 command.CardHolderName,
                 command.CardHolderSurname,
                 command.ExpiryDate,
-                maskedCardNumber
+                maskedCardNumber,
+                customer.Id
             );
 
             if (cardResult.IsFailure)

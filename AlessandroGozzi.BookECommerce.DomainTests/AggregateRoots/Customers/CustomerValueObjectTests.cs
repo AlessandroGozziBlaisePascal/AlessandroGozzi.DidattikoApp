@@ -290,55 +290,5 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Customers
             result.Error.Type.Should().Be(ErrorType.Validation);
         }
         #endregion
-        #region TAX CODE TESTS
-        [Theory]
-        [InlineData("RSSMRA80A01H501U", "RSSMRA80A01H501U")]
-        [InlineData("  rssmra80a01h501u ", "RSSMRA80A01H501U")]
-        public void TaxCode_Create_WithValidValue_ShouldUpperAndReturnSuccess(string rawTaxCode, string expectedTaxCode)
-        {
-            var result = TaxCode.Create(rawTaxCode);
-
-            result.IsSuccess.Should().BeTrue();
-            result.Value.Value.Should().Be(expectedTaxCode);
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void TaxCode_Create_WhenNullOrWhiteSpace_ShouldReturnFailure(string? invalidTaxCode)
-        {
-            var result = TaxCode.Create(invalidTaxCode!);
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tax code creation");
-            result.Error.Description.Should().Be("Tax code cannot be null or white spaces");
-            result.Error.Type.Should().Be(ErrorType.Validation);
-        }
-
-        [Theory]
-        [InlineData("RSSMRA80A01H501")] // 15 caratteri
-        [InlineData("RSSMRA80A01H501XX")] // 17 caratteri
-        public void TaxCode_Create_WhenLengthIsNot16_ShouldReturnFailure(string invalidTaxCode)
-        {
-            var result = TaxCode.Create(invalidTaxCode);
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tax code creation");
-            result.Error.Description.Should().Be("Tax code lenght must be 16 digits");
-            result.Error.Type.Should().Be(ErrorType.Validation);
-        }
-
-        [Fact]
-        public void TaxCode_Create_WhenContainsSpecialCharacters_ShouldReturnFailure()
-        {
-            var result = TaxCode.Create("RSSMRA80A01H501!");
-
-            result.IsFailure.Should().BeTrue();
-            result.Error.Code.Should().Be("Tax code creation");
-            result.Error.Description.Should().Be("Tax code must be comped by letters or digits");
-            result.Error.Type.Should().Be(ErrorType.Validation);
-        }
-        #endregion
     }
 }

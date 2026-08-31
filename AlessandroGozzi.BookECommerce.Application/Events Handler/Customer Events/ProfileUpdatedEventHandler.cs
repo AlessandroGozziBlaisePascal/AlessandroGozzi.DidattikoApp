@@ -33,7 +33,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             string fields = string.Join(", ", notification.UpdatedFields);
             string body = $"{customer.FullName}, profile fields: {fields} got updated at {notification.OccurredOnUtc}";
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Profile Updated",body, token);
+            await EmailSender.SendEmailAsync(customer.Email.Value, "Profile Updated",body, token);
 
             await UnitOfWork.SaveChangesAsync(token);
         }

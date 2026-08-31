@@ -12,6 +12,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObj
         public Name Name { get; init; }
         public Surname Surname { get; init; }
 
+        private FullName() { }
         public FullName(Name name, Surname surname)
         {
             Name = name;

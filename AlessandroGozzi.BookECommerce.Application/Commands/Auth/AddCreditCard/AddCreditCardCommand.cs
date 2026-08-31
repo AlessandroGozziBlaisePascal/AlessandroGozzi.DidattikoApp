@@ -14,7 +14,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
         string CardNumber,
         string CardHolderName,
         string CardHolderSurname,
-        string ExpiryDate,
-        string Cvv
+        string ExpiryDate
     ) : IRequest<Result<CreditCardDto>>;
 }

@@ -30,7 +30,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustomerRepo.GetByIdAsync(notification.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(),"Credit card removed",
+            await EmailSender.SendEmailAsync(customer.Email.Value,"Credit card removed",
                 $"Your credit card {notification.CardOwner} {notification.DisplayName} got removed with success at {notification.OccurredOnUtc}", token);
 
             await UnitOfWork.SaveChangesAsync(token);

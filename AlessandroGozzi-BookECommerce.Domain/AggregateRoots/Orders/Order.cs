@@ -31,8 +31,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders
         public ShippingType ShippingType { get; private set; }
         public static Dictionary<ShippingType, decimal> ShippingCosts { get; private set; } = new()
             { 
-            { ShippingType.Pieghi_Libri_Ordinario, 1.45m },
-                { ShippingType.Pieghi_Libri_Raccomandato, 4.80m },
+            { ShippingType.Pieghe_Libri_Ordinario, 1.45m },
+                { ShippingType.Pieghe_Libri_Raccomandato, 4.80m },
                 { ShippingType.Express, 8m }
             };
         public decimal ShippingFee { get; private set; }

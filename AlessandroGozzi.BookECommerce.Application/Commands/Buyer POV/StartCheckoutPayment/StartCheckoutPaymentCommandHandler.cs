@@ -24,13 +24,15 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
         private readonly ICustomerRepository CustomerRepo;
         private readonly IBookRepository BookRepo;
         private readonly IPaymentService PaymentService;
+        private readonly IWalletRepository WalletRepo;
 
-        public StartCheckoutPaymentCommandHandler(ICartRepository cartRepo, IBookRepository bookRepo, IPaymentService service, ICustomerRepository custRepo)
+        public StartCheckoutPaymentCommandHandler(ICartRepository cartRepo, IWalletRepository walletRepo, IBookRepository bookRepo, IPaymentService service, ICustomerRepository custRepo)
         {
             CartRepo = cartRepo;
             BookRepo = bookRepo;
             PaymentService = service;
             CustomerRepo = custRepo;
+            WalletRepo = walletRepo;
         }
 
         public async Task<Result<CheckoutPaymentResultDto>> Handle(StartCheckoutPaymentCommand command, CancellationToken token)
@@ -60,7 +62,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.StartCheckoutPaymen
             var calculationResult = SmartCartGenerator.Calculate(cart.ToDto(books).Items.ToList(), command.Type);
 
             decimal grandTotal = calculationResult.GrandTotal;
-            decimal walletBalance = customer.Wallet.AvailableBalance.Amount;
+            var wallet = await WalletRepo.GetByCustomerId(command.CustomerId, token);
+            if(wallet == null)
+            {
+                return Result.Failure<CheckoutPaymentResultDto>(new Error("Wallet", "Walle tnot found", ErrorType.NotFound));
+            }
+            decimal walletBalance = wallet.AvailableBalance.Amount;
 
             decimal amountToChargeOnCard = grandTotal > walletBalance 
                 ? grandTotal - walletBalance 

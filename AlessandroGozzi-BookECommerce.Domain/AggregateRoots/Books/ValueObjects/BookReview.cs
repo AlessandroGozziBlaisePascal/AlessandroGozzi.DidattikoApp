@@ -16,6 +16,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects
         public int Rating { get; init; }
         public DateTime CreatedAt { get; init; }
 
+        private BookReview() { }
         private BookReview(Guid custId, FullName custName, int rating)
         {
             CustomerId = custId;

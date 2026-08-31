@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.Entities;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
 {

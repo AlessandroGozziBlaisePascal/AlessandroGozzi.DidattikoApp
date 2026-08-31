@@ -18,12 +18,11 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Customers
         private readonly Email _email = Email.Create("mario.rossi@example.com").Value;
         private readonly Address _address = Address.Create("Via Roma", "10", "Milano", "20100").Value;
         private readonly PhoneNumber _phoneNumber = PhoneNumber.Create("3331234567").Value;
-        private readonly TaxCode _taxCode = TaxCode.Create("RSSMRA80A01H501U").Value;
         private const string PasswordHash = "hashed_password_123";
 
         private Customer CreateValidCustomer()
         {
-            return Customer.Create(_fullName, _email, _address, _phoneNumber, _taxCode, PasswordHash).Value;
+            return Customer.Create(_fullName, _email, _address, _phoneNumber, PasswordHash).Value;
         }
 
         // ==========================================
@@ -32,7 +31,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Customers
         [Fact]
         public void Create_WithValidParameters_ShouldReturnSuccessAndRaiseCustomerCreatedEvent()
         {
-            var result = Customer.Create(_fullName, _email, _address, _phoneNumber, _taxCode, PasswordHash);
+            var result = Customer.Create(_fullName, _email, _address, _phoneNumber, PasswordHash);
 
             result.IsSuccess.Should().BeTrue();
             result.Value.Should().NotBeNull();
@@ -40,10 +39,7 @@ namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Customers
             result.Value.Email.Should().Be(_email);
             result.Value.Address.Should().Be(_address);
             result.Value.Number.Should().Be(_phoneNumber);
-            result.Value.TaxCode.Should().Be(_taxCode);
             result.Value.PasswordHash.Should().Be(PasswordHash);
-            result.Value.Wallet.Should().NotBeNull();
-            result.Value.Wallet.CustomerId.Should().Be(result.Value.Id);
 
             result.Value._domainEvents.Should().ContainSingle(e => e is CustomerCreatedEvent);
         }

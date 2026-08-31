@@ -8,7 +8,7 @@ using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.Events;
-using AlessandroGozzi_BookECommerce.Domain.OrdersRepository;
+using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
 using AlessandroGozzi_BookECommerce.Domain.Repositories;
 using MediatR;
 
@@ -20,13 +20,15 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
         private readonly ICustomerRepository CustomerRepo;
         private readonly IUnitOfWork UnitOfWork;
         private readonly IEmailSender EmailSender;
+        private readonly IWalletRepository WalletRepo;
 
-        public ShipmentDeliveredEventHandler(IShipmentRepository shipRepo, IEmailSender emailServer, IUnitOfWork unitOfWork, ICustomerRepository custRepo)
+        public ShipmentDeliveredEventHandler(IShipmentRepository shipRepo, IEmailSender emailServer, IUnitOfWork unitOfWork, ICustomerRepository custRepo, IWalletRepository walletRepo)
         {
             ShipmentRepo = shipRepo;
             UnitOfWork = unitOfWork;
             CustomerRepo = custRepo;
             EmailSender = emailServer;
+            WalletRepo = walletRepo;
         }
 
         public async Task Handle(ShipmentDeliveredEvent notification, CancellationToken token)
@@ -42,14 +44,16 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             {
                 throw new Exception($"Seller with ID {notification.SellerId} not found.");
             }
+            var wallet = await WalletRepo.GetByCustomerId(notification.SellerId, token);
+            if (wallet == null) return;
 
-            var result = seller.Wallet.ReleasePendingFunds(shipment.SubTotal);
+            var result = wallet.ReleasePendingFunds(shipment.SubTotal);
             if (result.IsFailure)
             {
                 throw new Exception($"{result.Error.Description}");
             }
 
-            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Pending Funds Release", $"You shipment got " +
+            await EmailSender.SendEmailAsync(seller.Email.Value, "Pending Funds Release", $"You shipment got " +
                 $"delivered at {notification.OccurredOnUtc}, " +
                 $"your pending funds({shipment.SubTotal}) are now available in your wallet", token);
 

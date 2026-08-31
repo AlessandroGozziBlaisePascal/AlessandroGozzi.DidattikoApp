@@ -30,7 +30,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustomerRepository.GetByIdAsync(notification.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Welcome Email", $"Welcome {customer.FullName} to BookECommerce", token);
+            await EmailSender.SendEmailAsync(customer.Email.Value, "Welcome Email", $"Welcome {customer.FullName} to BookECommerce", token);
 
             await UnitOfWork.SaveChangesAsync(token);
         }

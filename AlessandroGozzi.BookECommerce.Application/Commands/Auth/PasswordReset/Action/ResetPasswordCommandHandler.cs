@@ -39,7 +39,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.
             }
 
             // 3. Validazione codice OTP inserito dal customer (verifica validità e scadenza)
-            bool isValidCode = await _otpService.ValidateCodeAsync(request.Identifier, request.Code, cancellationToken);
+            bool isValidCode = await _otpService.ValidateOtpAsync(request.Identifier, request.Code, cancellationToken);
             if (!isValidCode)
             {
                 return Result.Failure(new Error("ResetPassword.InvalidCode", "Il codice di verifica è errato o scaduto.", ErrorType.Validation));
@@ -51,7 +51,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.
 
             await UnitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _otpService.InvalidateCodeAsync(request.Identifier, cancellationToken);
+            await _otpService.InvalidateOtpAsync(request.Identifier, request.Code, cancellationToken);
 
             return Result.Success();
         }

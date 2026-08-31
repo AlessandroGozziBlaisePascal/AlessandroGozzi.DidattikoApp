@@ -15,10 +15,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
         {
             return new BookDto(
                 book.Id,
-                book.ISBNCode.ToDto(),
+                book.ISBNCode.Value,
                 book.Title,
                 book.Status.ToDto(),
-                book.MainPhoto.ToDto(),
+                book.MainPhoto.Value,
                 book.Price.Amount,
                 book.IsAvailable,
                 book.SellerId

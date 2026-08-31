@@ -8,8 +8,8 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObj
 {
     public enum ShippingType
     {
-        Pieghi_Libri_Ordinario,
-        Pieghi_Libri_Raccomandato,
+        Pieghe_Libri_Ordinario,
+        Pieghe_Libri_Raccomandato,
         Express
     }
 }

@@ -74,21 +74,13 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
             {
                 return Result.Failure<CustomerDto>(new Error("Phone number", numberResult.Error.Description, ErrorType.Validation));
             }
-
-            var taxCodeResult = command.TaxCode.ToTaxCodeDomain();
-            if(taxCodeResult.IsFailure)
-            {
-                return Result.Failure<CustomerDto>(new Error("Tax code", taxCodeResult.Error.Description, ErrorType.Validation));
-            }
             #endregion
 
             var customerResult = Customer.Create(
-                nameResult.Value,
-                surnameResult.Value,
+                new AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName(nameResult.Value, surnameResult.Value),
                 emailResult.Value,
                 addressResult.Value,
                 numberResult.Value,
-                taxCodeResult.Value,
                 passwordHash);
             
             if(customerResult.IsFailure)

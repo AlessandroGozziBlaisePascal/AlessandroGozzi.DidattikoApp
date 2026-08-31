@@ -29,6 +29,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
         private readonly IUnitOfWork _unitOfWork;
         private readonly ICustomerRepository _customerRepo;
         private readonly IBookRepository _bookRepo;
+        private readonly IWalletRepository walletRepository;
 
         public CompleteCheckoutPaymentCommandHandler(
             ICartRepository cartRepo,
@@ -37,7 +38,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
             IPaymentService paymentService,
             IUnitOfWork unitOfWork,
             ICustomerRepository customerRepo,
-            IBookRepository bookRepo)
+            IBookRepository bookRepo,
+            IWalletRepository walletRepository)
         {
             _cartRepo = cartRepo;
             _orderRepo = orderRepo;
@@ -46,6 +48,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
             _unitOfWork = unitOfWork;
             _customerRepo = customerRepo;
             _bookRepo = bookRepo;
+            this.walletRepository = walletRepository;
         }
 
         public async Task<Result<OrderDto>> Handle(CompleteCheckoutPaymentCommand command, CancellationToken token)
@@ -104,7 +107,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
 
             
             decimal totalAmount = cartCalculation.GrandTotal;
-            decimal availableWallet = customer.Wallet.AvailableBalance.Amount;
+            var wallet = await walletRepository.GetByCustomerId(command.CustomerId, token);
+            if (wallet == null)
+                return Result.Failure<OrderDto>(new Error("Wallet", "Wallet not found", ErrorType.NotFound));
+            decimal availableWallet = wallet.AvailableBalance.Amount;
             decimal walletToDeduct = Math.Min(totalAmount, availableWallet);
             decimal cardAmount = totalAmount - walletToDeduct;
 
@@ -124,7 +130,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
 
             if (walletToDeduct > 0)
             {
-                var walletDeductionResult = customer.Wallet.Withdraw(Money.Create(walletToDeduct).Value);
+                var walletDeductionResult = wallet.Withdraw(Money.Create(walletToDeduct).Value);
                 if (walletDeductionResult.IsFailure)
                     return Result.Failure<OrderDto>(new Error("Wallet", "Failed to deduct from wallet", ErrorType.Failure));
             }
@@ -192,8 +198,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.CompleteCheckoutPay
                     return Result.Failure<OrderDto>(new Error("Vendor", $"Vendor with ID {vendorId} not found.",ErrorType.NotFound ));
                 }
 
-                
-                vendor.Wallet.AddPendingFunds(vendorSalesTotal.ToMoneyDomain().Value);
+                var sellerWallet = await walletRepository.GetByCustomerId(vendorId, token);
+                if (sellerWallet == null)
+                    return Result.Failure<OrderDto>(new Error("Wallet", "Wallet not found", ErrorType.NotFound));
+                sellerWallet.AddPendingFunds(vendorSalesTotal.ToMoneyDomain().Value);
             }
 
             _orderRepo.Add(order);

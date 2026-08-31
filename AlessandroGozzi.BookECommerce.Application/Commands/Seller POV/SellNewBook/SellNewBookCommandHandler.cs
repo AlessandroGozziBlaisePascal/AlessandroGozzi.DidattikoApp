@@ -58,6 +58,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.SellNewBook
             {
                 return Result.Failure(conditionResult.Error);
             }
+
+            var urlResult = command.PhotoUrl.ToImageUrlDomain();
+            if(urlResult.IsFailure)
+                return Result.Failure(urlResult.Error);
             #endregion
 
             var book = Book.Create(
@@ -68,7 +72,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.SellNewBook
                 command.SchoolYear,
                 command.PublicationYear,
                 priceResult.Value,
-                conditionResult.Value
+                conditionResult.Value,
+                urlResult.Value
             );
 
             BookRepo.Add(book.Value);

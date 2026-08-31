@@ -8,17 +8,11 @@ using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Auth
 {
     public record RegisterNewProfileDto(
-        string Name,
-        string Surname,
+        string FullName,
         string Email,
         string PhoneNumber,
         AddressDto Address,
-        string TaxCode,
         string Password,
         string ConfirmPassword
-    )
-    {
-        public override string ToString() =>
-            $"RegisterNewProfileDto {{ Name = {Name}, Surname = {Surname}, Email = {Email}, PhoneNumber = {PhoneNumber}, Address = {Address}, TaxCode = {TaxCode}, Password = [PROTECTED]}}";
-    }
+    );
 }

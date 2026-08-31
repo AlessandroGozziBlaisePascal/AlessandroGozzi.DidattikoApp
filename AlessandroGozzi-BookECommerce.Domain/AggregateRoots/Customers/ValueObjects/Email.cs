@@ -11,6 +11,7 @@ namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObj
     {
         public string Value { get; init; }
 
+        private Email() { }
         private Email(string mail) => Value = mail;
 
         public static Result<Email> Create(string fullEmail)

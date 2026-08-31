@@ -10,6 +10,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.WalletWi
 {
     public record WalletWithdrawalRequestCommand(
         Guid CustomerId,
-        decimal Amount
+        decimal Amount,
+        string Iban
         ): IRequest<Result>;
 }

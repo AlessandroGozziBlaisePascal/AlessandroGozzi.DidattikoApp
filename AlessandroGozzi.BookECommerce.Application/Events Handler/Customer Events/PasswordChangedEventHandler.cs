@@ -30,7 +30,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustomerRepository.GetByIdAsync(customerEvent.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(), "Personal Password",
+            await EmailSender.SendEmailAsync(customer.Email.Value, "Personal Password",
                 $"Your personal password got changed at {customerEvent.OccurredOnUtc}",token);
         }
     }

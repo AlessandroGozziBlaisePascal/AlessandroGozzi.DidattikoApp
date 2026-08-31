@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
+namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
 {
     public record WalletDto(
         decimal AvailableBalance,

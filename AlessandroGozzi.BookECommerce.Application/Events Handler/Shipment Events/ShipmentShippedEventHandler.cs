@@ -37,12 +37,12 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var seller = await CustomerRepo.GetByIdAsync(notification.SellerId, token);
             if (seller == null) return;
 
-            await EmailSender.SendEmailAsync(buyer.Email.ToDto(), "Shipment", 
+            await EmailSender.SendEmailAsync(buyer.Email.Value, "Shipment", 
                 $"your order has been entrusted to {notification.TrackInfo.Carrier} with tracking code: " +
                 $"{notification.TrackInfo.TrackingCode} at {notification.OccurredOnUtc}. " +
                 $"Check Url if exist: {notification.TrackInfo.TrackingUrl}", token);
 
-            await EmailSender.SendEmailAsync(seller.Email.ToDto(), "Shipment shipped",$"Your shipment got entrusted with success at {notification.OccurredOnUtc}, " +
+            await EmailSender.SendEmailAsync(seller.Email.Value, "Shipment shipped",$"Your shipment got entrusted with success at {notification.OccurredOnUtc}, " +
                 $"pendings funds ({shipment.SubTotal} got deposited in your wallet)",token);
 
             await UnitOfWork.SaveChangesAsync(token);

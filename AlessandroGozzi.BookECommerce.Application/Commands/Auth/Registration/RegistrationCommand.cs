@@ -15,7 +15,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration
         string Email,
         string PhoneNumber,
         AddressDto Address,
-        string TaxCode,
         string Password,
         string ConfirmPassword): IRequest<Result<CustomerDto>>
     {

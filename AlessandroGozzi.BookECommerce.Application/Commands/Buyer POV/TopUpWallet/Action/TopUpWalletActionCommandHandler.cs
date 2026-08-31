@@ -15,12 +15,14 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Buyer_POV.TopUpWall
         private readonly IPaymentService _paymentService;
         private readonly ICustomerRepository CustomerRepository;
         private readonly IUnitOfWork UnitOfWork;
+        private readonly IWalletRepository WalletRepo;
 
-        public TopUpWalletActionCommandHandler(IPaymentService paymentService, ICustomerRepository customerRepository, IUnitOfWork unitOfWork)
+        public TopUpWalletActionCommandHandler(IPaymentService paymentService, ICustomerRepository customerRepository, IUnitOfWork unitOfWork, IWalletRepository walletRepo)
         {
             _paymentService = paymentService;
             CustomerRepository = customerRepository;
             UnitOfWork = unitOfWork;
+            WalletRepo = walletRepo;
         }
 
         public async Task<Result> Handle(TopUpWalletActionCommand command, CancellationToken token)
@@ -37,7 +39,11 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Buyer_POV.TopUpWall
             if(conversionResult.IsFailure)
                 return Result.Failure(conversionResult.Error);
 
-            var result = customer.Wallet.Deposit(conversionResult.Value);
+            var wallet = await WalletRepo.GetByCustomerId(command.CustomerId, token);
+            if (wallet == null)
+                return Result.Failure(new Error("Wallet", "Wallet not found", ErrorType.NotFound));
+
+            var result = wallet.Deposit(conversionResult.Value);
             if(result.IsFailure)
                 return Result.Failure(result.Error);
 

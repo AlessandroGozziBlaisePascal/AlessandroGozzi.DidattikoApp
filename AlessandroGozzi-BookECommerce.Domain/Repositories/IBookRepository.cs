@@ -21,5 +21,9 @@ namespace AlessandroGozzi_BookECommerce.Domain.Repositories
             string? subject = null,
             CancellationToken cancellationToken = default
         );
+        Task<Dictionary<string, int>> GetAvailableSellersCountByIsbnsAsync(
+            List<string> isbns,
+            CancellationToken cancellationToken
+        );
     }
 }

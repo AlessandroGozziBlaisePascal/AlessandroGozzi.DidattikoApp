@@ -27,10 +27,10 @@ namespace AlessandroGozzi.BookECommerce.Application.Queries.Book_Queries.GetBook
                 return Result.Failure<CatalogBookDto>(new Error("Book","Book not found",ErrorType.NotFound));
             var bookSummary = new CatalogBookDto(
                 book.Id,
-                book.ISBNCode.ToDto(),
+                book.ISBNCode.Value,
                 book.Status.ToDto(),
-                book.MainPhoto,
-                book.Price.ToDto(),
+                book.MainPhoto.Value,
+                book.Price.Amount,
                 book.IsAvailable
             );
             return Result.Success(bookSummary);

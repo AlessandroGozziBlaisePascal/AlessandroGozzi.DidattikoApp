@@ -35,7 +35,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Events_Handler
             var customer = await CustRepo.GetByIdAsync(order.CustomerId, token);
             if (customer == null) return;
 
-            await EmailSender.SendEmailAsync(customer.Email.ToDto(),"Order confirmation",
+            await EmailSender.SendEmailAsync(customer.Email.Value,"Order confirmation",
                 $"Your order got confirmed with success at {notification.OccurredOnUtc}" ,token);
 
             await UnitOfWork.SaveChangesAsync(token);

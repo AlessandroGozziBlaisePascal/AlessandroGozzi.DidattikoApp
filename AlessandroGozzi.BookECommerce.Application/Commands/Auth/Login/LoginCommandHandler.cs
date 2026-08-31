@@ -60,7 +60,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login
             }
 
             // 3. Genera Token e prepara il DTO di risposta
-            var token = _jwtProvider.GenerateToken(customer.ToDto());
+            var token = _jwtProvider.GenerateToken(customer.Id, request.Identifier);
             var expiresAt = DateTime.UtcNow.AddHours(2);
             var savedCard = customer.CreditCard;
 
@@ -68,7 +68,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login
                 AccessToken: token,
                 ExpiresAt: expiresAt,
                 RefreshToken: null,
-                Customer: new CustomerDto(customer.Id, customer.Name.ToDto(), customer.Surname.ToDto(), customer.Email.ToDto(), customer.Number.ToDto(), customer.Address.ToDto(), customer.TaxCode.ToDto()),
+                Customer: new CustomerDto(customer.Id, customer.FullName.ToString(), customer.Email.Value, customer.Number.Value, customer.Address.ToDto()),
                 HasSavedCreditCard: savedCard is not null,
                 MaskedCardNumbers: savedCard?.DisplayName
             );

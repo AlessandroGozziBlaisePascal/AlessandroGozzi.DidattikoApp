@@ -48,7 +48,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.PasswordReset.
                 return Result.Success();
             }
 
-            var otp = _otpService.GenerateAhdSaveOtpAsync(request.Identifier, cancellationToken);
+            var otp = _otpService.GenerateAndSaveOtpAsync(request.Identifier, cancellationToken);
 
             if(emailResult.IsSuccess)
             {
