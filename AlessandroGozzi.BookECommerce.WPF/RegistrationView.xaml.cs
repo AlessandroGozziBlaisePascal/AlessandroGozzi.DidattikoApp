@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,11 +16,11 @@ using System.Windows.Shapes;
 namespace AlessandroGozzi.BookECommerce.WPF
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Logica di interazione per RegistrationView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class RegistrationView : Window
     {
-        public MainWindow()
+        public RegistrationView()
         {
             InitializeComponent();
         }
