@@ -6,6 +6,7 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
+        <!-- Stile TextBox con Watermark (Placeholder) e senza bottoni strani -->
         <Style x:Key="CustomTextBoxStyle" TargetType="TextBox">
             <Setter Property="Background" Value="#EFE4D3"/>
             <Setter Property="BorderBrush" Value="#D6C4AD"/>
@@ -22,13 +23,40 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}" 
                                 CornerRadius="8">
-                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                            <Grid>
+                                <!-- Testo del Placeholder -->
+                                <TextBlock x:Name="PlaceholderText"
+                                           Text="{TemplateBinding Tag}"
+                                           Foreground="#888888"
+                                           FontSize="18"
+                                           VerticalAlignment="Center"
+                                           Margin="12,0"
+                                           IsHitTestVisible="False"
+                                           Visibility="Collapsed"/>
+
+                                <!-- Contenitore di testo standard WPF (senza scrollbar orizzontali/bottoni) -->
+                                <ScrollViewer x:Name="PART_ContentHost" 
+                                              VerticalAlignment="Center" 
+                                              Margin="{TemplateBinding Padding}"
+                                              Focusable="False"
+                                              HorizontalScrollBarVisibility="Hidden" 
+                                              VerticalScrollBarVisibility="Hidden"/>
+                            </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
+        <!-- Stile PasswordBox con Watermark (Placeholder) -->
         <Style x:Key="CustomPasswordBoxStyle" TargetType="PasswordBox">
             <Setter Property="Background" Value="#EFE4D3"/>
             <Setter Property="BorderBrush" Value="#D6C4AD"/>
@@ -45,13 +73,30 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}" 
                                 CornerRadius="8">
-                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                            <Grid>
+                                <!-- Testo Placeholder Password -->
+                                <TextBlock x:Name="PlaceholderText"
+                                           Text="{TemplateBinding Tag}"
+                                           Foreground="#888888"
+                                           FontSize="18"
+                                           VerticalAlignment="Center"
+                                           Margin="12,0"
+                                           IsHitTestVisible="False"/>
+
+                                <ScrollViewer x:Name="PART_ContentHost" 
+                                              VerticalAlignment="Center" 
+                                              Margin="{TemplateBinding Padding}"
+                                              Focusable="False"
+                                              HorizontalScrollBarVisibility="Hidden" 
+                                              VerticalScrollBarVisibility="Hidden"/>
+                            </Grid>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
+        <!-- Stile Pulsante Verde principale -->
         <Style x:Key="GreenButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#5B8C32"/>
             <Setter Property="Foreground" Value="White"/>
@@ -92,35 +137,51 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="#2A000000">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="12,0">
-                        <TextBlock Text="📚 Registrazione - Used Book Co." Foreground="#FFD2A8" FontWeight="SemiBold" FontSize="13"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
-                        <Button Content="—" Foreground="White" Background="Transparent" BorderThickness="0" Width="30"/>
-                        <Button Content="☐" Foreground="White" Background="Transparent" BorderThickness="0" Width="30"/>
-                        <Button Content="✕" Foreground="White" Background="Transparent" BorderThickness="0" Width="30" Click="BtnClose_Click"/>
-                    </StackPanel>
-                </Grid>
-
                 <Grid Grid.Row="1" Margin="30,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="0.8*"/>
                         <ColumnDefinition Width="1.2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Margin="10,5" CornerRadius="15">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.4" Color="Black"/>
-                        </Border.Effect>
-                        <Border CornerRadius="15" ClipToBounds="True">
-                            <Border.Background>
-                                <ImageBrush Stretch="UniformToFill"/>
-                            </Border.Background>
-                            <Image Margin="45" Stretch="Uniform"/>
-                        </Border>
-                    </Border>
+                    <!-- COLONNA SINISTRA: Divisa in due schede -->
+                    <Grid Grid.Column="0" Margin="10,5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
+                        <!-- Scheda Superiore: REGISTRATION -->
+                        <Border Grid.Row="0" Margin="0,0,0,10" CornerRadius="15">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.4" Color="Black"/>
+                            </Border.Effect>
+                            <Border CornerRadius="15" ClipToBounds="True">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Grid>
+                                    <TextBlock Text="REGISTRATION" FontSize="35" FontWeight="Bold" 
+                                               Foreground="#5C260B" HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"/>
+                                </Grid>
+                            </Border>
+                        </Border>
+
+                        <!-- Scheda Inferiore: Logo -->
+                        <Border Grid.Row="1" Margin="0,10,0,0" CornerRadius="15">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.4" Color="Black"/>
+                            </Border.Effect>
+                            <Border CornerRadius="15" ClipToBounds="True">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Image Source="/Immagini/LogoDidattiko.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Border>
+                    </Grid>
+
+                    <!-- COLONNA DESTRA: Form di Registrazione -->
                     <Border Grid.Column="1" Margin="10,5" Background="#FFFBF3" CornerRadius="15">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.3" Color="Black"/>
@@ -140,32 +201,57 @@
 
                             <TextBlock Grid.Row="0" Text="Compila per registrarti" FontSize="28" FontWeight="Bold" Foreground="#6A2000" Margin="0,0,0,18"/>
 
+                            <!-- Nome e Cognome -->
                             <Grid Grid.Row="1" Margin="0,0,0,12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="12"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox Grid.Column="0" x:Name="TxtNome" Text="Nome" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}"/>
-                                <TextBox Grid.Column="2" x:Name="TxtCognome" Text="Cognome" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="0" x:Name="TxtNome" Tag="Nome" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="2" x:Name="TxtCognome" Tag="Cognome" Style="{StaticResource CustomTextBoxStyle}"/>
                             </Grid>
 
-                            <TextBox Grid.Row="2" x:Name="TxtTelefono" Text="+39 " Foreground="#333333" Style="{StaticResource CustomTextBoxStyle}" Margin="0,0,0,12"/>
+                            <!-- Email -->
+                            <TextBox Grid.Row="2" x:Name="TxtEmail" Tag="Email" Style="{StaticResource CustomTextBoxStyle}" Margin="0,0,0,12"/>
 
-                            <TextBox Grid.Row="3" x:Name="TxtEmail" Text="Email" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}" Margin="0,0,0,12"/>
+                            <!-- Telefono e Via/Piazza -->
+                            <Grid Grid.Row="3" Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TxtTelefono" Tag="+39 Telefono" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="2" x:Name="TxtVia" Tag="Via/Piazza" Style="{StaticResource CustomTextBoxStyle}"/>
+                            </Grid>
 
-                            <TextBox Grid.Row="4" x:Name="TxtIndirizzo" Text="Indirizzo" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}" Margin="0,0,0,12"/>
+                            <!-- N., Città e CAP -->
+                            <Grid Grid.Row="4" Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="0.7*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="2*"/>
+                                    <ColumnDefinition Width="12"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" x:Name="TxtCivico" Tag="N." Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="2" x:Name="TxtCitta" Tag="Città" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="4" x:Name="TxtCap" Tag="CAP" Style="{StaticResource CustomTextBoxStyle}"/>
+                            </Grid>
 
+                            <!-- Password e Conferma Password -->
                             <Grid Grid.Row="5" Margin="0,0,0,16">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="12"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBox Grid.Column="0" x:Name="TxtPassword" Text="Password" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}"/>
-                                <TextBox Grid.Column="2" x:Name="TxtConfermaPassword" Text="Conferma password" Foreground="#888888" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="0" x:Name="TxtPassword" Tag="Password" Style="{StaticResource CustomTextBoxStyle}"/>
+                                <TextBox Grid.Column="2" x:Name="TxtConfermaPassword" Tag="Conferma password" Style="{StaticResource CustomTextBoxStyle}"/>
                             </Grid>
 
+                            <!-- Pulsante Registrati -->
                             <Button Grid.Row="6" x:Name="BtnRegistrati" Content="Registrati" Style="{StaticResource GreenButtonStyle}" Click="BtnRegistrati_Click"/>
                         </Grid>
                     </Border>

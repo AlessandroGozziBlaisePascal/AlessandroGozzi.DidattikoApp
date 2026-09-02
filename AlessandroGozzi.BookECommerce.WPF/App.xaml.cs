@@ -4,6 +4,8 @@ using System.IO;
 using System.Windows;
 using AlessandroGozzi.BookECommerce.Infrastructure;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance;
+using AlessandroGozzi.BookECommerce.WPF.Services;
+using AlessandroGozzi.BookECommerce.WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,7 @@ namespace AlessandroGozzi.BookECommerce.WPF
     public partial class App : System.Windows.Application
     {
         public static IHost? AppHost { get; private set; }
+        private readonly IServiceProvider _serviceProvider;
 
         public App()
         {
@@ -30,13 +33,21 @@ namespace AlessandroGozzi.BookECommerce.WPF
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddInfrastructureServices(hostContext.Configuration);
+                    services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(App).Assembly));
 
-                    services.AddSingleton<LoginView>();
-                    services.AddSingleton<PasswordResetView>();
-                    services.AddSingleton<RegistrationView>();
+                    services.AddSingleton<CustomerSession>();
 
+                    services.AddTransient<LoginViewModel>();
+                    services.AddTransient<PasswordResetViewModel>();
+                    services.AddTransient<RegistrationViewModel>();
+
+                    services.AddTransient<LoginView>();
+                    services.AddTransient<PasswordResetView>();
+                    services.AddTransient<RegistrationView>();
                 })
                 .Build();
+
+            _serviceProvider = AppHost.Services;
         }
 
         protected override async void OnStartup(StartupEventArgs e)

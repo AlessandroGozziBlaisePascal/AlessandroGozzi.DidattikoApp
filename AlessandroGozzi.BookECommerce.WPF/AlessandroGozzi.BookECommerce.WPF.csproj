@@ -9,6 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Immagini\LogoDidattiko.png" />
+    <None Remove="Immagini\SfondoLegnoChiaroWPF.jpg" />
+    <None Remove="Immagini\SfondoLegnoWPF.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.19">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -23,6 +30,18 @@
     <ProjectReference Include="..\AlessandroGozzi.BookECommerce.Application\AlessandroGozzi.BookECommerce.Application.csproj" />
     <ProjectReference Include="..\AlessandroGozzi.BookECommerce.Infrastructure\AlessandroGozzi.BookECommerce.Infrastructure.csproj" />
     <ProjectReference Include="..\AlessandroGozzi.BookECommerce.SharedKernel\AlessandroGozzi.BookECommerce.SharedKernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Immagini\LogoDidattiko.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Immagini\SfondoLegnoChiaroWPF.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Immagini\SfondoLegnoWPF.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

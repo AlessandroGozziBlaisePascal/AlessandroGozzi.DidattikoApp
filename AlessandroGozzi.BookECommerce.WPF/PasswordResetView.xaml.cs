@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AlessandroGozzi.BookECommerce.WPF.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AlessandroGozzi.BookECommerce.WPF
 {
@@ -20,9 +22,56 @@ namespace AlessandroGozzi.BookECommerce.WPF
     /// </summary>
     public partial class PasswordResetView : Window
     {
-        public PasswordResetView()
+        private readonly PasswordResetViewModel _viewModel;
+
+        public PasswordResetView(PasswordResetViewModel viewModel)
         {
             InitializeComponent();
+            _viewModel = viewModel;
+            DataContext = _viewModel;
+        }
+
+        // 1. Invia la richiesta OTP e sblocca la Fase 2
+        private async void BtnInviaCodice_Click(object sender, RoutedEventArgs e)
+        {
+            string recapito = TxtRecapito.Text;
+
+            bool isRequested = await _viewModel.RequestOtpAsync(recapito);
+
+            if (isRequested)
+            {
+                // Sblocca visivamente il pannello per inserire OTP e Nuova Password
+                PannelloFase2.IsEnabled = true;
+                PannelloFase2.Opacity = 1.0;
+            }
+        }
+
+        // 2. Click sul pulsante "Conferma" finale (nella Fase 2)
+        private async void BtnResetPassword_Click(object sender, RoutedEventArgs e)
+        {
+            string recapito = TxtRecapito.Text;
+            string otp = TxtCodiceOtp.Text;
+            string newPassword = TxtNewPassword.Password;
+            string confirmPassword = TxtConfirmPassword.Password;
+
+            bool isSuccess = await _viewModel.ExecutePasswordResetAsync(recapito, otp, newPassword, confirmPassword);
+
+            if (isSuccess)
+            {
+                // Torna al Login
+                var appHost = App.AppHost;
+                var loginView = appHost.Services.GetRequiredService<LoginView>();
+                loginView.Show();
+                this.Close();
+            }
+        }
+
+        private void BtnClose_Click(object sender, RoutedEventArgs e)
+        {
+            var appHost = App.AppHost;
+            var loginView = appHost.Services.GetRequiredService<LoginView>();
+            loginView.Show();
+            this.Close();
         }
     }
 }

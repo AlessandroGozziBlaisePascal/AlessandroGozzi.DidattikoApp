@@ -6,6 +6,7 @@
         WindowStartupLocation="CenterScreen">
 
     <Window.Resources>
+        <!-- Stile TextBox con Watermark -->
         <Style x:Key="WatermarkTextBox" TargetType="TextBox">
             <Setter Property="Background" Value="#EFE4D3"/>
             <Setter Property="BorderBrush" Value="#D6C4AD"/>
@@ -43,6 +44,7 @@
             </Setter>
         </Style>
 
+        <!-- Stile PasswordBox Corretto (Watermark dinamico con EventTrigger) -->
         <Style x:Key="WatermarkPasswordBox" TargetType="PasswordBox">
             <Setter Property="Background" Value="#EFE4D3"/>
             <Setter Property="BorderBrush" Value="#D6C4AD"/>
@@ -60,21 +62,40 @@
                                 CornerRadius="10">
                             <Grid>
                                 <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
-                                <TextBlock Text="{TemplateBinding Tag}" Foreground="#9E8C77" FontSize="18"
-                                           VerticalAlignment="Center" Margin="17,0" IsHitTestVisible="False">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Password, RelativeSource={RelativeSource TemplatedParent}}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
+                                <TextBlock x:Name="WatermarkText" Text="{TemplateBinding Tag}" Foreground="#9E8C77" FontSize="18"
+                                           VerticalAlignment="Center" Margin="17,0" IsHitTestVisible="False" Visibility="Visible"/>
                             </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Nasconde la scritta appena il campo riceve focus o contiene caratteri -->
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="WatermarkText" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stile Pulsante Verde principale -->
+        <Style x:Key="GreenButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#5B8C32"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btnBorder" Background="{TemplateBinding Background}" CornerRadius="10">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btnBorder" Property="Background" Value="#4A7528"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -97,17 +118,6 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Background="#1A000000">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0">
-                        <TextBlock Text="📚 ACCEDI - Used Book Co." Foreground="#FFD2A8" FontWeight="SemiBold"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,10,0">
-                        <Button Content="—" Foreground="White" Background="Transparent" BorderThickness="0" Width="30"/>
-                        <Button Content="☐" Foreground="White" Background="Transparent" BorderThickness="0" Width="30"/>
-                        <Button Content="✕" Foreground="White" Background="Transparent" BorderThickness="0" Width="30"/>
-                    </StackPanel>
-                </Grid>
-
                 <Grid Grid.Row="1" Margin="30,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -115,18 +125,43 @@
                         <ColumnDefinition Width="0.9*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Border Grid.Column="0" Margin="10" CornerRadius="15">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="4" Opacity="0.4" Color="Black"/>
-                        </Border.Effect>
-                        <Border CornerRadius="15" ClipToBounds="True">
-                            <Border.Background>
-                                <ImageBrush Stretch="UniformToFill"/>
-                            </Border.Background>
-                            <Image Margin="40" Stretch="Uniform"/>
-                        </Border>
-                    </Border>
+                    <!-- COLONNA SINISTRA -->
+                    <Grid Grid.Column="0" Margin="10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
+                        <!-- Scheda Superiore: LOGIN -->
+                        <Border Grid.Row="0" Margin="0,0,0,10" CornerRadius="15">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="4" Opacity="0.4" Color="Black"/>
+                            </Border.Effect>
+                            <Border CornerRadius="15" ClipToBounds="True">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="UniformToFill"/>
+                                </Border.Background>
+                                <Grid>
+                                    <TextBlock Text="LOGIN" FontSize="45" FontWeight="Bold" 
+                                               Foreground="#5C260B" HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                        </Border>
+
+                        <!-- Scheda Inferiore: Logo a tutto spazio -->
+                        <Border Grid.Row="1" Margin="0,10,0,0" CornerRadius="15">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="4" Opacity="0.4" Color="Black"/>
+                            </Border.Effect>
+                            <Border.Background>
+                                <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="UniformToFill"/>
+                            </Border.Background>
+                            <Image Source="/Immagini/LogoDidattiko.png" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- COLONNA CENTRALE: Form di Login -->
                     <Border Grid.Column="1" Margin="10" Background="#FFFBF3" CornerRadius="15">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="10" ShadowDepth="4" Opacity="0.3" Color="Black"/>
@@ -139,50 +174,81 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Text="ACCEDI" FontSize="42" FontWeight="Bold" 
-                                       Foreground="#8B3A0F" Margin="0,0,0,25" HorizontalAlignment="Left"/>
+                                       Foreground="#8B3A0F" Margin="0,0,0,20" HorizontalAlignment="Left"/>
 
-                            <StackPanel Grid.Row="1" Margin="0,0,0,18">
+                            <StackPanel Grid.Row="1" Margin="0,0,0,14">
                                 <TextBlock Text="Email o Numero di telefono" FontSize="14" FontWeight="SemiBold" Foreground="#6A4E38" Margin="0,0,0,6"/>
-                                <TextBox Style="{StaticResource WatermarkTextBox}" Tag="Inserisci email o numero"/>
+                                <TextBox x:Name="IdentifierTextBox" Style="{StaticResource WatermarkTextBox}" Tag="Inserisci email o numero"/>
                             </StackPanel>
 
-                            <StackPanel Grid.Row="2" Margin="0,0,0,5">
+                            <StackPanel Grid.Row="2" Margin="0,0,0,16">
                                 <TextBlock Text="Password" FontSize="14" FontWeight="SemiBold" Foreground="#6A4E38" Margin="0,0,0,6"/>
-                                <PasswordBox Style="{StaticResource WatermarkPasswordBox}" Tag="Inserisci password"/>
+                                <PasswordBox x:Name="PasswordTextBox" Style="{StaticResource WatermarkPasswordBox}" Tag="Inserisci password"/>
                             </StackPanel>
 
-                            <Button Grid.Row="3" Content="Password dimenticata?" Background="Transparent" Foreground="#B34A12" 
-                                    BorderThickness="0" HorizontalAlignment="Right" FontSize="14" FontWeight="Bold" 
-                                    Cursor="Hand" Margin="0,4,0,30"/>
+                            <!-- Bottone Accedi -->
+                            <Button Grid.Row="3" x:Name="BtnLogin" Content="Accedi" Style="{StaticResource GreenButtonStyle}" Margin="0,0,0,8" Click="BtnLogin_Click"/>
 
-                            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Grid.Row="4" Content="Password dimenticata?" Background="Transparent" Foreground="#B34A12" 
+                                    BorderThickness="0" HorizontalAlignment="Right" FontSize="14" FontWeight="Bold" 
+                                    Cursor="Hand" Margin="0,0,0,20" Click="BtnForgotPassword_Click"/>
+
+                            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock Text="Non hai un account? " Foreground="#555555" FontSize="15"/>
-                                <Button Content="Registrati" Background="Transparent" BorderThickness="0" Foreground="#B34A12" FontWeight="Bold" FontSize="15" Cursor="Hand"/>
+                                <Button Content="Registrati" Background="Transparent" BorderThickness="0" Foreground="#B34A12" FontWeight="Bold" FontSize="15" Cursor="Hand" Click="BtnRegister_Click"/>
                             </StackPanel>
                         </Grid>
                     </Border>
 
+                    <!-- COLONNA DESTRA: Quadrati Top Secret / Locked -->
                     <Grid Grid.Column="2" Margin="10">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <Border Grid.Row="0" Margin="0,0,0,10" Background="#FFFBF3" CornerRadius="12">
+                        <!-- Box Superiore Top Secret -->
+                        <Border Grid.Row="0" Margin="0,0,0,10" Background="#1E1916" CornerRadius="12">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.2" Color="Black"/>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.4" Color="Black"/>
                             </Border.Effect>
-                            <Image Margin="10" Stretch="Uniform"/>
+                            <Grid>
+                                <Rectangle Stroke="#8B3A0F" StrokeThickness="2" StrokeDashArray="4 2" Margin="8" RadiusX="8" RadiusY="8"/>
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Text="🔒" FontSize="26" HorizontalAlignment="Center" Margin="0,0,0,5" Opacity="0.8"/>
+                                    <Border BorderBrush="#C0392B" BorderThickness="2" Background="#2C0000" CornerRadius="4" Padding="8,4" HorizontalAlignment="Center">
+                                        <Border.RenderTransform>
+                                            <RotateTransform Angle="-8"/>
+                                        </Border.RenderTransform>
+                                        <TextBlock Text="NOT IMPLEMENTED" Foreground="#E74C3C" FontWeight="Black" FontSize="13"/>
+                                    </Border>
+                                    <TextBlock Text="AREA RISERVATA" Foreground="#8A7B70" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
-                        <Border Grid.Row="1" Margin="0,10,0,0" Background="#FFFBF3" CornerRadius="12">
+                        <!-- Box Inferiore Top Secret -->
+                        <Border Grid.Row="1" Margin="0,10,0,0" Background="#1E1916" CornerRadius="12">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.2" Color="Black"/>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.4" Color="Black"/>
                             </Border.Effect>
-                            <Image Margin="10" Stretch="Uniform"/>
+                            <Grid>
+                                <Rectangle Stroke="#8B3A0F" StrokeThickness="2" StrokeDashArray="4 2" Margin="8" RadiusX="8" RadiusY="8"/>
+                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <TextBlock Text="🔒" FontSize="26" HorizontalAlignment="Center" Margin="0,0,0,5" Opacity="0.8"/>
+                                    <Border BorderBrush="#C0392B" BorderThickness="2" Background="#2C0000" CornerRadius="4" Padding="8,4" HorizontalAlignment="Center">
+                                        <Border.RenderTransform>
+                                            <RotateTransform Angle="6"/>
+                                        </Border.RenderTransform>
+                                        <TextBlock Text="NOT IMPLEMENTED" Foreground="#E74C3C" FontWeight="Black" FontSize="13"/>
+                                    </Border>
+                                    <TextBlock Text="IN ARRIVO" Foreground="#8A7B70" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                     </Grid>
                 </Grid>

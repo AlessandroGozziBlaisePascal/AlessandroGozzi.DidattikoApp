@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login;
+using AlessandroGozzi.BookECommerce.WPF.ViewModels;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AlessandroGozzi.BookECommerce.WPF
 {
@@ -20,9 +24,41 @@ namespace AlessandroGozzi.BookECommerce.WPF
     /// </summary>
     public partial class LoginView : Window
     {
-        public LoginView()
+        private readonly LoginViewModel _viewModel;
+
+        // Il ViewModel viene iniettato automaticamente dal container di Dependency Injection
+        public LoginView(LoginViewModel viewModel)
         {
             InitializeComponent();
+            _viewModel = viewModel;
+            DataContext = _viewModel;
+        }
+
+        private async void BtnLogin_Click(object sender, RoutedEventArgs e)
+        {
+            string username = IdentifierTextBox.Text;
+            string password = PasswordTextBox.Password;
+
+            bool isSuccess = await _viewModel.ExecuteLoginAsync(username, password);
+        }
+
+        private void BtnForgotPassword_Click(object sender, RoutedEventArgs e)
+        {
+            var appHost = App.AppHost;
+
+            var passwordResetView = appHost.Services.GetRequiredService<PasswordResetView>();
+
+            passwordResetView.Show();
+            this.Close();
+        }
+
+        private void BtnRegister_Click(object sender, RoutedEventArgs e)
+        {
+            var appHost = App.AppHost;
+            var registrationView = appHost.Services.GetRequiredService<RegistrationView>();
+
+            registrationView.Show();
+            this.Close();
         }
     }
 }
