@@ -39,7 +39,14 @@ namespace AlessandroGozzi.BookECommerce.WPF
             string username = IdentifierTextBox.Text;
             string password = PasswordTextBox.Password;
 
-            bool isSuccess = await _viewModel.ExecuteLoginAsync(username, password);
+            //bool isSuccess = await _viewModel.ExecuteLoginAsync(username, password)
+
+            var appHost = App.AppHost;
+
+            var mainWindow = appHost.Services.GetRequiredService<PrincipalView>();
+
+            mainWindow.Show();
+            this.Close();
         }
 
         private void BtnForgotPassword_Click(object sender, RoutedEventArgs e)

@@ -40,10 +40,12 @@ namespace AlessandroGozzi.BookECommerce.WPF
                     services.AddTransient<LoginViewModel>();
                     services.AddTransient<PasswordResetViewModel>();
                     services.AddTransient<RegistrationViewModel>();
+                    services.AddTransient<PrincipalViewModel>();
 
                     services.AddTransient<LoginView>();
                     services.AddTransient<PasswordResetView>();
                     services.AddTransient<RegistrationView>();
+                    services.AddTransient<PrincipalView>();
                 })
                 .Build();
 

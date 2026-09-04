@@ -47,13 +47,15 @@ namespace AlessandroGozzi.BookECommerce.WPF
             string password = TxtPassword.Text;
             string confermaPassword = TxtConfermaPassword.Text;
 
-            bool success = await _viewModel.RegisterUserAsync(
+            /*bool success = await _viewModel.RegisterUserAsync(
                 nome, cognome, telefono, email, street, civicNumber, city, cap, password, confermaPassword);
 
             if (success)
             {
                 TornaAlLogin();
             }
+            */
+            TornaAlLogin();
         }
 
         private void TornaAlLogin()
