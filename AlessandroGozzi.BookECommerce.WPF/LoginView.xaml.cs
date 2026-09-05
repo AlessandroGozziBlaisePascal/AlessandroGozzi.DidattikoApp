@@ -39,7 +39,13 @@ namespace AlessandroGozzi.BookECommerce.WPF
             string username = IdentifierTextBox.Text;
             string password = PasswordTextBox.Password;
 
-            //bool isSuccess = await _viewModel.ExecuteLoginAsync(username, password)
+            bool isSuccess = await _viewModel.ExecuteLoginAsync(username, password);
+
+            if (!isSuccess)
+            {
+                MessageBox.Show("Login failed. Please check your credentials.", "Login Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
             var appHost = App.AppHost;
 

@@ -26,13 +26,8 @@ namespace AlessandroGozzi.BookECommerce.WPF
         public PrincipalView(PrincipalViewModel viewModel)
         {
             InitializeComponent();
-            _viewModel = viewModel;
+            _viewModel= viewModel;
             DataContext = _viewModel;
-        }
-
-        private async void BtnAddCreditCard_Click(object sender, RoutedEventArgs e)
-        {
-            //await _viewModel.ExecuteAddCreditCardAsync();
         }
 
         private void BtnCompraLibri_Click(object sender, RoutedEventArgs e)
@@ -43,6 +38,13 @@ namespace AlessandroGozzi.BookECommerce.WPF
         private void BtnVendiLibri_Click(object sender, RoutedEventArgs e)
         {
             //TODO: Implementare la logica per la navigazione alla pagina di vendita libri
+        }
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                DragMove();
+            }
         }
     }
 }

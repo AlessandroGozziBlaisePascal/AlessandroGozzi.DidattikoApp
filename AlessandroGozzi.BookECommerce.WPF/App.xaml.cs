@@ -1,9 +1,13 @@
-﻿using System.Configuration;
+﻿using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Windows;
+using AlessandroGozzi.BookECommerce.Application.Commands.Auth.Registration;
+using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.Infrastructure;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance;
+using AlessandroGozzi.BookECommerce.Infrastructure.Services;
 using AlessandroGozzi.BookECommerce.WPF.Services;
 using AlessandroGozzi.BookECommerce.WPF.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +37,11 @@ namespace AlessandroGozzi.BookECommerce.WPF
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddInfrastructureServices(hostContext.Configuration);
-                    services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(App).Assembly));
+
+                    services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(
+                        typeof(App).Assembly,
+                        typeof(RegistrationCommandHandler).Assembly
+                    ));
 
                     services.AddSingleton<CustomerSession>();
 
@@ -46,8 +54,21 @@ namespace AlessandroGozzi.BookECommerce.WPF
                     services.AddTransient<PasswordResetView>();
                     services.AddTransient<RegistrationView>();
                     services.AddTransient<PrincipalView>();
+
+                    services.AddMemoryCache();
+                    services.AddScoped<IEmailSender, EmailSender>();
+                    services.AddScoped<ISMSSender, SMSSender>();
+                    services.AddScoped<IOtpService, OtpService>();
+                    services.AddScoped<IPasswordHasher, PasswordHasher>();
+                    services.AddScoped<IJwtProvider, JwtProvider>();
                 })
                 .Build();
+
+            using (var scope = AppHost.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                dbContext.Database.EnsureCreated();
+            }
 
             _serviceProvider = AppHost.Services;
         }

@@ -13,8 +13,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
         public static CreditCardDto ToDto(this CreditCard card)
         {
             return new CreditCardDto(
-                MaskedNumber: card.DisplayName,
-                ExpirationDate: card.ExpiryDate.ToDto()
+                Owner: card.CardOwner.ToString(),
+                Last4Digits: card.DisplayName,
+                ExpiryDate: card.ExpiryDate.ToDto()
             );
         }
     }

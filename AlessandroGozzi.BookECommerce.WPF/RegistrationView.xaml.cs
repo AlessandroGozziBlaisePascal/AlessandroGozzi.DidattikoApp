@@ -30,7 +30,6 @@ namespace AlessandroGozzi.BookECommerce.WPF
             _viewModel = viewModel;
             DataContext = _viewModel;
 
-            // Gestione Placeholder per i campi di testo
             SetupPlaceholders();
         }
 
@@ -47,14 +46,15 @@ namespace AlessandroGozzi.BookECommerce.WPF
             string password = TxtPassword.Text;
             string confermaPassword = TxtConfermaPassword.Text;
 
-            /*bool success = await _viewModel.RegisterUserAsync(
+            bool success = await _viewModel.RegisterUserAsync(
                 nome, cognome, telefono, email, street, civicNumber, city, cap, password, confermaPassword);
 
-            if (success)
+            if (!success)
             {
-                TornaAlLogin();
+                MessageBox.Show("Registrazione fallita. Controlla i campi e riprova.", "Errore Registrazione", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
-            */
+            
             TornaAlLogin();
         }
 

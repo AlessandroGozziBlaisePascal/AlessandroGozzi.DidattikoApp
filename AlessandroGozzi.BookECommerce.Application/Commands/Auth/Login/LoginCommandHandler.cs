@@ -68,7 +68,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.Login
                 AccessToken: token,
                 ExpiresAt: expiresAt,
                 RefreshToken: null,
-                Customer: new CustomerDto(customer.Id, customer.FullName.ToString(), customer.Email.Value, customer.Number.Value, customer.Address.ToDto()),
+                Customer: new CustomerDto(customer.Id, customer.FullName.ToString(), customer.Email.Value, customer.Number.Value, customer.Address.ToDto(), null),
                 HasSavedCreditCard: savedCard is not null,
                 MaskedCardNumbers: savedCard?.DisplayName
             );

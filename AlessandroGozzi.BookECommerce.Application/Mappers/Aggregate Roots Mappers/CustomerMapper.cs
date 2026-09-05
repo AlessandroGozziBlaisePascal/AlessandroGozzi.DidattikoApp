@@ -18,7 +18,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mapp
                 customer.FullName.ToString(),
                 customer.Email.Value,
                 customer.Number.Value,
-                customer.Address.ToDto()
+                customer.Address.ToDto(),
+                customer.CreditCard?.ToDto()
             );
     }
 }

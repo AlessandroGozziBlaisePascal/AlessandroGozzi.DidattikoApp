@@ -26,9 +26,9 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
         public async Task<Result<CreditCardDto>> Handle(AddCreditCardCommand command, CancellationToken token)
         {
             string cleanNumber = command.CardNumber.Replace(" ", "");
-            if(cleanNumber.Length != 4)
+            if(cleanNumber.Length != 16)
             {
-                return Result.Failure<CreditCardDto>(new Error("CardNumber", "Card number is too short", ErrorType.Validation));
+                return Result.Failure<CreditCardDto>(new Error("CardNumber", "Card number is not 16 digits", ErrorType.Validation));
             }
             string lastFourDigits = cleanNumber.Substring(cleanNumber.Length - 4);
             string maskedCardNumber = $"**** **** **** {lastFourDigits}";
@@ -43,13 +43,19 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
                 command.CardHolderName,
                 command.CardHolderSurname,
                 command.ExpiryDate,
-                maskedCardNumber,
+                lastFourDigits,
                 customer.Id
             );
 
             if (cardResult.IsFailure)
             {
                 return Result.Failure<CreditCardDto>(cardResult.Error);
+            }
+
+            if (customer.CreditCard != null)
+            {
+                return Result.Failure<CreditCardDto>(
+                    new Error("CreditCard.Exists", "Il cliente possiede già una carta di credito associata.", ErrorType.Validation));
             }
 
             customer.AddCreditCard(cardResult.Value);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AlessandroGozzi.BookECommerce.Infrastructure.Persistance.Configurations;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
 using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers;
@@ -32,13 +33,13 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Persistance
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CustomerConfiguration).Assembly);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=BookECommerceDb;Trusted_Connection=True;MultipleActiveResultSets=true");
+                optionsBuilder.UseSqlite("Data Source=bookecommerce.db");
             }
         }
 

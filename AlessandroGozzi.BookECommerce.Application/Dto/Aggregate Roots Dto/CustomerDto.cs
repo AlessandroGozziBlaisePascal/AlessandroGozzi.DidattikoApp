@@ -12,7 +12,8 @@ namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
         string FullName,
         string Email,
         string PhoneNumber,
-        AddressDto Address
+        AddressDto Address,
+        CreditCardDto? CreditCard
         )
     { }
 }

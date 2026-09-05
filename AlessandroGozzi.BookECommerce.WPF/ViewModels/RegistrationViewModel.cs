@@ -34,7 +34,10 @@ namespace AlessandroGozzi.BookECommerce.WPF.ViewModels
         {
             // Validazione dei campi obbligatori
             if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(cognome) ||
-                string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || 
+                string.IsNullOrWhiteSpace(confermaPassword) || string.IsNullOrWhiteSpace(telefono) || 
+                string.IsNullOrWhiteSpace(street) || string.IsNullOrWhiteSpace(civicNumber) || 
+                string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(cap))
             {
                 MessageBox.Show("Tutti i campi contrassegnati sono obbligatori.", "Campi Mancanti", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;

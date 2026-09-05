@@ -9,12 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Immagini\CompraLibri.png" />
     <None Remove="Immagini\LogoDidattiko.png" />
     <None Remove="Immagini\SfondoLegnoChiaroWPF.jpg" />
     <None Remove="Immagini\SfondoLegnoWPF.jpg" />
+    <None Remove="Immagini\VendiLibri.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="MediatR" Version="14.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.19">
       <PrivateAssets>all</PrivateAssets>
@@ -33,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Immagini\CompraLibri.png" />
     <Resource Include="Immagini\LogoDidattiko.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -42,6 +46,13 @@
     <Resource Include="Immagini\SfondoLegnoWPF.jpg">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Immagini\VendiLibri.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

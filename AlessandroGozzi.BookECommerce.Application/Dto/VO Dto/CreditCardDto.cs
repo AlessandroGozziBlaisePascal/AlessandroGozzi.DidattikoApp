@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto
 {
     public record CreditCardDto(
-    string MaskedNumber, 
-    string ExpirationDate
+    string Owner,
+    string Last4Digits, 
+    string ExpiryDate
     );
 }
