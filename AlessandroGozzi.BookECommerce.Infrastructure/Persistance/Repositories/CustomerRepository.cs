@@ -28,5 +28,26 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Persistance.Repositories
                     c.Number.Value == cleanIdentifier,
                     cancellationToken);
         }
+
+        public Task UpdateAsync(Customer customer, CancellationToken cancellationToken = default)
+        {
+            // Cerca se l'entità è già presente e tracciata nel Change Tracker di EF Core
+            var trackedEntity = Context.Customers.Local.FirstOrDefault(c => c.Id == customer.Id);
+
+            if (trackedEntity == null)
+            {
+                // Se non è tracciata in memoria, la colleghiamo/aggiorniamo
+                Context.Customers.Update(customer);
+            }
+            else if (!ReferenceEquals(trackedEntity, customer))
+            {
+                // Se c'è un'istanza diversa già tracciata con lo stesso ID, aggiorniamo i valori
+                Context.Entry(trackedEntity).CurrentValues.SetValues(customer);
+            }
+
+            // Se l'istanza è esattamente la stessa (ReferenceEquals == true), 
+            // EF Core la sta già tracciando ed è già a conoscenza delle modifiche.
+            return Task.CompletedTask;
+        }
     }
 }

@@ -1,21 +1,23 @@
 ﻿<Window x:Class="AlessandroGozzi.BookECommerce.WPF.PrincipalView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Used Book Co." 
-        Height="620" Width="980"
+        Title="Didattiko" 
+        Height="650" Width="1020"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent">
 
     <Window.Resources>
+        <!-- Stile Input / TextBox Arrotondato opaco stile Credit Card -->
         <Style x:Key="RoundedTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="#FFF8DC"/>
-            <Setter Property="Foreground" Value="#2B1609"/>
-            <Setter Property="BorderBrush" Value="#8B5A2B"/>
-            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Background" Value="#F8F6F0"/>
+            <Setter Property="Foreground" Value="#2A1B0E"/>
+            <Setter Property="BorderBrush" Value="#D4C5A9"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="5,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -23,14 +25,14 @@
                                 Background="{TemplateBinding Background}" 
                                 BorderBrush="{TemplateBinding BorderBrush}" 
                                 BorderThickness="{TemplateBinding BorderThickness}" 
-                                CornerRadius="8" 
+                                CornerRadius="6" 
                                 SnapsToDevicePixels="True">
-                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter TargetName="border" Property="BorderBrush" Value="#FFD700"/>
-                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#8B5A2B"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="1.5"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -38,32 +40,68 @@
             </Setter>
         </Style>
 
-        <!-- Stile Neutro / Schiarito per la Carta -->
-        <Style x:Key="NeutralButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="#8B4513"/>
-            <Setter Property="Foreground" Value="#FFF8DC"/>
+        <!-- Stile Pulsante Dinamico Carta (Aggiungi/Rimuovi Carta) -->
+        <Style x:Key="CardActionButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="#FFFFFF"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="BorderBrush" Value="#DAA520"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Background" Value="#5B8C3E"/>
+            <!-- Default: Verde -->
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="btnBorder"
                                 Background="{TemplateBinding Background}" 
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="6" 
-                                Padding="4,2">
+                                Padding="8,2">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!-- Switch Colore: Rosso quando HasCard è True -->
+                            <DataTrigger Binding="{Binding HasCard}" Value="True">
+                                <Setter TargetName="btnBorder" Property="Background" Value="#C0392B"/>
+                            </DataTrigger>
+
+                            <!-- Hover per stato Aggiungi (Verde) -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding HasCard}" Value="False"/>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="btnBorder" Property="Background" Value="#4B7732"/>
+                            </MultiDataTrigger>
+
+                            <!-- Hover per stato Rimuovi (Rosso) -->
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding HasCard}" Value="True"/>
+                                    <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="btnBorder" Property="Background" Value="#A93226"/>
+                            </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Stile Card Azione Legno (Compra / Vendi Libri) -->
+        <Style x:Key="WoodActionButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                CornerRadius="14" 
+                                BorderBrush="#A37148" 
+                                BorderThickness="1.5">
+                            <Border.Background>
+                                <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="Fill"/>
+                            </Border.Background>
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="btnBorder" Property="Background" Value="#A0522D"/>
-                                <Setter TargetName="btnBorder" Property="BorderBrush" Value="#FFD700"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="btnBorder" Property="Background" Value="#5C2E0B"/>
+                                <Setter TargetName="border" Property="Opacity" Value="0.92"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -72,175 +110,226 @@
         </Style>
     </Window.Resources>
 
+    <!-- Sfondo Principale in Legno Scuro -->
     <Border CornerRadius="16" 
             BorderBrush="#2B1609" 
-            BorderThickness="4"
+            BorderThickness="3"
             Margin="10"
             MouseLeftButtonDown="Window_MouseDown">
-
         <Border.Background>
             <ImageBrush ImageSource="/Immagini/SfondoLegnoWPF.jpg" Stretch="Fill"/>
         </Border.Background>
 
-        <Grid Margin="15">
+        <Grid Margin="20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="200"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            <!-- 1. HEADER -->
             <Border Grid.Row="0" 
-                    CornerRadius="12" 
-                    Margin="5,0,5,10"
-                    ClipToBounds="True">
+                    CornerRadius="14" 
+                    Margin="0,0,0,18"
+                    Padding="18,14">
                 <Border.Background>
                     <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="Fill"/>
                 </Border.Background>
 
-                <Grid VerticalAlignment="Stretch" Margin="10,0,10,0">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="340"/>
+                        <ColumnDefinition Width="0.8*"/>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="15,0,15,0">
-                        <TextBlock Text="Benvenuto" 
+                    <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Cursor="Hand" VerticalAlignment="Center" Margin="0,0,20,0">
+                        <TextBlock Text="←" FontSize="48" FontWeight="ExtraBold" Foreground="#2B1609"/>
+                    </Button>
+
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0,0,0">
+                        <TextBlock Text="Benvenuto nell'Hub Didattiko" 
                                    FontFamily="Brush Script MT, Segoe Script, Cursive" 
-                                   FontSize="80" 
-                                   Foreground="#3A210A"/>
-                        <TextBlock Text="{Binding CustomerFullName}" 
-                           FontWeight="Bold" 
-                           FontSize="42" 
-                           TextTrimming="CharacterEllipsis"
-                           Foreground="#2B1609" 
-                           Margin="0,-10,0,0"/> 
+                                   FontSize="39" 
+                                   FontWeight="ExtraBold"
+                                   Foreground="#5C260B"/>
+                        <TextBlock Text="{Binding CustomerFullName, FallbackValue='NOME COGNOME'}" 
+                                   FontWeight="Bold" 
+                                   FontSize="35" 
+                                   Foreground="#5C260B"/>
                     </StackPanel>
 
-                    <Border Grid.Column="1" 
-                            Background="#B8860B" 
-                            CornerRadius="14" 
-                            Padding="12" 
-                            Height="165"
-                            ClipToBounds="True"
-                            VerticalAlignment="Center">
-
-                        <Grid>
-                            <Path Data="M -20,120 C 80,40 200,180 360,30" 
-                                  Stroke="#E6C280" 
-                                  StrokeThickness="18" 
-                                  Opacity="0.45" 
-                                  IsHitTestVisible="False"/>
-
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Owner" Foreground="#2B1609" FontWeight="Bold" FontSize="11" Margin="2,0,0,2"/>
-                                <TextBox Text="{Binding CardOwner, UpdateSourceTrigger=PropertyChanged}"
-                                         IsEnabled="{Binding IsCardEditable}"
-                                         Style="{StaticResource RoundedTextBoxStyle}"
-                                         Height="30" 
-                                         FontSize="13" 
-                                         Padding="6,0"
-                                         Margin="0,0,0,6"/>
-
-                                <TextBlock Text="Card Number" Foreground="#2B1609" FontWeight="Bold" FontSize="11" Margin="2,0,0,2"/>
-                                <Grid Margin="0,0,0,6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="5"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <TextBox Grid.Column="0" Text="{Binding CardNumber1, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="30" TextAlignment="Center" FontSize="13"/>
-                                    <TextBox Grid.Column="2" Text="{Binding CardNumber2, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="30" TextAlignment="Center" FontSize="13"/>
-                                    <TextBox Grid.Column="4" Text="{Binding CardNumber3, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="30" TextAlignment="Center" FontSize="13"/>
-                                    <TextBox Grid.Column="6" Text="{Binding CardNumber4, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="30" TextAlignment="Center" FontSize="13"/>
-                                </Grid>
-
-                                <Grid VerticalAlignment="Center">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="85"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Pulsante ridimensionato e leggibile -->
-                                    <Button Grid.Column="0" 
-                                        Command="{Binding CardActionCommand}"
-                                        Content="{Binding CardActionButtonText}" 
-                                        Style="{StaticResource NeutralButtonStyle}" 
-                                        Cursor="Hand"
-                                        Height="28"
-                                        Margin="0,0,4,0"/>
-
-                                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <TextBlock Text="Expiry" Foreground="#2B1609" FontWeight="Bold" FontSize="10" VerticalAlignment="Center" Margin="0,0,3,0"/>
-                                        <TextBox Text="{Binding ExpiryMonth, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Width="32" Height="26" Style="{StaticResource RoundedTextBoxStyle}" TextAlignment="Center" FontSize="11"/>
-                                        <TextBlock Text="/" 
-                                                   FontSize="14" 
-                                                   FontWeight="Bold" 
-                                                   Foreground="#2B1609" 
-                                                   Margin="1,0,1,0" 
-                                                   VerticalAlignment="Center"/>
-                                        <TextBox Text="{Binding ExpiryYear, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsCardEditable}" Width="32" Height="26" Style="{StaticResource RoundedTextBoxStyle}" TextAlignment="Center" FontSize="11"/>
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
+                    <Image Grid.Column="2" Source="/Immagini/LogoDidattiko.png" Height="120" VerticalAlignment="Center"/>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" Margin="5,5,5,5">
+            <!-- 2. CONTENUTO CENTRALE -->
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="20"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Grid.Column="0" Cursor="Hand" Focusable="False">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="16" 
-                                    ClipToBounds="True"
-                                    HorizontalAlignment="Stretch" 
-                                    VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="Fill"/>
-                                </Border.Background>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                                <Image Source="/Immagini/CompraLibri.png" 
-                                       Stretch="UniformToFill" 
-                                       Margin="-70"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                <!-- Modulo Carta Stile "Credit Card Texture" (In Alto a Sinistra) -->
+                <Border Grid.Row="0" Grid.Column="0"
+                        CornerRadius="14" 
+                        Padding="14,10"
+                        BorderBrush="#E2C99B"
+                        BorderThickness="1.5">
+                    <Border.Background>
+                        <!-- Sfumatura metallica/oro dorata stile carta di credito VIP -->
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#D4AF37" Offset="0.0"/>
+                            <GradientStop Color="#FFF3A8" Offset="0.3"/>
+                            <GradientStop Color="#AA7C11" Offset="0.7"/>
+                            <GradientStop Color="#5B4006" Offset="1.0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" ShadowDepth="4" Opacity="0.4" Color="Black"/>
+                    </Border.Effect>
+
+                    <Grid>
+                        <!-- Texture aggiuntiva: riflesso di luce obliquo sulla carta -->
+                        <Border CornerRadius="12" IsHitTestVisible="False">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                                    <GradientStop Color="#40FFFFFF" Offset="0.0"/>
+                                    <GradientStop Color="#00FFFFFF" Offset="0.4"/>
+                                    <GradientStop Color="#25FFFFFF" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+
+                        <StackPanel VerticalAlignment="Center">
+                            <!-- Titolo Dinamico + Simbolo Chip Carta -->
+                            <Grid Margin="0,0,0,6">
+                                <TextBlock Text="{Binding CardHeaderTitle, FallbackValue='Aggiungi Carta'}" 
+                                           FontSize="17" 
+                                           FontWeight="Black" 
+                                           Foreground="#2A1B0E" 
+                                           VerticalAlignment="Center"/>
+
+                                <!-- Simulazione Chip EMV dorato metallico -->
+                                <Border HorizontalAlignment="Right" Width="34" Height="24" CornerRadius="4" Background="#E6C200" BorderBrush="#8A7300" BorderThickness="1">
+                                    <Grid>
+                                        <Rectangle Stroke="#B39700" StrokeThickness="0.8" Margin="3"/>
+                                        <Line X1="0" Y1="12" X2="34" Y2="12" Stroke="#8A7300" StrokeThickness="0.8"/>
+                                        <Line X1="17" Y1="0" X2="17" Y2="24" Stroke="#8A7300" StrokeThickness="0.8"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <!-- Labels Nome e Cognome Intestatario -->
+                            <Grid Margin="2,0,0,1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Nome Intestatario" Foreground="#3B2816" FontWeight="Bold" FontSize="11"/>
+                                <TextBlock Grid.Column="2" Text="Cognome Intestatario" Foreground="#3B2816" FontWeight="Bold" FontSize="11"/>
+                            </Grid>
+
+                            <!-- TextBoxes Nome e Cognome Intestatario -->
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Grid.Column="0" 
+                                         Text="{Binding CardHolderName, UpdateSourceTrigger=PropertyChanged}" 
+                                         IsEnabled="{Binding IsCardEditable}"
+                                         Style="{StaticResource RoundedTextBoxStyle}" 
+                                         Height="26" FontSize="11"/>
+
+                                <TextBox Grid.Column="2" 
+                                         Text="{Binding CardHolderSurname, UpdateSourceTrigger=PropertyChanged}" 
+                                         IsEnabled="{Binding IsCardEditable}"
+                                         Style="{StaticResource RoundedTextBoxStyle}" 
+                                         Height="26" FontSize="11"/>
+                            </Grid>
+
+                            <!-- Label Card Number -->
+                            <TextBlock Text="Card Number" Foreground="#3B2816" FontWeight="Bold" FontSize="11" Margin="2,0,0,1"/>
+
+                            <!-- Campi Card Number (#) -->
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox Grid.Column="0" Text="{Binding CardNumber1}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="26" TextAlignment="Center" FontSize="11"/>
+                                <TextBox Grid.Column="2" Text="{Binding CardNumber2}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="26" TextAlignment="Center" FontSize="11"/>
+                                <TextBox Grid.Column="4" Text="{Binding CardNumber3}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="26" TextAlignment="Center" FontSize="11"/>
+                                <TextBox Grid.Column="6" Text="{Binding CardNumber4}" IsEnabled="{Binding IsCardEditable}" Style="{StaticResource RoundedTextBoxStyle}" Height="26" TextAlignment="Center" FontSize="11"/>
+                            </Grid>
+
+                            <!-- Scadenza -->
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                <TextBox Text="{Binding ExpiryMonth}" IsEnabled="{Binding IsCardEditable}" Width="50" Height="26" Style="{StaticResource RoundedTextBoxStyle}" TextAlignment="Center" FontSize="11"/>
+                                <TextBlock Text="/" FontSize="14" FontWeight="Bold" Foreground="#2A1B0E" VerticalAlignment="Center" Margin="4,0"/>
+                                <TextBox Text="{Binding ExpiryYear}" IsEnabled="{Binding IsCardEditable}" Width="50" Height="26" Style="{StaticResource RoundedTextBoxStyle}" TextAlignment="Center" FontSize="11"/>
+                            </StackPanel>
+
+                            <!-- Pulsante Conferma Dinamico (Verde / Rosso) -->
+                            <Button Command="{Binding CardActionCommand}" 
+                                    Content="{Binding CardActionButtonText, FallbackValue='Aggiungi Carta'}" 
+                                    Style="{StaticResource CardActionButtonStyle}" 
+                                    Height="30" 
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Area Riservata (In Alto a Destra) -->
+                <Border Grid.Row="0" Grid.Column="2" Background="#1E1916" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.4" Color="Black"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Rectangle Stroke="#8B3A0F" StrokeThickness="2" StrokeDashArray="4 2" Margin="8" RadiusX="8" RadiusY="8"/>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="🔒" FontSize="26" HorizontalAlignment="Center" Margin="0,0,0,5" Opacity="0.8"/>
+                            <Border BorderBrush="#C0392B" BorderThickness="2" Background="#2C0000" CornerRadius="4" Padding="8,4" HorizontalAlignment="Center">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="-8"/>
+                                </Border.RenderTransform>
+                                <TextBlock Text="NOT IMPLEMENTED" Foreground="#E74C3C" FontWeight="Black" FontSize="13"/>
                             </Border>
-                        </ControlTemplate>
-                    </Button.Template>
+                            <TextBlock Text="AREA RISERVATA" Foreground="#8A7B70" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- COMPRA LIBRI (Sinistra) -->
+                <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource WoodActionButtonStyle}" Cursor="Hand" Focusable="False" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="COMPRA&#x0a;LIBRI" FontSize="38" FontWeight="ExtraBold" Foreground="#5C260B" TextAlignment="Left" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
 
-                <Button Grid.Column="2" Cursor="Hand" Focusable="False">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border CornerRadius="16" 
-                                    ClipToBounds="True"
-                                    HorizontalAlignment="Stretch" 
-                                    VerticalAlignment="Stretch">
-                                <Border.Background>
-                                    <ImageBrush ImageSource="/Immagini/SfondoLegnoChiaroWPF.jpg" Stretch="Fill"/>
-                                </Border.Background>
-
-                                <Image Source="/Immagini/VendiLibri.png" 
-                                       Stretch="UniformToFill" 
-                                       Margin="-55"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Button.Template>
+                <!-- VENDI LIBRI (Destra) -->
+                <Button Grid.Row="2" Grid.Column="2" Style="{StaticResource WoodActionButtonStyle}" Cursor="Hand" Focusable="False" VerticalAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Text="VENDI&#x0a;LIBRI" FontSize="38" FontWeight="ExtraBold" Foreground="#5C260B" TextAlignment="Left" VerticalAlignment="Center"/>
+                    </StackPanel>
                 </Button>
             </Grid>
-
         </Grid>
     </Border>
 </Window>

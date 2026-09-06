@@ -31,7 +31,6 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
                 return Result.Failure<CreditCardDto>(new Error("CardNumber", "Card number is not 16 digits", ErrorType.Validation));
             }
             string lastFourDigits = cleanNumber.Substring(cleanNumber.Length - 4);
-            string maskedCardNumber = $"**** **** **** {lastFourDigits}";
 
             var customer = await CustRepo.GetByIdAsync(command.CustomerId, token);
             if(customer == null)
@@ -60,6 +59,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard
 
             customer.AddCreditCard(cardResult.Value);
 
+            await CustRepo.UpdateAsync(customer, token);
             await _unitOfWork.SaveChangesAsync(token);
 
             return Result.Success(cardResult.Value.ToDto());

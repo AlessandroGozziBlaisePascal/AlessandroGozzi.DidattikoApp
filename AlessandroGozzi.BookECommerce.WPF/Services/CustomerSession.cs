@@ -42,9 +42,10 @@ namespace AlessandroGozzi.BookECommerce.WPF.Services
             ExpiresAt = null;
         }
 
-        public void UpdateCustomerCreditCard(CreditCardDto? creditCard)
+        public void UpdateCreditCard(CreditCardDto? creditCard)
         {
-            if (CurrentCustomer == null) return;
+            if (CurrentCustomer is null)
+                return;
 
             CurrentCustomer = CurrentCustomer with { CreditCard = creditCard };
         }

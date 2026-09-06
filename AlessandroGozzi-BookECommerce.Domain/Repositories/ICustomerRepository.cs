@@ -11,5 +11,6 @@ namespace AlessandroGozzi_BookECommerce.Domain.Repositories
     public interface ICustomerRepository: IRepository<Customer>
     {
         Task<Customer?> GetByIdentifierAsync(string identifier, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Customer customer, CancellationToken cancellationToken = default);
     }
 }

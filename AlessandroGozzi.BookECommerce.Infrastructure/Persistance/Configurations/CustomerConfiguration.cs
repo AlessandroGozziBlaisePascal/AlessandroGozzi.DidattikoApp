@@ -80,36 +80,40 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Persistance.Configuration
 
             builder.OwnsOne(c => c.CreditCard, cardBuilder =>
             {
+                cardBuilder.WithOwner();
+
                 cardBuilder.Property(cc => cc.Last4Digits)
-                    .HasColumnName("CreditCardLast4Digits")
-                    .HasMaxLength(4);
+                           .HasColumnName("CreditCardLast4Digits")
+                           .HasMaxLength(4);
 
                 cardBuilder.Ignore(cc => cc.DisplayName);
 
                 cardBuilder.OwnsOne(cc => cc.CardOwner, ownerBuilder =>
                 {
+                    ownerBuilder.WithOwner();
+
                     ownerBuilder.OwnsOne(co => co.Name, nBuilder =>
                     {
+                        nBuilder.WithOwner();
                         nBuilder.Property(n => n.Value)
-                            .HasColumnName("CreditCardOwnerFirstName")
-                            .HasMaxLength(100);
+                                .HasColumnName("CreditCardOwnerFirstName")
+                                .HasMaxLength(100);
                     });
 
                     ownerBuilder.OwnsOne(co => co.Surname, sBuilder =>
                     {
+                        sBuilder.WithOwner();
                         sBuilder.Property(s => s.Value)
-                            .HasColumnName("CreditCardOwnerLastName")
-                            .HasMaxLength(100);
+                                .HasColumnName("CreditCardOwnerLastName")
+                                .HasMaxLength(100);
                     });
                 });
 
                 cardBuilder.OwnsOne(cc => cc.ExpiryDate, expiryBuilder =>
                 {
-                    expiryBuilder.Property(e => e.Month)
-                        .HasColumnName("CreditCardExpiryMonth");
-
-                    expiryBuilder.Property(e => e.Year)
-                        .HasColumnName("CreditCardExpiryYear");
+                    expiryBuilder.WithOwner();
+                    expiryBuilder.Property(e => e.Month).HasColumnName("CreditCardExpiryMonth");
+                    expiryBuilder.Property(e => e.Year).HasColumnName("CreditCardExpiryYear");
                 });
             });
 

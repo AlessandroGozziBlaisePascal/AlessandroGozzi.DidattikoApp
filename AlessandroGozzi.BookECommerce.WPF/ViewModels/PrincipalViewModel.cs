@@ -10,7 +10,9 @@ using System.Windows.Input;
 using AlessandroGozzi.BookECommerce.Application.Commands.Auth.AddCreditCard;
 using AlessandroGozzi.BookECommerce.Application.Commands.Auth.RemoveCreditCard;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
+using AlessandroGozzi.BookECommerce.Application.Dto.Auth;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
+using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.WPF.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,125 +22,201 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AlessandroGozzi.BookECommerce.WPF.ViewModels
 {
-    public partial class PrincipalViewModel : ObservableObject
+    public partial class PrincipalViewModel : INotifyPropertyChanged
     {
-        private readonly ISender _mediator;
-        private readonly Services.CustomerSession _customerSession;
+        private readonly IMediator _mediator;
+        private readonly Guid _currentUserId;
+        private readonly Services.CustomerSession _session;
 
-        [ObservableProperty] private string _cardOwner = string.Empty;
-        [ObservableProperty] private string _cardNumber1 = string.Empty;
-        [ObservableProperty] private string _cardNumber2 = string.Empty;
-        [ObservableProperty] private string _cardNumber3 = string.Empty;
-        [ObservableProperty] private string _cardNumber4 = string.Empty;
-        [ObservableProperty] private string _expiryMonth = string.Empty;
-        [ObservableProperty] private string _expiryYear = string.Empty;
-
-        // Gestione dello stato della carta tramite la proprietà automatica
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(CardActionButtonText))]
-        [NotifyPropertyChangedFor(nameof(IsCardEditable))]
-        private bool _hasCard;
-
-        public string CardActionButtonText => HasCard ? "Rimuovi" : "+ Aggiungi";
-        public bool IsCardEditable => !HasCard;
-
+        private string _customerFullName = string.Empty;
         public string CustomerFullName
         {
-            get
+            get => _customerFullName;
+            set { _customerFullName = value; OnPropertyChanged(); }
+        }
+
+        private string _cardHolderName = string.Empty;
+        public string CardHolderName
+        {
+            get => _cardHolderName;
+            set { _cardHolderName = value; OnPropertyChanged(); }
+        }
+
+        private string _cardHolderSurname = string.Empty;
+        public string CardHolderSurname
+        {
+            get => _cardHolderSurname;
+            set { _cardHolderSurname = value; OnPropertyChanged(); }
+        }
+
+        private string _cardNumber1 = string.Empty;
+        public string CardNumber1
+        {
+            get => _cardNumber1;
+            set { _cardNumber1 = value; OnPropertyChanged(); }
+        }
+
+        private string _cardNumber2 = string.Empty;
+        public string CardNumber2
+        {
+            get => _cardNumber2;
+            set { _cardNumber2 = value; OnPropertyChanged(); }
+        }
+
+        private string _cardNumber3 = string.Empty;
+        public string CardNumber3
+        {
+            get => _cardNumber3;
+            set { _cardNumber3 = value; OnPropertyChanged(); }
+        }
+
+        private string _cardNumber4 = string.Empty;
+        public string CardNumber4
+        {
+            get => _cardNumber4;
+            set { _cardNumber4 = value; OnPropertyChanged(); }
+        }
+
+        private string _expiryMonth = string.Empty;
+        public string ExpiryMonth
+        {
+            get => _expiryMonth;
+            set { _expiryMonth = value; OnPropertyChanged(); }
+        }
+
+        private string _expiryYear = string.Empty;
+        public string ExpiryYear
+        {
+            get => _expiryYear;
+            set { _expiryYear = value; OnPropertyChanged(); }
+        }
+
+        private bool _hasCard;
+        public bool HasCard
+        {
+            get => _hasCard;
+            set
             {
-                var customer = _customerSession.CurrentCustomer;
-                if (customer == null) return "OSPITE";
-                return $"{customer.FullName}";
+                _hasCard = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsCardEditable));
+                OnPropertyChanged(nameof(CardActionButtonText));
+                OnPropertyChanged(nameof(CardHeaderTitle));
             }
         }
 
-        public IAsyncRelayCommand CardActionCommand { get; }
+        public bool IsCardEditable => !HasCard;
 
-        public PrincipalViewModel(ISender mediator, Services.CustomerSession custSession)
+        public string CardHeaderTitle => HasCard ? "La tua Carta" : "Aggiungi Carta";
+
+        public string CardActionButtonText => HasCard ? "Rimuovi Carta" : "Aggiungi Carta";
+
+        public ICommand CardActionCommand { get; }
+
+        public PrincipalViewModel(IMediator mediator, Services.CustomerSession session)
         {
+            _session = session;
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _customerSession = custSession ?? throw new ArgumentNullException(nameof(custSession));
 
-            CardActionCommand = new AsyncRelayCommand(ExecuteCardActionAsync);
-            RefreshCardState();
-        }
-
-        private void RefreshCardState()
-        {
-            var card = _customerSession.CurrentCustomer?.CreditCard;
-
-            // Assegna alla proprietà generata HasCard (H Maiuscola)
-            HasCard = card != null;
-
-            if (HasCard && card != null)
+            if (session?.CurrentCustomer != null)
             {
-                CardOwner = card.Owner ?? string.Empty;
-                CardNumber1 = "****";
-                CardNumber2 = "****";
-                CardNumber3 = "****";
-                CardNumber4 = card.Last4Digits ?? string.Empty;
+                _currentUserId = session.CurrentCustomer.CustomerId;
+                CustomerFullName = $"{session.CurrentCustomer.FullName}".Trim();
 
-                var expiryParts = card.ExpiryDate?.Split('/');
-                ExpiryMonth = expiryParts?.Length > 0 ? expiryParts[0] : string.Empty;
-                ExpiryYear = expiryParts?.Length > 1 ? expiryParts[1] : string.Empty;
-            }
-            else
-            {
-                CardOwner = string.Empty;
-                CardNumber1 = string.Empty;
-                CardNumber2 = string.Empty;
-                CardNumber3 = string.Empty;
-                CardNumber4 = string.Empty;
-                ExpiryMonth = string.Empty;
-                ExpiryYear = string.Empty;
+                if (session.CurrentCustomer.CreditCard is { } creditCard)
+                {
+                    HasCard = true;
+
+                    CardHolderName = creditCard.OwnerName ?? string.Empty;
+                    CardHolderSurname = creditCard.OwnerSurname ?? string.Empty;
+
+                    CardNumber1 = "****";
+                    CardNumber2 = "****";
+                    CardNumber3 = "****";
+                    CardNumber4 = creditCard.Last4Digits ?? "****";
+
+                    if (!string.IsNullOrEmpty(creditCard.ExpiryDate) && creditCard.ExpiryDate.Contains('/'))
+                    {
+                        var parts = creditCard.ExpiryDate.Split('/');
+                        ExpiryMonth = parts[0];
+                        ExpiryYear = parts.Length > 1 ? parts[1] : string.Empty;
+                    }
+                }
+                else
+                {
+                    CardHolderName = string.Empty;
+                    CardHolderSurname = string.Empty;
+                }
             }
 
-            OnPropertyChanged(nameof(CustomerFullName));
+            CardActionCommand = new RelayCommand(ExecuteCardAction);
         }
 
-        private async Task ExecuteCardActionAsync()
+        private async void ExecuteCardAction()
         {
-            var customer = _customerSession.CurrentCustomer;
-            if (customer == null) return;
-
             if (HasCard)
             {
-                var result = await _mediator.Send(new RemoveCreditCardCommand(customer.CustomerId));
-                if (result?.IsSuccess == true)
+                var command = new RemoveCreditCardCommand(_currentUserId);
+                var result = await _mediator.Send(command);
+
+                if (result.IsSuccess)
                 {
-                    _customerSession.UpdateCustomerCreditCard(null);
-                    RefreshCardState();
+                    HasCard = false;
+                    _session.UpdateCreditCard(null);
+                    ClearCardFields();
                 }
             }
             else
             {
-                var fullCardNumber = $"{CardNumber1.Trim()}{CardNumber2.Trim()}{CardNumber3.Trim()}{CardNumber4.Trim()}";
-                var expiryDate = $"{ExpiryMonth.Trim()}/{ExpiryYear.Trim()}";
-
-                var ownerParts = CardOwner.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
-                var name = ownerParts.Length > 0 ? ownerParts[0] : string.Empty;
-                var surname = ownerParts.Length > 1 ? ownerParts[1] : string.Empty;
+                // Aggiunta Carta
+                string fullCardNumber = $"{CardNumber1}{CardNumber2}{CardNumber3}{CardNumber4}";
+                string expiryDate = $"{ExpiryMonth}/{ExpiryYear}";
 
                 var command = new AddCreditCardCommand(
-                    customer.CustomerId,
-                    fullCardNumber,
-                    name,
-                    surname,
-                    expiryDate
+                    CustomerId: _currentUserId,
+                    CardNumber: fullCardNumber,
+                    CardHolderName: CardHolderName,
+                    CardHolderSurname: CardHolderSurname,
+                    ExpiryDate: expiryDate
                 );
 
                 var result = await _mediator.Send(command);
-                if (result?.IsSuccess == true)
-                {
-                    var last4Digits = fullCardNumber.Length >= 4
-                        ? fullCardNumber.Substring(fullCardNumber.Length - 4)
-                        : fullCardNumber;
 
-                    var newCard = new CreditCardDto(CardOwner, last4Digits, expiryDate);
-                    _customerSession.UpdateCustomerCreditCard(newCard);
-                    RefreshCardState();
+                if (result.IsSuccess && result.Value != null)
+                {
+                    HasCard = true;
+
+                    _session.UpdateCreditCard(result.Value);
+
+                    CardNumber1 = "****";
+                    CardNumber2 = "****";
+                    CardNumber3 = "****";
+                    CardNumber4 = result.Value.Last4Digits;
+
+                    OnPropertyChanged(nameof(CardNumber1));
+                    OnPropertyChanged(nameof(CardNumber2));
+                    OnPropertyChanged(nameof(CardNumber3));
+                    OnPropertyChanged(nameof(CardNumber4));
                 }
             }
+        }
+
+        private void ClearCardFields()
+        {
+            CardHolderName = string.Empty;
+            CardHolderSurname = string.Empty;
+            CardNumber1 = string.Empty;
+            CardNumber2 = string.Empty;
+            CardNumber3 = string.Empty;
+            CardNumber4 = string.Empty;
+            ExpiryMonth = string.Empty;
+            ExpiryYear = string.Empty;
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

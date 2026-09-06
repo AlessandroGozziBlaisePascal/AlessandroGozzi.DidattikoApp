@@ -32,6 +32,7 @@ namespace AlessandroGozzi.BookECommerce.Application.Commands.Auth.RemoveCreditCa
             if (result.IsFailure)
                 return Result.Failure(result.Error);
 
+            await CustomerRepo.UpdateAsync(customer, token);
             await UnitOfWork.SaveChangesAsync(token);
             return Result.Success();
         }
