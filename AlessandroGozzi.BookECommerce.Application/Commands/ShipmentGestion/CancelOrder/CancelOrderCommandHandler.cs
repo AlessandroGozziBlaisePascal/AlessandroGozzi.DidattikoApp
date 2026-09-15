@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.ShipmentGestion.CancelOrder

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.Events;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.Events;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders
 {
     public class Order : AggregateRoot
     {

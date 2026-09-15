@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects
 {
     public enum ShippingType
     {

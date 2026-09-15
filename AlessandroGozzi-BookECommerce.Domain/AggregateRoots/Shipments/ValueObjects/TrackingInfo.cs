@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects
 {
     public sealed class TrackingInfo
     {

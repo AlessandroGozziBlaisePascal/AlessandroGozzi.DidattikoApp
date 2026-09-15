@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {

@@ -17,7 +17,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.19");
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.Book", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.Book", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Books", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts.Cart", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts.Cart", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -70,7 +70,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Carts", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.Customer", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.Customer", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -85,7 +85,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Customers", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.Order", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +121,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Orders", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.Shipment", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.Shipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,7 +154,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Shipments", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets.Wallet", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets.Wallet", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -168,9 +168,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.ToTable("Wallets", (string)null);
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.Book", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.Book", b =>
                 {
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("TEXT");
@@ -189,7 +189,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("BookId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "Price", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "Price", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("TEXT");
@@ -207,7 +207,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("BookId");
                         });
 
-                    b.OwnsMany("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.BookReview", "Reviews", b1 =>
+                    b.OwnsMany("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.BookReview", "Reviews", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -234,7 +234,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("BookId");
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "CustomerName", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "CustomerName", b2 =>
                                 {
                                     b2.Property<int>("BookReviewId")
                                         .HasColumnType("INTEGER");
@@ -246,7 +246,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                     b2.WithOwner()
                                         .HasForeignKey("BookReviewId");
 
-                                    b2.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b3 =>
+                                    b2.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b3 =>
                                         {
                                             b3.Property<int>("FullNameBookReviewId")
                                                 .HasColumnType("INTEGER");
@@ -265,7 +265,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                                 .HasForeignKey("FullNameBookReviewId");
                                         });
 
-                                    b2.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b3 =>
+                                    b2.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b3 =>
                                         {
                                             b3.Property<int>("FullNameBookReviewId")
                                                 .HasColumnType("INTEGER");
@@ -295,7 +295,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .IsRequired();
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ISBN", "ISBNCode", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ISBN", "ISBNCode", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("TEXT");
@@ -314,7 +314,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("BookId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.Subject", "Subject", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.Subject", "Subject", b1 =>
                         {
                             b1.Property<Guid>("BookId")
                                 .HasColumnType("TEXT");
@@ -348,9 +348,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts.Cart", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts.Cart", b =>
                 {
-                    b.OwnsMany("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts.CartItem", "Items", b1 =>
+                    b.OwnsMany("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts.CartItem", "Items", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -382,7 +382,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("CartId");
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b2 =>
                                 {
                                     b2.Property<Guid>("CartItemId")
                                         .HasColumnType("TEXT");
@@ -401,7 +401,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                         .HasForeignKey("CartItemId");
                                 });
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "Price", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "Price", b2 =>
                                 {
                                     b2.Property<Guid>("CartItemId")
                                         .HasColumnType("TEXT");
@@ -429,9 +429,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.Customer", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.Customer", b =>
                 {
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Address", "Address", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Address", "Address", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("TEXT");
@@ -468,7 +468,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "FullName", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "FullName", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("TEXT");
@@ -480,7 +480,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("CustomerId");
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b2 =>
                                 {
                                     b2.Property<Guid>("FullNameCustomerId")
                                         .HasColumnType("TEXT");
@@ -499,7 +499,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                         .HasForeignKey("FullNameCustomerId");
                                 });
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b2 =>
                                 {
                                     b2.Property<Guid>("FullNameCustomerId")
                                         .HasColumnType("TEXT");
@@ -525,7 +525,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .IsRequired();
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Email", "Email", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Email", "Email", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("TEXT");
@@ -544,7 +544,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.PhoneNumber", "Number", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.PhoneNumber", "Number", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("TEXT");
@@ -563,7 +563,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("CustomerId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.CreditCard", "CreditCard", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.CreditCard", "CreditCard", b1 =>
                         {
                             b1.Property<Guid>("CustomerId")
                                 .HasColumnType("TEXT");
@@ -581,7 +581,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("CustomerId");
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "CardOwner", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.FullName", "CardOwner", b2 =>
                                 {
                                     b2.Property<Guid>("CreditCardCustomerId")
                                         .HasColumnType("TEXT");
@@ -593,7 +593,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                     b2.WithOwner()
                                         .HasForeignKey("CreditCardCustomerId");
 
-                                    b2.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b3 =>
+                                    b2.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Name", "Name", b3 =>
                                         {
                                             b3.Property<Guid>("FullNameCreditCardCustomerId")
                                                 .HasColumnType("TEXT");
@@ -612,7 +612,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                                 .HasForeignKey("FullNameCreditCardCustomerId");
                                         });
 
-                                    b2.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b3 =>
+                                    b2.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Surname", "Surname", b3 =>
                                         {
                                             b3.Property<Guid>("FullNameCreditCardCustomerId")
                                                 .HasColumnType("TEXT");
@@ -638,7 +638,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                         .IsRequired();
                                 });
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.ExpiryDate", "ExpiryDate", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.ExpiryDate", "ExpiryDate", b2 =>
                                 {
                                     b2.Property<Guid>("CreditCardCustomerId")
                                         .HasColumnType("TEXT");
@@ -681,9 +681,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.Order", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.Order", b =>
                 {
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "TotalPrice", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "TotalPrice", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("TEXT");
@@ -701,7 +701,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("OrderId");
                         });
 
-                    b.OwnsMany("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.OrderItem", "_items", b1 =>
+                    b.OwnsMany("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.OrderItem", "_items", b1 =>
                         {
                             b1.Property<Guid>("Id")
                                 .ValueGeneratedOnAdd()
@@ -733,7 +733,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects.ImageUrl", "MainPhoto", b2 =>
                                 {
                                     b2.Property<Guid>("OrderItemId")
                                         .HasColumnType("TEXT");
@@ -752,7 +752,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                         .HasForeignKey("OrderItemId");
                                 });
 
-                            b1.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "Price", b2 =>
+                            b1.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "Price", b2 =>
                                 {
                                     b2.Property<Guid>("OrderItemId")
                                         .HasColumnType("TEXT");
@@ -777,7 +777,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .IsRequired();
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.ValueObjects.PaymentDetails", "PaymentDetails", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.ValueObjects.PaymentDetails", "PaymentDetails", b1 =>
                         {
                             b1.Property<Guid>("OrderId")
                                 .HasColumnType("TEXT");
@@ -811,9 +811,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.Navigation("_items");
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.Shipment", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.Shipment", b =>
                 {
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Address", "ShippingAddress", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects.Address", "ShippingAddress", b1 =>
                         {
                             b1.Property<Guid>("ShipmentId")
                                 .HasColumnType("TEXT");
@@ -850,7 +850,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("ShipmentId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "SubTotal", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "SubTotal", b1 =>
                         {
                             b1.Property<Guid>("ShipmentId")
                                 .HasColumnType("TEXT");
@@ -868,7 +868,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("ShipmentId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects.TrackingInfo", "TrackingInfo", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects.TrackingInfo", "TrackingInfo", b1 =>
                         {
                             b1.Property<Guid>("ShipmentId")
                                 .HasColumnType("TEXT");
@@ -907,9 +907,9 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                     b.Navigation("TrackingInfo");
                 });
 
-            modelBuilder.Entity("AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets.Wallet", b =>
+            modelBuilder.Entity("AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets.Wallet", b =>
                 {
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "AvailableBalance", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "AvailableBalance", b1 =>
                         {
                             b1.Property<Guid>("WalletId")
                                 .HasColumnType("TEXT");
@@ -927,7 +927,7 @@ namespace AlessandroGozzi.BookECommerce.Infrastructure.Migrations
                                 .HasForeignKey("WalletId");
                         });
 
-                    b.OwnsOne("AlessandroGozzi_BookECommerce.Domain.ValueObjects.Money", "PendingBalance", b1 =>
+                    b.OwnsOne("AlessandroGozzi.BookECommerce.Domain.ValueObjects.Money", "PendingBalance", b1 =>
                         {
                             b1.Property<Guid>("WalletId")
                                 .HasColumnType("TEXT");

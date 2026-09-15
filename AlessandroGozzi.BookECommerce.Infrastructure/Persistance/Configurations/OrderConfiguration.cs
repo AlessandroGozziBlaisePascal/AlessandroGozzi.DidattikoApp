@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

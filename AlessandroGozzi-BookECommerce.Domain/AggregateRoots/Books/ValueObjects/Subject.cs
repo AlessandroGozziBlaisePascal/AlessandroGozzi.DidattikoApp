@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects
 {
     public record Subject
     {

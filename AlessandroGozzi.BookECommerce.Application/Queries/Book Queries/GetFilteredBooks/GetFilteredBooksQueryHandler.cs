@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.BookInformation;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.Book_Queries.GetFilteredBooks

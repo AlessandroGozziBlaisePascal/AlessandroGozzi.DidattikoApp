@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Net.NetworkInformation;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.Events;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.Events;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers
 {
     public class Customer: AggregateRoot
     {

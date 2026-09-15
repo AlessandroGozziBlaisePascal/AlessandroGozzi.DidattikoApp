@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Repositories
+namespace AlessandroGozzi.BookECommerce.Domain.Repositories
 {
     public interface IBookRepository: IRepository<Book>
     {

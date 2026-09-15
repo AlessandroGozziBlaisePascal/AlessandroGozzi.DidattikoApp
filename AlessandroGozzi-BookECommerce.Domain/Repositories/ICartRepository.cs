@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Repositories
+namespace AlessandroGozzi.BookECommerce.Domain.Repositories
 {
     public interface ICartRepository: IRepository<Cart>
     {

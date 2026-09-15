@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers
 {

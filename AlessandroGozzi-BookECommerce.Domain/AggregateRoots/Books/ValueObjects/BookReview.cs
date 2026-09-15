@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects
 {
     public record BookReview
     {

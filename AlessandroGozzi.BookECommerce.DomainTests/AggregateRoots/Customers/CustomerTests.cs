@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.Events;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.Events;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 using FluentAssertions;
 
 namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Customers

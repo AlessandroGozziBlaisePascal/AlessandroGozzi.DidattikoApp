@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.ValueObjects
 {
     public record Money
     {

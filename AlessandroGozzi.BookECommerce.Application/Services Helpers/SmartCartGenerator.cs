@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
 
 namespace AlessandroGozzi.BookECommerce.Application.Services_Helpers
 {

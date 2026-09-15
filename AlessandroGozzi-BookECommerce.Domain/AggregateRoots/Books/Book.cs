@@ -5,11 +5,11 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.Events;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.Events;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books
 {
     public class Book: AggregateRoot
     {

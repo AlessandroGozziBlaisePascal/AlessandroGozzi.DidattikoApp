@@ -10,11 +10,11 @@ using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 using MediatR;
 using Stripe;
 

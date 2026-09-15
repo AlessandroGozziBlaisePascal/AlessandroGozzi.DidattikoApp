@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.ValueObjects;
 
 namespace AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto
 {

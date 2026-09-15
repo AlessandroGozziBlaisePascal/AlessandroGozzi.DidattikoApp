@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments.Events
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments.Events
 {
     public record ShipmentDeliveredEvent(Guid Id, Guid OrderId, Guid SellerId): DomainEvent;
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Repositories
+namespace AlessandroGozzi.BookECommerce.Domain.Repositories
 {
     public interface IShipmentRepository: IRepository<Shipment>
     {

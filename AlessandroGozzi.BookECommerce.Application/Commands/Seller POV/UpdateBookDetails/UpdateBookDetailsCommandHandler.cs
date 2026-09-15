@@ -7,7 +7,7 @@ using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 using MediatR;
 
 namespace AlessandroGozzi.BookECommerce.Application.Commands.Seller_POV.UpdateBookDetails

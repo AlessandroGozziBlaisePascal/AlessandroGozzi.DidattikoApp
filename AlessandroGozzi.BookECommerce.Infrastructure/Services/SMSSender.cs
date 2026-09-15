@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.ValueObjects
 {
     public sealed record CreditCard
     {

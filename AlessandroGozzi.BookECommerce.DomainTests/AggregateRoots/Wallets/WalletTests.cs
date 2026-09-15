@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets.Events;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets.Events;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 using FluentAssertions;
 
 namespace AlessandroGozzi.BookECommerce.DomainTests.AggregateRoots.Wallets

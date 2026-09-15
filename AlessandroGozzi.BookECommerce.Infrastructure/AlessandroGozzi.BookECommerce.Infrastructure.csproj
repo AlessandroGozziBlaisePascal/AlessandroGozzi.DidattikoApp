@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AlessandroGozzi-BookECommerce.Domain\AlessandroGozzi-BookECommerce.Domain.csproj" />
+    <ProjectReference Include="..\AlessandroGozzi-BookECommerce.Domain\AlessandroGozzi.BookECommerce.Domain.csproj" />
     <ProjectReference Include="..\AlessandroGozzi.BookECommerce.Application\AlessandroGozzi.BookECommerce.Application.csproj" />
     <ProjectReference Include="..\AlessandroGozzi.BookECommerce.SharedKernel\AlessandroGozzi.BookECommerce.SharedKernel.csproj" />
   </ItemGroup>

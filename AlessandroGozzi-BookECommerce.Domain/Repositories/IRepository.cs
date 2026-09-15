@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.Repositories
+namespace AlessandroGozzi.BookECommerce.Domain.Repositories
 {
     public interface IRepository<T> where T : AggregateRoot
     {

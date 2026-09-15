@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders
 {
     public enum OrderStatus
     {

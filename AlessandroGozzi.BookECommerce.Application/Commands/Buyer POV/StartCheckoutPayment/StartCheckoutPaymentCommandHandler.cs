@@ -11,7 +11,7 @@ using AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
 using AlessandroGozzi.BookECommerce.Application.Services_Helpers;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 using MediatR;
 using Stripe;
 using Stripe.V2;

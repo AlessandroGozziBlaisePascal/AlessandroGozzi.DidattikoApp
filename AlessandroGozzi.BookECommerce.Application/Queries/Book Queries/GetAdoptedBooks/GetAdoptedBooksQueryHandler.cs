@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 
 namespace AlessandroGozzi.BookECommerce.Application.Queries.Book_Queries.GetAdoptedBooks
 {

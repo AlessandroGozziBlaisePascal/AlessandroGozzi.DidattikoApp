@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance.Repositories;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.Repositories;
+using AlessandroGozzi.BookECommerce.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

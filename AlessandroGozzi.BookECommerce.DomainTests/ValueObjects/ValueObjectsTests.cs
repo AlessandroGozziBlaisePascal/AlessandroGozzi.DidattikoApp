@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 using FluentAssertions;
 
 namespace AlessandroGozzi.BookECommerce.DomainTests.ValueObjects

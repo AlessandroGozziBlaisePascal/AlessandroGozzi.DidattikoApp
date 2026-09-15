@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {

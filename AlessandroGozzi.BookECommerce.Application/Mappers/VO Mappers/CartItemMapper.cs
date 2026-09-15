@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.Checkout;
 using AlessandroGozzi.BookECommerce.Application.Dto.VO_Dto;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts;
 
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers
 {

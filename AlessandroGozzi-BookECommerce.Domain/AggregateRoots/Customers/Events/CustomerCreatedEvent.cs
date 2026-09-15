@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.Events
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.Events
 {
     public record CustomerCreatedEvent(Guid CustomerId) : DomainEvent { }
 }

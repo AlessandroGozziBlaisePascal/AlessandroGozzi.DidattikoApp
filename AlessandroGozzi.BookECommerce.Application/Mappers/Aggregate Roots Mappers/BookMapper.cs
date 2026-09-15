@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Application.Dto;
 using AlessandroGozzi.BookECommerce.Application.Dto.Aggregate_Roots_Dto;
 using AlessandroGozzi.BookECommerce.Application.Mappers.VO_Mappers;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
 namespace AlessandroGozzi.BookECommerce.Application.Mappers.Aggregate_Roots_Mappers
 {
     public static class BookMapper

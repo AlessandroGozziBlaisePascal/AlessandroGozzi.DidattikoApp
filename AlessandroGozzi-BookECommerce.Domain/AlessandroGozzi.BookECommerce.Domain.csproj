@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>AlessandroGozzi_BookECommerce.Domain</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>AlessandroGozzi.BookECommerce.Domain</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

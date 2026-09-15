@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.Events
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.Events
 {
     public record OrderConfirmedEvent(Guid Id): DomainEvent;
 }

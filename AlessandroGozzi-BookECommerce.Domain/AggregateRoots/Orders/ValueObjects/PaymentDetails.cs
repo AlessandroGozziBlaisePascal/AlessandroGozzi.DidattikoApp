@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders.ValueObjects
 {
     public enum PaymentMethod { CreditCard, Wallet, Hybrid}
     public record PaymentDetails

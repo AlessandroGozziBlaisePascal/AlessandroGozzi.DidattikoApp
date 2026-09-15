@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers.ValueObjects
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers.ValueObjects
 {
     public record Name
     {

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.Infrastructure.Persistance.Configurations;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Customers;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Orders;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Shipments;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Wallets;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Customers;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Orders;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Shipments;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Wallets;
 using Microsoft.EntityFrameworkCore;
 
 namespace AlessandroGozzi.BookECommerce.Infrastructure.Persistance

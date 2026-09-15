@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AlessandroGozzi.BookECommerce.SharedKernel;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
-using AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts.Events;
-using AlessandroGozzi_BookECommerce.Domain.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Books.ValueObjects;
+using AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts.Events;
+using AlessandroGozzi.BookECommerce.Domain.ValueObjects;
 
-namespace AlessandroGozzi_BookECommerce.Domain.AggregateRoots.Carts
+namespace AlessandroGozzi.BookECommerce.Domain.AggregateRoots.Carts
 {
     public class Cart: AggregateRoot
     {
