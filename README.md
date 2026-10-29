@@ -1,11 +1,11 @@
 # DidattikoApp - E-Commerce Libri Scolastici Usati
 
-Applicazione desktop per la compravendita di libri di testo scolastici usati, sviluppata con architettura pulita (DDD / Clean Architecture) in C# e WPF.
+Applicazione desktop per la compravendita di libri di testo scolastici usati, sviluppata con architettura pulita (DDD / Clean Architecture) in C#.
 
 ## 🚀 Tecnologie Utilizzate
 
 * **Linguaggio:** C# (.NET)
-* **GUI / Interfaccia Grafica:** WPF (Windows Presentation Foundation)
+* **GUI / Interfaccia Grafica:** NET .MAUI
 * **Database & ORM:** SQLite / Entity Framework Core (gestione migrazioni)
 * **Testing:** xUnit / FluentAssertions
 
@@ -17,7 +17,7 @@ Il progetto è strutturato seguendo i principi di **Domain-Driven Design (DDD)**
 * `Application`: CQRS / Use Cases (gestione comandi, query, contratti di servizio e gestori eventi).
 * `Infrastructure`: Implementazione della persistenza dei dati (DB), repository, servizi esterni e autenticazione.
 * `SharedKernel`: Componenti e contratti condivisi tra i diversi livelli dell'applicazione.
-* `WPF`: Interfaccia utente grafica dell'applicazione (Views, ViewModels e asset di interfaccia).
+* `NET .MAUI`: Interfaccia utente grafica dell'applicazione (Views, ViewModels e asset di interfaccia).
 * `DomainTests`: Unit test dedicati alla validazione del livello di dominio e delle regole di business.
 
 ## 🛠️ Funzionalità Principali
