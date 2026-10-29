@@ -17,7 +17,7 @@ Il progetto è strutturato seguendo i principi di **Domain-Driven Design (DDD)**
 * `Application`: CQRS / Use Cases (gestione comandi, query, contratti di servizio e gestori eventi).
 * `Infrastructure`: Implementazione della persistenza dei dati (DB), repository, servizi esterni e autenticazione.
 * `SharedKernel`: Componenti e contratti condivisi tra i diversi livelli dell'applicazione.
-* `NET .MAUI`: Interfaccia utente grafica dell'applicazione (Views, ViewModels e asset di interfaccia).
+* `NET.MAUI`: Interfaccia utente grafica dell'applicazione (Views, ViewModels e asset di interfaccia).
 * `DomainTests`: Unit test dedicati alla validazione del livello di dominio e delle regole di business.
 
 ## 🛠️ Funzionalità Principali
