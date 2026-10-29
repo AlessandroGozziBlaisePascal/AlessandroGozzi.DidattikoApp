@@ -1,0 +1,151 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlessandroGozzi.BookECommerce.MobileGUI.ViewModels"
+             x:Class="AlessandroGozzi.BookECommerce.MobileGUI.Pages.LoginPage"
+             x:DataType="vm:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Sfondo con lo stesso gradiente della Intro -->
+    <Grid IgnoreSafeArea="True">
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#4A148C" Offset="0.0" />
+                <GradientStop Color="#5B21B6" Offset="0.35" />
+                <GradientStop Color="#1D4ED8" Offset="0.75" />
+                <GradientStop Color="#2563EB" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <ScrollView>
+            <VerticalStackLayout Spacing="28"
+                                 Padding="24,60,24,30"
+                                 VerticalOptions="Center">
+
+                <!-- Badge Rettangolare Arrotondato in Alto: LOGIN -->
+                <Border StrokeShape="RoundRectangle 18"
+                        Stroke="#60FFFFFF"
+                        StrokeThickness="1.5"
+                        BackgroundColor="#25FFFFFF"
+                        Padding="36,12"
+                        HorizontalOptions="Center"
+                        WidthRequest="220">
+                    <Border.Shadow>
+                        <Shadow Brush="#30000000" Offset="0,6" Radius="12" Opacity="0.5" />
+                    </Border.Shadow>
+
+                    <Label Text="LOGIN"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#FFFFFF"
+                           CharacterSpacing="3"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <!-- Riquadro Principale del Form (Card Bianca Morbida) -->
+                <Border StrokeShape="RoundRectangle 24"
+                        Stroke="#E2E8F0"
+                        StrokeThickness="0"
+                        BackgroundColor="#FFFFFF"
+                        Padding="26,32"
+                        MaximumWidthRequest="420"
+                        HorizontalOptions="Fill">
+
+                    <Border.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,10" Radius="22" Opacity="0.6" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="16">
+
+                        <!-- Campo: Mail o Numero di Telefono -->
+                        <Label Text="Mail o Numero di telefono"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="#334155" />
+
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#F1F5F9"
+                                Stroke="#CBD5E1"
+                                StrokeThickness="1"
+                                Padding="14,0"
+                                HeightRequest="50">
+                            <Entry Placeholder="Inserisci email o numero"
+                                   PlaceholderColor="#94A3B8"
+                                   TextColor="#0F172A"
+                                   Text="{Binding Username}"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Campo: Password -->
+                        <Label Text="Password"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="#334155"
+                               Margin="0,4,0,0" />
+
+                        <Border StrokeShape="RoundRectangle 12"
+                                BackgroundColor="#F1F5F9"
+                                Stroke="#CBD5E1"
+                                StrokeThickness="1"
+                                Padding="14,0"
+                                HeightRequest="50">
+                            <Entry Placeholder="Inserisci password"
+                                   IsPassword="True"
+                                   PlaceholderColor="#94A3B8"
+                                   TextColor="#0F172A"
+                                   Text="{Binding Password}"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Link: Password dimenticata? -->
+                        <Label Text="Password dimenticata?"
+                               TextColor="#5B21B6"
+                               FontAttributes="Bold"
+                               HorizontalOptions="End"
+                               FontSize="12"
+                               Margin="0,2,0,4">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                        <!-- Bottone di Accesso nei Colori Coordinati al Gradiente -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                HeightRequest="50"
+                                Margin="0,10,0,0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#5B21B6" Offset="0.0" />
+                                    <GradientStop Color="#2563EB" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Button Text="Accedi"
+                                    Command="{Binding LoginCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="#FFFFFF"
+                                    FontSize="16"
+                                    FontAttributes="Bold" />
+                        </Border>
+
+                        <!-- Link: Registrazione -->
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="6" Margin="0,12,0,0">
+                            <Label Text="Non hai un account?" TextColor="#64748B" FontSize="13" />
+                            <Label Text="Registrati"
+                                   TextColor="#5B21B6"
+                                   FontAttributes="Bold"
+                                   FontSize="13">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToRegisterCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </HorizontalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

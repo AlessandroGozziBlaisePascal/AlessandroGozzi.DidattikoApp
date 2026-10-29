@@ -1,0 +1,151 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlessandroGozzi.BookECommerce.MobileGUI.ViewModels"
+             x:Class="AlessandroGozzi.BookECommerce.MobileGUI.Pages.RegistrationPage"
+             x:DataType="vm:RegistrationViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid IgnoreSafeArea="True">
+        <!-- Sfondo a Gradiente Viola - Indaco - Blu -->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#4A148C" Offset="0.0" />
+                <GradientStop Color="#5B21B6" Offset="0.35" />
+                <GradientStop Color="#1D4ED8" Offset="0.75" />
+                <GradientStop Color="#2563EB" Offset="1.0" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <ScrollView>
+            <VerticalStackLayout Spacing="22"
+                                 Padding="20,50,20,35"
+                                 VerticalOptions="Center">
+
+                <!-- Header: Tasto Back Circolare Glass + Titolo Badge -->
+                <Border Grid.Column="1"
+        StrokeShape="RoundRectangle 18"
+        Stroke="#60FFFFFF"
+        StrokeThickness="1.5"
+        BackgroundColor="#25FFFFFF"
+        Padding="24,10"
+        HorizontalOptions="Center">
+                    <Border.Shadow>
+                        <Shadow Brush="#30000000" Offset="0,6" Radius="12" Opacity="0.5" />
+                    </Border.Shadow>
+
+                    <Label Text="REGISTRAZIONE"
+           FontSize="18"
+           FontAttributes="Bold"
+           TextColor="#FFFFFF"
+           CharacterSpacing="2"
+           HorizontalOptions="Center" />
+                </Border>
+
+                <!-- Card Principale Form -->
+                <Border StrokeShape="RoundRectangle 24"
+                        Stroke="#E2E8F0"
+                        StrokeThickness="0"
+                        BackgroundColor="#FFFFFF"
+                        Padding="22,26"
+                        MaximumWidthRequest="430"
+                        HorizontalOptions="Fill">
+
+                    <Border.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,10" Radius="22" Opacity="0.6" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="Crea il tuo Account"
+                               FontSize="22"
+                               FontAttributes="Bold"
+                               TextColor="#1E293B"
+                               Margin="0,0,0,4" />
+
+                        <!-- Nome e Cognome -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="Nome" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Nome}" VerticalOptions="Center" />
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="Cognome" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Cognome}" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Email -->
+                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                            <Entry Placeholder="Indirizzo Email" Keyboard="Email" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Email}" VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Telefono e Via -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="+39 Telefono" Keyboard="Telephone" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Telefono}" VerticalOptions="Center" />
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="Via / Piazza" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Street}" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Civico, Città, CAP -->
+                        <Grid ColumnDefinitions="1.2*, 2.4*, 1.4*" ColumnSpacing="8">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="8,0" HeightRequest="46">
+                                <Entry Placeholder="N." PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding CivicNumber}" VerticalOptions="Center" />
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="10,0" HeightRequest="46">
+                                <Entry Placeholder="Città" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding City}" VerticalOptions="Center" />
+                            </Border>
+                            <Border Grid.Column="2" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="8,0" HeightRequest="46">
+                                <Entry Placeholder="CAP" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Cap}" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Password e Conferma Password -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="Password" IsPassword="True" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding Password}" VerticalOptions="Center" />
+                            </Border>
+                            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F1F5F9" Stroke="#CBD5E1" StrokeThickness="1" Padding="12,0" HeightRequest="46">
+                                <Entry Placeholder="Conferma" IsPassword="True" PlaceholderColor="#94A3B8" TextColor="#0F172A" Text="{Binding ConfermaPassword}" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Tasto Registrati Primario (Gradiente Sfumato) -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                HeightRequest="48"
+                                Margin="0,8,0,0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#5B21B6" Offset="0.0" />
+                                    <GradientStop Color="#2563EB" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+
+                            <Button Text="Registrati"
+                                    Command="{Binding RegisterUserCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="#FFFFFF"
+                                    FontSize="15"
+                                    FontAttributes="Bold" />
+                        </Border>
+
+                        <!-- Tasto Secondario "Torna al Login" con bordo outline -->
+                        <Border StrokeShape="RoundRectangle 12"
+                                Stroke="#CBD5E1"
+                                StrokeThickness="1"
+                                BackgroundColor="Transparent"
+                                HeightRequest="44">
+                            <Button Text="Annulla e Torna al Login"
+                                    Command="{Binding BackToLoginCommand}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="#64748B"
+                                    FontSize="13"
+                                    FontAttributes="Bold" />
+                        </Border>
+
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

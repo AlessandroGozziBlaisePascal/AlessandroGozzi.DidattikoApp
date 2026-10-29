@@ -1,0 +1,59 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlessandroGozzi.BookECommerce.MobileGUI.Pages.IntroPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#FFFFFF">
+
+    <Grid x:Name="RootLayout" IgnoreSafeArea="True">
+        <!-- 1. Onda fluida vettoriale con Gradiente Viola -> Blu (ispirato al logo) -->
+        <Path x:Name="WaveSplash"
+              Aspect="Fill"
+              HorizontalOptions="Fill"
+              VerticalOptions="Fill"
+              Data="M 0,0 L 400,0 L 400,800 L 0,800 C 130,550 60,250 0,0 Z"
+              Opacity="0.98"
+              InputTransparent="True">
+            <Path.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <!-- Viola profondo del logo -->
+                    <GradientStop Color="#4A148C" Offset="0.0" />
+                    <!-- Viola/Indaco medio -->
+                    <GradientStop Color="#5B21B6" Offset="0.4" />
+                    <!-- Blu del libro -->
+                    <GradientStop Color="#1D4ED8" Offset="0.8" />
+                    <!-- Azzurro acceso di accento -->
+                    <GradientStop Color="#2563EB" Offset="1.0" />
+                </LinearGradientBrush>
+            </Path.Fill>
+        </Path>
+
+        <!-- 2. Gocce di avanguardia coordinate con i colori del brand -->
+        <Border x:Name="Drop1"
+                WidthRequest="42" HeightRequest="42"
+                StrokeShape="RoundRectangle 21"
+                BackgroundColor="#7C3AED"
+                StrokeThickness="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Opacity="0" />
+
+        <Border x:Name="Drop2"
+                WidthRequest="26" HeightRequest="26"
+                StrokeShape="RoundRectangle 13"
+                BackgroundColor="#3B82F6"
+                StrokeThickness="0"
+                HorizontalOptions="Center"
+                VerticalOptions="Center"
+                Opacity="0" />
+
+        <!-- 3. Logo Didattiko Centrale (ingrandito per massima visibilità) -->
+        <Image x:Name="LogoImg"
+               Source="LogoDidattiko.png"
+               WidthRequest="320"
+               HeightRequest="320"
+               HorizontalOptions="Center"
+               VerticalOptions="Center"
+               Opacity="0"
+               Scale="0.1" />
+    </Grid>
+</ContentPage>
